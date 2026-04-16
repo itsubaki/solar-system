@@ -13,9 +13,8 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Solar System Simulator',
-  description: 'Interactive 3D Solar System built with Three.js',
-  generator: 'v0.app',
+  title: 'Solar System',
+  description: 'Interactive 3D Solar System',
   icons: {
     icon: [
       {
