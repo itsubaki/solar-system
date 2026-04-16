@@ -15,12 +15,19 @@ type OrbitControlsRef = {
   update: () => void
 }
 
+const DEFAULT_CAMERA_POSITION = new Vector3(30, -20, 30)
+const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
+const MIN_CAMERA_DISTANCE = 5
+const MAX_CAMERA_DISTANCE = 80
+const KEY_ROTATE_PIXELS = 48
+const KEY_ZOOM_FACTOR = 0.9
+
 function CameraController() {
   const { camera } = useThree()
 
   useEffect(() => {
-    camera.position.set(30, -20, 30)
-    camera.lookAt(0, 0, 0)
+    camera.position.copy(DEFAULT_CAMERA_POSITION)
+    camera.lookAt(DEFAULT_CAMERA_TARGET)
   }, [camera])
 
   return null
@@ -38,6 +45,43 @@ function InvertedOrbitControls() {
     const rotateSpeed = 1
     const spherical = new Spherical()
     const offset = new Vector3()
+
+    const syncCamera = () => {
+      camera.lookAt(controls.target)
+      controls.update()
+    }
+
+    const orbitByPixels = (deltaX: number, deltaY: number) => {
+      offset.copy(camera.position).sub(controls.target)
+      spherical.setFromVector3(offset)
+
+      spherical.theta -= (2 * Math.PI * deltaX * rotateSpeed) / element.clientHeight
+      spherical.phi += (2 * Math.PI * deltaY * rotateSpeed) / element.clientHeight
+      spherical.makeSafe()
+
+      offset.setFromSpherical(spherical)
+      camera.position.copy(controls.target).add(offset)
+      syncCamera()
+    }
+
+    const zoomByFactor = (factor: number) => {
+      offset.copy(camera.position).sub(controls.target)
+      spherical.setFromVector3(offset)
+      spherical.radius = Math.min(
+        MAX_CAMERA_DISTANCE,
+        Math.max(MIN_CAMERA_DISTANCE, spherical.radius * factor)
+      )
+      offset.setFromSpherical(spherical)
+      camera.position.copy(controls.target).add(offset)
+      syncCamera()
+    }
+
+    const resetCamera = () => {
+      controls.target.copy(DEFAULT_CAMERA_TARGET)
+      camera.position.copy(DEFAULT_CAMERA_POSITION)
+      syncCamera()
+    }
+
     let isRotating = false
     let lastX = 0
     let lastY = 0
@@ -63,30 +107,72 @@ function InvertedOrbitControls() {
       lastX = event.clientX
       lastY = event.clientY
 
-      offset.copy(camera.position).sub(controls.target)
-      spherical.setFromVector3(offset)
+      orbitByPixels(deltaX, deltaY)
+    }
 
-      spherical.theta -= (2 * Math.PI * deltaX * rotateSpeed) / element.clientHeight
-      spherical.phi += (2 * Math.PI * deltaY * rotateSpeed) / element.clientHeight
-      spherical.makeSafe()
+    const onKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement
+      const isTypingTarget =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") === "true"
 
-      offset.setFromSpherical(spherical)
-      camera.position.copy(controls.target).add(offset)
-      camera.lookAt(controls.target)
+      if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return
 
-      controls.update()
+      switch (event.key) {
+        case "r":
+        case "R":
+          event.preventDefault()
+          resetCamera()
+          break
+        case "ArrowUp":
+          event.preventDefault()
+          orbitByPixels(0, KEY_ROTATE_PIXELS)
+          break
+        case "ArrowDown":
+          event.preventDefault()
+          orbitByPixels(0, -KEY_ROTATE_PIXELS)
+          break
+        case "ArrowLeft":
+          event.preventDefault()
+          orbitByPixels(-KEY_ROTATE_PIXELS, 0)
+          break
+        case "ArrowRight":
+          event.preventDefault()
+          orbitByPixels(KEY_ROTATE_PIXELS, 0)
+          break
+        case "+":
+          event.preventDefault()
+          zoomByFactor(KEY_ZOOM_FACTOR)
+          break
+        case "-":
+          event.preventDefault()
+          zoomByFactor(1 / KEY_ZOOM_FACTOR)
+          break
+        default:
+          if (event.code === "NumpadAdd") {
+            event.preventDefault()
+            zoomByFactor(KEY_ZOOM_FACTOR)
+          } else if (event.code === "NumpadSubtract") {
+            event.preventDefault()
+            zoomByFactor(1 / KEY_ZOOM_FACTOR)
+          }
+      }
     }
 
     element.addEventListener("pointerdown", onPointerDown)
     window.addEventListener("pointermove", onPointerMove)
     window.addEventListener("pointerup", endRotation)
     window.addEventListener("pointercancel", endRotation)
+    window.addEventListener("keydown", onKeyDown)
 
     return () => {
       element.removeEventListener("pointerdown", onPointerDown)
       window.removeEventListener("pointermove", onPointerMove)
       window.removeEventListener("pointerup", endRotation)
       window.removeEventListener("pointercancel", endRotation)
+      window.removeEventListener("keydown", onKeyDown)
     }
   }, [camera, gl])
 
@@ -97,8 +183,8 @@ function InvertedOrbitControls() {
     enablePan
     enableZoom
     enableRotate={false}
-    minDistance={5}
-    maxDistance={80}
+    minDistance={MIN_CAMERA_DISTANCE}
+    maxDistance={MAX_CAMERA_DISTANCE}
     autoRotate={false}
   />
 }
