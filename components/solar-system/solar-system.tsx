@@ -17,7 +17,7 @@ function AdaptiveCamera() {
 
   if (isMobile) {
     // On mobile, place camera directly above so the Sun (origin) is centered
-    return <PerspectiveCamera makeDefault position={[0, 50, 0]} fov={55} />
+    return <PerspectiveCamera makeDefault position={[0, 80, 0]} fov={55} />
   }
   return <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
 }
