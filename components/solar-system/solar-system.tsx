@@ -15,9 +15,9 @@ function CameraController({ isMobile }: { isMobile: boolean }) {
 
   useEffect(() => {
     if (isMobile) {
-      camera.position.set(0, 80, 0)
+      camera.position.set(0, -80, 0)
     } else {
-      camera.position.set(30, 20, 30)
+      camera.position.set(30, -20, 30)
     }
     camera.lookAt(0, 0, 0)
   }, [camera, isMobile])
@@ -42,7 +42,7 @@ function Scene({
 }) {
   return (
     <>
-      <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
+      <PerspectiveCamera makeDefault position={[30, -20, 30]} fov={60} />
       <CameraController isMobile={isMobile} />
       <OrbitControls
         enablePan
