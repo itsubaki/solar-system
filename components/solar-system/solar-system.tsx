@@ -275,7 +275,11 @@ function Scene({
 
   useEffect(() => {
     if (!selectedPlanet) {
-      focusedPlanetPositionRef.current = null
+      if (focusedPlanetPositionRef.current) {
+        focusedPlanetPositionRef.current.set(0, 0, 0)
+      } else {
+        focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
+      }
     }
   }, [selectedPlanet])
 
@@ -295,8 +299,11 @@ function Scene({
       {/* Stars background */}
       <Stars />
 
-      {/* Sun at center */}
-      <Sun />
+      {/* Sun at center (clickable) */}
+      <Sun
+        onSelect={() => onSelectPlanet(null)}
+        focusTargetRef={focusedPlanetPositionRef}
+      />
 
       {/* Planets */}
       {PLANETS.map((planet) => (

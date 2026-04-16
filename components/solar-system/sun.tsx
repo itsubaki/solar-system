@@ -2,10 +2,19 @@
 
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
-import type { Mesh } from "three"
+import type { Mesh, Vector3 } from "three"
 import { SUN_DATA } from "@/lib/planet-data"
 
-export function Sun() {
+type FocusTargetRef = {
+  current: Vector3 | null
+}
+
+interface SunProps {
+  onSelect?: () => void
+  focusTargetRef?: FocusTargetRef | null
+}
+
+export function Sun({ onSelect, focusTargetRef }: SunProps) {
   const meshRef = useRef<Mesh>(null)
 
   useFrame((_, delta) => {
@@ -14,10 +23,19 @@ export function Sun() {
     }
   })
 
+  const handleClick = () => {
+    if (focusTargetRef && focusTargetRef.current) {
+      focusTargetRef.current.set(0, 0, 0)
+    } else if (focusTargetRef) {
+      focusTargetRef.current = new (require("three").Vector3)(0, 0, 0)
+    }
+    if (onSelect) onSelect()
+  }
+
   return (
     <group>
       {/* Sun mesh */}
-      <mesh ref={meshRef}>
+      <mesh ref={meshRef} onClick={handleClick}>
         <sphereGeometry args={[SUN_DATA.radius, 64, 64]} />
         <meshStandardMaterial
           color={SUN_DATA.color}
