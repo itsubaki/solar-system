@@ -251,15 +251,17 @@ export function SolarSystem() {
 
       {/* Planet Info Panel */}
       {selectedPlanet && (
-        <PlanetInfo
-          planet={selectedPlanet}
-          onClose={() => setSelectedPlanet(null)}
-        />
+        <div className="relative z-20">
+          <PlanetInfo
+            planet={selectedPlanet}
+            onClose={() => setSelectedPlanet(null)}
+          />
+        </div>
       )}
 
       {/* Title */}
       <div
-        className="absolute left-1/2 -translate-x-1/2 text-center pointer-events-none"
+        className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
         style={{
           top: "calc(env(safe-area-inset-top) + 1.5rem)",
         }}
