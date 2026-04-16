@@ -15,7 +15,7 @@ type OrbitControlsRef = {
   update: () => void
 }
 
-const DEFAULT_CAMERA_POSITION = new Vector3(30, -20, 30)
+const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const MIN_CAMERA_DISTANCE = 5
 const MAX_CAMERA_DISTANCE = 80
