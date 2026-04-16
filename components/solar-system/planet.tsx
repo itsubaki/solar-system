@@ -15,6 +15,7 @@ const SECONDS_PER_DAY = 86400
 
 interface PlanetProps {
   data: PlanetData
+  initialOrbitAngle?: number
   orbitSpeedScale: number
   showOrbits: boolean
   showLabels: boolean
@@ -23,7 +24,7 @@ interface PlanetProps {
   focusTargetRef?: FocusTargetRef | null
 }
 
-export function Planet({ data, orbitSpeedScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
+export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
   const groupRef = useRef<Group>(null)
   const planetRef = useRef<Mesh>(null)
   const worldPositionRef = useRef(new Vector3())
@@ -51,7 +52,7 @@ export function Planet({ data, orbitSpeedScale, showOrbits, showLabels, onSelect
   })
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
       {/* Orbit path */}
       {showOrbits && (
         <mesh rotation={[-Math.PI / 2, 0, 0]}>

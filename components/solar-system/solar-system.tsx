@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect, useRef } from "react"
+import { Suspense, useState, useEffect, useMemo, useRef } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
@@ -8,7 +8,7 @@ import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
-import { PLANETS, type PlanetData } from "@/lib/planet-data"
+import { getInitialOrbitAngle, PLANETS, type PlanetData } from "@/lib/planet-data"
 
 type OrbitControlsRef = {
   target: Vector3
@@ -269,6 +269,12 @@ function Scene({
   onSelectPlanet: (planet: PlanetData | null) => void
 }) {
   const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
+  const initialOrbitAngles = useMemo(
+    () => Object.fromEntries(
+      PLANETS.map((planet) => [planet.name, getInitialOrbitAngle(planet, new Date())])
+    ),
+    []
+  )
 
   useEffect(() => {
     if (!selectedPlanet) {
@@ -300,6 +306,7 @@ function Scene({
         <Planet
           key={planet.name}
           data={planet}
+          initialOrbitAngle={initialOrbitAngles[planet.name]}
           orbitSpeedScale={orbitSpeedScale}
           showOrbits
           showLabels
