@@ -1,3 +1,15 @@
+export interface SatelliteData {
+  name: string
+  radius: number
+  distance: number
+  orbitalPeriod: number
+  color: string
+  // Optional: orbital elements for more accurate simulation
+  eccentricity?: number
+  longitudeOfPeriapsis?: number
+  meanLongitudeAtJ2000?: number
+}
+
 export interface PlanetData {
   name: string
   radius: number
@@ -12,14 +24,97 @@ export interface PlanetData {
     outerRadius: number
     color: string
   }
-  satellites?: {
-    name: string
-    radius: number
-    distance: number
-    orbitalPeriod: number
-    color: string
-  }[]
+  satellites?: SatelliteData[]
   description: string
+}
+
+export const SATELLITE_ORBITAL_PHASES: Record<string, Record<string, {
+  eccentricity: number
+  longitudeOfPeriapsis: number
+  meanLongitudeAtJ2000: number
+}>> = {
+  Earth: {
+    Moon: {
+      eccentricity: 0.0549,
+      longitudeOfPeriapsis: 318.15, // deg
+      meanLongitudeAtJ2000: 115.3654, // deg
+    },
+  },
+  Jupiter: {
+    Io: {
+      eccentricity: 0.0041,
+      longitudeOfPeriapsis: 84.129,
+      meanLongitudeAtJ2000: 171.0169,
+    },
+    Europa: {
+      eccentricity: 0.0094,
+      longitudeOfPeriapsis: 88.970,
+      meanLongitudeAtJ2000: 41.923,
+    },
+    Ganymede: {
+      eccentricity: 0.0013,
+      longitudeOfPeriapsis: 192.417,
+      meanLongitudeAtJ2000: 63.552,
+    },
+    Callisto: {
+      eccentricity: 0.0074,
+      longitudeOfPeriapsis: 52.643,
+      meanLongitudeAtJ2000: 24.833,
+    },
+  },
+  Mars: {
+    Phobos: {
+      eccentricity: 0.0151,
+      longitudeOfPeriapsis: 150.057,
+      meanLongitudeAtJ2000: 177.617,
+    },
+    Deimos: {
+      eccentricity: 0.0002,
+      longitudeOfPeriapsis: 260.729,
+      meanLongitudeAtJ2000: 53.316,
+    },
+  },
+  Saturn: {
+    Titan: {
+      eccentricity: 0.0288,
+      longitudeOfPeriapsis: 186.585,
+      meanLongitudeAtJ2000: 28.051,
+    },
+  },
+  Neptune: {
+    Triton: {
+      eccentricity: 0.000016,
+      longitudeOfPeriapsis: 0,
+      meanLongitudeAtJ2000: 0,
+    },
+  },
+}
+
+export function getSatelliteOrbitAngle(
+  planetName: string,
+  satellite: SatelliteData,
+  at = new Date()
+): number {
+  const planetSatellites = SATELLITE_ORBITAL_PHASES[planetName]
+  const phase = planetSatellites?.[satellite.name]
+  if (!phase) {
+    const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
+    const meanMotion = (Math.PI * 2) / satellite.orbitalPeriod
+    return normalizeRadians(meanMotion * elapsedDays)
+  }
+  const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
+  const meanMotion = (Math.PI * 2) / satellite.orbitalPeriod
+  const meanAnomalyAtJ2000 = degToRad(
+    phase.meanLongitudeAtJ2000 - phase.longitudeOfPeriapsis
+  )
+  const meanAnomaly = normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays)
+  const eccentricAnomaly = solveKeplerEquation(meanAnomaly, phase.eccentricity)
+  const trueAnomaly = 2 * Math.atan2(
+    Math.sqrt(1 + phase.eccentricity) * Math.sin(eccentricAnomaly / 2),
+    Math.sqrt(1 - phase.eccentricity) * Math.cos(eccentricAnomaly / 2)
+  )
+  const longitude = trueAnomaly + degToRad(phase.longitudeOfPeriapsis)
+  return normalizeRadians(longitude)
 }
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24

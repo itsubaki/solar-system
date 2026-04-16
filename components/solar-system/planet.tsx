@@ -5,7 +5,8 @@ import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3 } from "three"
 import type { Group, Mesh } from "three"
-import type { PlanetData } from "@/lib/planet-data"
+import type { PlanetData, SatelliteData } from "@/lib/planet-data"
+import { getSatelliteOrbitAngle } from "@/lib/planet-data"
 
 type FocusTargetRef = {
   current: Vector3 | null
@@ -95,7 +96,12 @@ export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbit
 
         {/* Satellites */}
         {data.satellites?.map((satellite) => (
-          <Satellite key={satellite.name} satellite={satellite} orbitSpeedScale={orbitSpeedScale} showLabels={showLabels} />
+          <Satellite
+            key={satellite.name}
+            satellite={{ ...satellite, parentPlanetName: data.name }}
+            orbitSpeedScale={orbitSpeedScale}
+            showLabels={showLabels}
+          />
         ))}
 
         {/* Label */}
@@ -122,7 +128,7 @@ export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbit
 }
 
 interface SatelliteProps {
-  satellite: NonNullable<PlanetData["satellites"]>[number]
+  satellite: SatelliteData & { parentPlanetName: string }
   orbitSpeedScale: number
   showLabels: boolean
 }
@@ -130,6 +136,8 @@ interface SatelliteProps {
 function Satellite({ satellite, orbitSpeedScale, showLabels }: SatelliteProps) {
   const groupRef = useRef<Group>(null)
   const [hovered, setHovered] = useState(false)
+
+  const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)
 
   const orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
 
@@ -140,7 +148,7 @@ function Satellite({ satellite, orbitSpeedScale, showLabels }: SatelliteProps) {
   })
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} rotation={[0, initialAngle, 0]}>
       <group position={[satellite.distance, 0, 0]}>
         <mesh
           onPointerOver={() => setHovered(true)}
