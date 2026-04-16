@@ -87,6 +87,7 @@ function InvertedOrbitControls() {
     const onPointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return
 
+      event.preventDefault()
       isRotating = true
       lastX = event.clientX
       lastY = event.clientY
@@ -95,6 +96,7 @@ function InvertedOrbitControls() {
     const onPointerMove = (event: PointerEvent) => {
       if (!isRotating) return
 
+      event.preventDefault()
       const deltaX = event.clientX - lastX
       const deltaY = event.clientY - lastY
 
@@ -174,7 +176,7 @@ function InvertedOrbitControls() {
     ref={(instance) => {
       controlsRef.current = instance
     }}
-    enablePan
+    enablePan={false}
     enableZoom
     enableRotate={false}
     minDistance={MIN_CAMERA_DISTANCE}
@@ -237,9 +239,10 @@ export function SolarSystem() {
           paddingRight: "env(safe-area-inset-right)",
           paddingBottom: "env(safe-area-inset-bottom)",
           paddingLeft: "env(safe-area-inset-left)",
+          touchAction: "none",
         }}
       >
-        <Canvas className="size-full">
+        <Canvas className="size-full touch-none">
           <Suspense fallback={null}>
             <Scene
               selectedPlanet={selectedPlanet}
