@@ -25,7 +25,7 @@ export function Sun() {
           emissiveIntensity={SUN_DATA.emissiveIntensity}
         />
       </mesh>
-      
+
       {/* Sun glow effect */}
       <mesh scale={1.2}>
         <sphereGeometry args={[SUN_DATA.radius, 32, 32]} />
@@ -35,7 +35,7 @@ export function Sun() {
           opacity={0.3}
         />
       </mesh>
-      
+
       {/* Point light from sun */}
       <pointLight
         color="#FFF5E0"

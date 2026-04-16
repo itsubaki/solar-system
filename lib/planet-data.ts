@@ -88,8 +88,8 @@ function solveKeplerEquation(meanAnomaly: number, eccentricity: number) {
     eccentricAnomaly -= (
       eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly
     ) / (
-      1 - eccentricity * Math.cos(eccentricAnomaly)
-    )
+        1 - eccentricity * Math.cos(eccentricAnomaly)
+      )
   }
 
   return eccentricAnomaly
