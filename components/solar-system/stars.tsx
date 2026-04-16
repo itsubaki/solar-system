@@ -1,13 +1,13 @@
 "use client"
 
-import { useMemo, useRef } from "react"
+import { useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 
 export function Stars() {
   const ref = useRef<THREE.Points>(null)
 
-  const [positions, colors] = useMemo(() => {
+  const [{ positions, colors }] = useState(() => {
     const count = 5000
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
@@ -42,8 +42,8 @@ export function Stars() {
       }
     }
 
-    return [positions, colors]
-  }, [])
+    return { positions, colors }
+  })
 
   useFrame((_, delta) => {
     if (ref.current) {
