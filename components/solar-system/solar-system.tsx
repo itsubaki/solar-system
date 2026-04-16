@@ -15,17 +15,13 @@ type OrbitControlsRef = {
   update: () => void
 }
 
-function CameraController({ isMobile }: { isMobile: boolean }) {
+function CameraController() {
   const { camera } = useThree()
 
   useEffect(() => {
-    if (isMobile) {
-      camera.position.set(0, -80, 0)
-    } else {
-      camera.position.set(30, -20, 30)
-    }
+    camera.position.set(30, -20, 30)
     camera.lookAt(0, 0, 0)
-  }, [camera, isMobile])
+  }, [camera])
 
   return null
 }
@@ -110,16 +106,14 @@ function InvertedOrbitControls() {
 function Scene({
   selectedPlanet,
   onSelectPlanet,
-  isMobile,
 }: {
   selectedPlanet: PlanetData | null
   onSelectPlanet: (planet: PlanetData | null) => void
-  isMobile: boolean
 }) {
   return (
     <>
       <PerspectiveCamera makeDefault position={[30, -20, 30]} fov={60} />
-      <CameraController isMobile={isMobile} />
+      <CameraController />
       <InvertedOrbitControls />
 
       {/* Ambient light for general visibility */}
@@ -149,16 +143,6 @@ function Scene({
 
 export function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
-    return () => window.removeEventListener("resize", checkMobile)
-  }, [])
 
   return (
     <div className="relative w-full h-screen bg-background">
@@ -167,7 +151,6 @@ export function SolarSystem() {
           <Scene
             selectedPlanet={selectedPlanet}
             onSelectPlanet={setSelectedPlanet}
-            isMobile={isMobile}
           />
         </Suspense>
       </Canvas>
