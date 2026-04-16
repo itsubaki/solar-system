@@ -4,10 +4,9 @@ import { useEffect, useState } from "react"
 
 type SimulatedClockProps = {
     orbitSpeedScale: number
-    position?: "top-right" | "bottom-right"
 }
 
-export function SimulatedClock({ orbitSpeedScale, position = "top-right" }: SimulatedClockProps) {
+export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
     const [simTime, setSimTime] = useState(() => new Date())
     useEffect(() => {
         let lastReal = Date.now()

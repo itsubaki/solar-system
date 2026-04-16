@@ -293,19 +293,15 @@ function Scene({
       />
       <InvertedOrbitControls focusTarget={focusedPlanetPositionRef} />
 
-      {/* Ambient light for general visibility */}
       <ambientLight intensity={0.05} />
 
-      {/* Stars background */}
       <Stars />
 
-      {/* Sun at center (clickable) */}
       <Sun
         onSelect={() => onSelectPlanet(null)}
         focusTargetRef={focusedPlanetPositionRef}
       />
 
-      {/* Planets */}
       {PLANETS.map((planet) => (
         <Planet
           key={planet.name}
@@ -330,7 +326,6 @@ export function SolarSystem() {
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
-      {/* 3Dシーン: ラベルなどはz-0で */}
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -362,13 +357,11 @@ export function SolarSystem() {
         </div>
       )}
 
-      {/* Control Panel: z-30 */}
       <ControlPanel
         orbitSpeedIndex={orbitSpeedIndex}
         setOrbitSpeedIndex={setOrbitSpeedIndex}
       />
 
-      {/* Title: z-10 */}
       <div
         className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
         style={{
@@ -379,7 +372,7 @@ export function SolarSystem() {
           Solar System
         </h1>
       </div>
-      {/* Clock: z-40 右下・コントロールパネルの上 */}
+
       <div
         className="absolute z-40"
         style={{
@@ -387,7 +380,7 @@ export function SolarSystem() {
           bottom: "calc(env(safe-area-inset-bottom) + 7.5rem)",
         }}
       >
-        <SimulatedClock orbitSpeedScale={orbitSpeedScale} position="bottom-right" />
+        <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
       </div>
     </div>
   )
