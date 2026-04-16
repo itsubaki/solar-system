@@ -3,12 +3,24 @@
 import { Suspense, useState } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
+import { useThree } from "@react-three/fiber"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
 import { ControlPanel } from "./control-panel"
 import { PlanetInfo } from "./planet-info"
 import { PLANETS, type PlanetData } from "@/lib/planet-data"
+
+function AdaptiveCamera() {
+  const { size } = useThree()
+  const isMobile = size.width < 768
+
+  if (isMobile) {
+    // On mobile, place camera directly above so the Sun (origin) is centered
+    return <PerspectiveCamera makeDefault position={[0, 50, 0]} fov={55} />
+  }
+  return <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
+}
 
 function Scene({
   timeScale,
@@ -25,7 +37,7 @@ function Scene({
 }) {
   return (
     <>
-      <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
+      <AdaptiveCamera />
       <OrbitControls
         enablePan
         enableZoom
