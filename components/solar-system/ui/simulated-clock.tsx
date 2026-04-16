@@ -7,20 +7,32 @@ type SimulatedClockProps = {
 }
 
 export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
-    const [simTime, setSimTime] = useState(() => new Date())
+    const [simTime, setSimTime] = useState<Date | null>(null)
     useEffect(() => {
+        let mounted = true
         let lastReal = Date.now()
         let frameId: number
+        setSimTime(new Date())
         const tick = () => {
             const now = Date.now()
             const elapsed = (now - lastReal) / 1000 // 秒
             lastReal = now
-            setSimTime((prev) => new Date(prev.getTime() + elapsed * 1000 * orbitSpeedScale))
-            frameId = requestAnimationFrame(tick)
+            if (mounted) {
+                setSimTime((prev) => prev ? new Date(prev.getTime() + elapsed * 1000 * orbitSpeedScale) : new Date())
+                frameId = requestAnimationFrame(tick)
+            }
         }
         frameId = requestAnimationFrame(tick)
-        return () => cancelAnimationFrame(frameId)
+        return () => {
+            mounted = false
+            cancelAnimationFrame(frameId)
+        }
     }, [orbitSpeedScale])
+
+    if (!simTime) {
+        // Prevent hydration mismatch: render nothing until mounted on client
+        return null
+    }
 
     const y = simTime.getFullYear()
     const m = String(simTime.getMonth() + 1).padStart(2, '0')
