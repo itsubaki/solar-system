@@ -14,7 +14,7 @@ export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
         let frameId: number
         const tick = () => {
             const now = Date.now()
-            const elapsed = (now - lastReal) / 1000 // 秒
+            const elapsed = (now - lastReal) / 1000
             lastReal = now
             if (mounted) {
                 setSimTime((prev) => prev ? new Date(prev.getTime() + elapsed * 1000 * orbitSpeedScale) : new Date())
@@ -27,8 +27,6 @@ export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
             cancelAnimationFrame(frameId)
         }
     }, [orbitSpeedScale])
-
-    // simTime is always defined now
 
     const y = simTime.getFullYear()
     const m = String(simTime.getMonth() + 1).padStart(2, '0')
