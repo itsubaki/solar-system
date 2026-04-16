@@ -17,9 +17,9 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-full shadow-lg"
-            style={{ backgroundColor: planet.color }}
+            style={{ backgroundColor: planet.color ?? "#888" }}
           />
-          <CardTitle className="text-lg">{planet.name}</CardTitle>
+          <CardTitle className="text-lg">{planet.name ?? ""}</CardTitle>
         </div>
         <Button
           variant="ghost"
@@ -32,27 +32,27 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {planet.description}
+          {planet.description ?? ""}
         </p>
 
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
           <div>
             <p className="text-xs text-muted-foreground">Orbital Period</p>
             <p className="text-sm font-medium text-foreground">
-              {planet.orbitalPeriod} days
+              {(planet.orbitalPeriod ?? "")} days
             </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Day Length</p>
             <p className="text-sm font-medium text-foreground">
-              {planet.rotationPeriod} Earth days
+              {(planet.rotationPeriod ?? "")} Earth days
             </p>
           </div>
           {planet.satellites && planet.satellites.length > 0 && (
             <div className="col-span-2">
               <p className="text-xs text-muted-foreground">Satellites</p>
               <p className="text-sm font-medium text-foreground">
-                {planet.satellites.map(m => m.name).join(", ")}
+                {planet.satellites.map(m => m.name ?? "").join(", ")}
               </p>
             </div>
           )}
