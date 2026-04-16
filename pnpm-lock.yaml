@@ -178,7 +178,7 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.14)
       '@types/three':
-        specifier: ^0.183.0
+        specifier: ^0.183.1
         version: 0.183.1
       eslint:
         specifier: 9.39.4
