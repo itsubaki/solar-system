@@ -20,13 +20,13 @@ type FocusTargetRef = {
 }
 
 const ORBIT_SPEED_OPTIONS = [
-  { label: "Real-time", multiplier: 1, description: "Actual orbital speed." },
-  { label: "1 min / sec", multiplier: 60, description: "One simulated minute per second." },
-  { label: "1 hr / sec", multiplier: 3600, description: "One simulated hour per second." },
-  { label: "1 day / sec", multiplier: 86400, description: "One simulated day per second." },
-  { label: "1 week / sec", multiplier: 604800, description: "One simulated week per second." },
-  { label: "30 days / sec", multiplier: 2592000, description: "About one simulated month per second." },
-  { label: "1 year / sec", multiplier: 31536000, description: "One simulated year per second." },
+  { label: "Real-time", multiplier: 1 },
+  { label: "1 min / sec", multiplier: 60 },
+  { label: "1 hr / sec", multiplier: 3600 },
+  { label: "1 day / sec", multiplier: 86400 },
+  { label: "1 week / sec", multiplier: 604800 },
+  { label: "30 days / sec", multiplier: 2592000 },
+  { label: "1 year / sec", multiplier: 31536000 },
 ] as const
 
 const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
@@ -72,10 +72,6 @@ function ControlPanel({
         type="range"
         value={orbitSpeedIndex}
       />
-
-      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-        {currentOption.description}
-      </p>
     </div>
   )
 }
