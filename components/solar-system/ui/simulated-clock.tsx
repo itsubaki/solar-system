@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react"
 
-export function SimulatedClock({ orbitSpeedScale }: { orbitSpeedScale: number }) {
+type SimulatedClockProps = {
+    orbitSpeedScale: number
+    position?: "top-right" | "bottom-right"
+}
+
+export function SimulatedClock({ orbitSpeedScale, position = "top-right" }: SimulatedClockProps) {
     const [simTime, setSimTime] = useState(() => new Date())
     useEffect(() => {
         let lastReal = Date.now()
@@ -26,10 +31,7 @@ export function SimulatedClock({ orbitSpeedScale }: { orbitSpeedScale: number })
 
     return (
         <div style={{
-            position: 'fixed',
-            top: 16,
-            right: 24,
-            zIndex: 1000,
+            position: 'relative',
             background: 'rgba(0,0,0,0.5)',
             color: 'white',
             padding: '6px 16px',
@@ -39,6 +41,8 @@ export function SimulatedClock({ orbitSpeedScale }: { orbitSpeedScale: number })
             letterSpacing: 1,
             pointerEvents: 'none',
             userSelect: 'none',
+            minWidth: 120,
+            textAlign: 'center',
         }}>{date} {time}</div>
     )
 }

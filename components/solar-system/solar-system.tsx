@@ -372,8 +372,16 @@ export function SolarSystem() {
           Solar System
         </h1>
       </div>
-      {/* Clock: z-40 */}
-      <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
+      {/* Clock: z-40 右下・コントロールパネルの上 */}
+      <div
+        className="absolute z-40"
+        style={{
+          right: "calc(env(safe-area-inset-right) + 1.5rem)",
+          bottom: "calc(env(safe-area-inset-bottom) + 7.5rem)",
+        }}
+      >
+        <SimulatedClock orbitSpeedScale={orbitSpeedScale} position="bottom-right" />
+      </div>
     </div>
   )
 }
