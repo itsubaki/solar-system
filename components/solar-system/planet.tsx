@@ -11,9 +11,11 @@ type FocusTargetRef = {
   current: Vector3 | null
 }
 
+const SECONDS_PER_DAY = 86400
+
 interface PlanetProps {
   data: PlanetData
-  timeScale: number
+  orbitSpeedScale: number
   showOrbits: boolean
   showLabels: boolean
   onSelect: (planet: PlanetData | null) => void
@@ -21,22 +23,22 @@ interface PlanetProps {
   focusTargetRef?: FocusTargetRef | null
 }
 
-export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
+export function Planet({ data, orbitSpeedScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
   const groupRef = useRef<Group>(null)
   const planetRef = useRef<Mesh>(null)
   const worldPositionRef = useRef(new Vector3())
   const [hovered, setHovered] = useState(false)
 
-  // Convert orbital period to angular velocity (radians per second)
-  const orbitalSpeed = (2 * Math.PI) / (data.orbitalPeriod * 0.1)
+  // Real-time orbital speed scaled by the control panel multiplier.
+  const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
   const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
 
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * orbitalSpeed * timeScale
+      groupRef.current.rotation.y += delta * orbitalSpeed
     }
     if (planetRef.current) {
-      planetRef.current.rotation.y += delta * rotationSpeed * timeScale
+      planetRef.current.rotation.y += delta * rotationSpeed
     }
     if (focusTargetRef && planetRef.current) {
       planetRef.current.getWorldPosition(worldPositionRef.current)
@@ -92,7 +94,7 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
 
         {/* Satellites */}
         {data.satellites?.map((satellite) => (
-          <Satellite key={satellite.name} satellite={satellite} timeScale={timeScale} showLabels={showLabels} />
+          <Satellite key={satellite.name} satellite={satellite} orbitSpeedScale={orbitSpeedScale} showLabels={showLabels} />
         ))}
 
         {/* Label */}
@@ -120,19 +122,19 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
 
 interface SatelliteProps {
   satellite: NonNullable<PlanetData["satellites"]>[number]
-  timeScale: number
+  orbitSpeedScale: number
   showLabels: boolean
 }
 
-function Satellite({ satellite, timeScale, showLabels }: SatelliteProps) {
+function Satellite({ satellite, orbitSpeedScale, showLabels }: SatelliteProps) {
   const groupRef = useRef<Group>(null)
   const [hovered, setHovered] = useState(false)
 
-  const orbitalSpeed = (2 * Math.PI) / (satellite.orbitalPeriod * 2)
+  const orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
 
   useFrame((_, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * orbitalSpeed * timeScale
+      groupRef.current.rotation.y += delta * orbitalSpeed
     }
   })
 

@@ -19,6 +19,16 @@ type FocusTargetRef = {
   current: Vector3 | null
 }
 
+const ORBIT_SPEED_OPTIONS = [
+  { label: "Real-time", multiplier: 1, description: "Actual orbital speed." },
+  { label: "1 min / sec", multiplier: 60, description: "One simulated minute per second." },
+  { label: "1 hr / sec", multiplier: 3600, description: "One simulated hour per second." },
+  { label: "1 day / sec", multiplier: 86400, description: "One simulated day per second." },
+  { label: "1 week / sec", multiplier: 604800, description: "One simulated week per second." },
+  { label: "30 days / sec", multiplier: 2592000, description: "About one simulated month per second." },
+  { label: "1 year / sec", multiplier: 31536000, description: "One simulated year per second." },
+] as const
+
 const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION_ARRAY = [30, 30, 30] as const
@@ -27,6 +37,48 @@ const MIN_CAMERA_DISTANCE = 5
 const MAX_CAMERA_DISTANCE = 80
 const KEY_ROTATE_PIXELS = 48
 const KEY_ZOOM_FACTOR = 0.9
+
+function ControlPanel({
+  orbitSpeedIndex,
+  setOrbitSpeedIndex,
+}: {
+  orbitSpeedIndex: number
+  setOrbitSpeedIndex: (value: number) => void
+}) {
+  const currentOption = ORBIT_SPEED_OPTIONS[orbitSpeedIndex]
+
+  return (
+    <div
+      className="absolute z-30 w-64 rounded-2xl border border-border bg-card/85 p-4 shadow-2xl backdrop-blur-md"
+      style={{
+        right: "calc(env(safe-area-inset-right) + 1rem)",
+        bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+      }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm font-semibold text-card-foreground">Orbit Speed</p>
+        <span className="rounded-full bg-primary/15 px-2 py-1 text-[11px] font-medium text-primary">
+          {currentOption.label}
+        </span>
+      </div>
+
+      <input
+        aria-label="Orbit speed"
+        className="mt-4 w-full accent-primary"
+        max={ORBIT_SPEED_OPTIONS.length - 1}
+        min={0}
+        onChange={(event) => setOrbitSpeedIndex(Number(event.target.value))}
+        step={1}
+        type="range"
+        value={orbitSpeedIndex}
+      />
+
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+        {currentOption.description}
+      </p>
+    </div>
+  )
+}
 
 function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef }) {
   const { camera, gl } = useThree()
@@ -208,9 +260,11 @@ function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef })
 }
 
 function Scene({
+  orbitSpeedScale,
   selectedPlanet,
   onSelectPlanet,
 }: {
+  orbitSpeedScale: number
   selectedPlanet: PlanetData | null
   onSelectPlanet: (planet: PlanetData | null) => void
 }) {
@@ -246,7 +300,7 @@ function Scene({
         <Planet
           key={planet.name}
           data={planet}
-          timeScale={1}
+          orbitSpeedScale={orbitSpeedScale}
           showOrbits
           showLabels
           onSelect={onSelectPlanet}
@@ -259,7 +313,9 @@ function Scene({
 }
 
 export function SolarSystem() {
+  const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
+  const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
@@ -276,6 +332,7 @@ export function SolarSystem() {
         <Canvas className="size-full touch-none">
           <Suspense fallback={null}>
             <Scene
+              orbitSpeedScale={orbitSpeedScale}
               selectedPlanet={selectedPlanet}
               onSelectPlanet={setSelectedPlanet}
             />
@@ -292,6 +349,11 @@ export function SolarSystem() {
           />
         </div>
       )}
+
+      <ControlPanel
+        orbitSpeedIndex={orbitSpeedIndex}
+        setOrbitSpeedIndex={setOrbitSpeedIndex}
+      />
 
       {/* Title */}
       <div
