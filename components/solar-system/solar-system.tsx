@@ -1,9 +1,8 @@
 "use client"
 
-import { Suspense, useState } from "react"
-import { Canvas } from "@react-three/fiber"
+import { Suspense, useState, useEffect } from "react"
+import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
-import { useThree } from "@react-three/fiber"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
@@ -11,15 +10,19 @@ import { ControlPanel } from "./control-panel"
 import { PlanetInfo } from "./planet-info"
 import { PLANETS, type PlanetData } from "@/lib/planet-data"
 
-function AdaptiveCamera() {
-  const { size } = useThree()
-  const isMobile = size.width < 768
+function CameraController({ isMobile }: { isMobile: boolean }) {
+  const { camera } = useThree()
 
-  if (isMobile) {
-    // On mobile, place camera directly above so the Sun (origin) is centered
-    return <PerspectiveCamera makeDefault position={[0, 80, 0]} fov={55} />
-  }
-  return <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
+  useEffect(() => {
+    if (isMobile) {
+      camera.position.set(0, 80, 0)
+    } else {
+      camera.position.set(30, 20, 30)
+    }
+    camera.lookAt(0, 0, 0)
+  }, [camera, isMobile])
+
+  return null
 }
 
 function Scene({
@@ -28,16 +31,19 @@ function Scene({
   showLabels,
   selectedPlanet,
   onSelectPlanet,
+  isMobile,
 }: {
   timeScale: number
   showOrbits: boolean
   showLabels: boolean
   selectedPlanet: PlanetData | null
   onSelectPlanet: (planet: PlanetData | null) => void
+  isMobile: boolean
 }) {
   return (
     <>
-      <AdaptiveCamera />
+      <PerspectiveCamera makeDefault position={[30, 20, 30]} fov={60} />
+      <CameraController isMobile={isMobile} />
       <OrbitControls
         enablePan
         enableZoom
@@ -77,6 +83,16 @@ export function SolarSystem() {
   const [showOrbits, setShowOrbits] = useState(true)
   const [showLabels, setShowLabels] = useState(true)
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   return (
     <div className="relative w-full h-screen bg-background">
@@ -88,6 +104,7 @@ export function SolarSystem() {
             showLabels={showLabels}
             selectedPlanet={selectedPlanet}
             onSelectPlanet={setSelectedPlanet}
+            isMobile={isMobile}
           />
         </Suspense>
       </Canvas>

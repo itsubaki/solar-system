@@ -27,7 +27,7 @@ export function ControlPanel({
   const isPaused = timeScale === 0
 
   return (
-    <Card className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-md bg-card/90 backdrop-blur-md border-border">
+    <Card className="absolute bottom-4 pb-[env(safe-area-inset-bottom)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md bg-card/90 backdrop-blur-md border-border">
       <CardContent className="p-4">
         {/* Time Controls */}
         <div className="space-y-3">
