@@ -3,12 +3,17 @@
 import { Suspense, useState, useEffect, useRef } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
+import { Spherical, Vector3 } from "three"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
-import { ControlPanel } from "./control-panel"
 import { PlanetInfo } from "./planet-info"
 import { PLANETS, type PlanetData } from "@/lib/planet-data"
+
+type OrbitControlsRef = {
+  target: Vector3
+  update: () => void
+}
 
 function CameraController({ isMobile }: { isMobile: boolean }) {
   const { camera } = useThree()
@@ -26,40 +31,87 @@ function CameraController({ isMobile }: { isMobile: boolean }) {
 }
 
 function InvertedOrbitControls() {
-  const controlsRef = useRef<any>(null)
+  const { camera, gl } = useThree()
+  const controlsRef = useRef<OrbitControlsRef | null>(null)
 
   useEffect(() => {
     if (!controlsRef.current) return
 
     const controls = controlsRef.current
-    
-    // Invert the rotate speed to reverse vertical/horizontal controls
-    controls.rotateSpeed = -0.005
-  }, [])
+    const element = gl.domElement
+    const rotateSpeed = 1
+    const spherical = new Spherical()
+    const offset = new Vector3()
+    let isRotating = false
+    let lastX = 0
+    let lastY = 0
+
+    const endRotation = () => {
+      isRotating = false
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.button !== 0) return
+
+      isRotating = true
+      lastX = event.clientX
+      lastY = event.clientY
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!isRotating) return
+
+      const deltaX = event.clientX - lastX
+      const deltaY = event.clientY - lastY
+
+      lastX = event.clientX
+      lastY = event.clientY
+
+      offset.copy(camera.position).sub(controls.target)
+      spherical.setFromVector3(offset)
+
+      spherical.theta -= (2 * Math.PI * deltaX * rotateSpeed) / element.clientHeight
+      spherical.phi += (2 * Math.PI * deltaY * rotateSpeed) / element.clientHeight
+      spherical.makeSafe()
+
+      offset.setFromSpherical(spherical)
+      camera.position.copy(controls.target).add(offset)
+      camera.lookAt(controls.target)
+
+      controls.update()
+    }
+
+    element.addEventListener("pointerdown", onPointerDown)
+    window.addEventListener("pointermove", onPointerMove)
+    window.addEventListener("pointerup", endRotation)
+    window.addEventListener("pointercancel", endRotation)
+
+    return () => {
+      element.removeEventListener("pointerdown", onPointerDown)
+      window.removeEventListener("pointermove", onPointerMove)
+      window.removeEventListener("pointerup", endRotation)
+      window.removeEventListener("pointercancel", endRotation)
+    }
+  }, [camera, gl])
 
   return <OrbitControls
-    ref={controlsRef}
+    ref={(instance) => {
+      controlsRef.current = instance
+    }}
     enablePan
     enableZoom
-    enableRotate
+    enableRotate={false}
     minDistance={5}
     maxDistance={80}
     autoRotate={false}
-    rotateSpeed={1}
   />
 }
 
 function Scene({
-  timeScale,
-  showOrbits,
-  showLabels,
   selectedPlanet,
   onSelectPlanet,
   isMobile,
 }: {
-  timeScale: number
-  showOrbits: boolean
-  showLabels: boolean
   selectedPlanet: PlanetData | null
   onSelectPlanet: (planet: PlanetData | null) => void
   isMobile: boolean
@@ -69,24 +121,24 @@ function Scene({
       <PerspectiveCamera makeDefault position={[30, -20, 30]} fov={60} />
       <CameraController isMobile={isMobile} />
       <InvertedOrbitControls />
-      
+
       {/* Ambient light for general visibility */}
       <ambientLight intensity={0.05} />
-      
+
       {/* Stars background */}
       <Stars />
-      
+
       {/* Sun at center */}
       <Sun />
-      
+
       {/* Planets */}
       {PLANETS.map((planet) => (
         <Planet
           key={planet.name}
           data={planet}
-          timeScale={timeScale}
-          showOrbits={showOrbits}
-          showLabels={showLabels}
+          timeScale={1}
+          showOrbits
+          showLabels
           onSelect={onSelectPlanet}
           isSelected={selectedPlanet?.name === planet.name}
         />
@@ -96,9 +148,6 @@ function Scene({
 }
 
 export function SolarSystem() {
-  const [timeScale, setTimeScale] = useState(1)
-  const [showOrbits, setShowOrbits] = useState(true)
-  const [showLabels, setShowLabels] = useState(true)
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
@@ -116,26 +165,13 @@ export function SolarSystem() {
       <Canvas>
         <Suspense fallback={null}>
           <Scene
-            timeScale={timeScale}
-            showOrbits={showOrbits}
-            showLabels={showLabels}
             selectedPlanet={selectedPlanet}
             onSelectPlanet={setSelectedPlanet}
             isMobile={isMobile}
           />
         </Suspense>
       </Canvas>
-      
-      {/* Control Panel */}
-      <ControlPanel
-        timeScale={timeScale}
-        setTimeScale={setTimeScale}
-        showOrbits={showOrbits}
-        setShowOrbits={setShowOrbits}
-        showLabels={showLabels}
-        setShowLabels={setShowLabels}
-      />
-      
+
       {/* Planet Info Panel */}
       {selectedPlanet && (
         <PlanetInfo

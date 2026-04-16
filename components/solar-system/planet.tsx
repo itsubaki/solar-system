@@ -75,9 +75,9 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
           </mesh>
         )}
 
-        {/* Moons */}
-        {data.moons?.map((moon) => (
-          <Moon key={moon.name} moon={moon} timeScale={timeScale} showLabels={showLabels} />
+        {/* Satellites */}
+        {data.satellites?.map((satellite) => (
+          <Satellite key={satellite.name} satellite={satellite} timeScale={timeScale} showLabels={showLabels} />
         ))}
 
         {/* Label */}
@@ -90,11 +90,10 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
               userSelect: "none",
             }}
           >
-            <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${
-              isSelected 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-card/80 text-card-foreground backdrop-blur-sm"
-            }`}>
+            <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+              ? "bg-primary text-primary-foreground"
+              : "bg-card/80 text-card-foreground backdrop-blur-sm"
+              }`}>
               {data.name}
             </div>
           </Html>
@@ -104,17 +103,17 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
   )
 }
 
-interface MoonProps {
-  moon: NonNullable<PlanetData["moons"]>[number]
+interface SatelliteProps {
+  satellite: NonNullable<PlanetData["satellites"]>[number]
   timeScale: number
   showLabels: boolean
 }
 
-function Moon({ moon, timeScale, showLabels }: MoonProps) {
+function Satellite({ satellite, timeScale, showLabels }: SatelliteProps) {
   const groupRef = useRef<Group>(null)
   const [hovered, setHovered] = useState(false)
 
-  const orbitalSpeed = (2 * Math.PI) / (moon.orbitalPeriod * 2)
+  const orbitalSpeed = (2 * Math.PI) / (satellite.orbitalPeriod * 2)
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -124,31 +123,31 @@ function Moon({ moon, timeScale, showLabels }: MoonProps) {
 
   return (
     <group ref={groupRef}>
-      <group position={[moon.distance, 0, 0]}>
+      <group position={[satellite.distance, 0, 0]}>
         <mesh
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
         >
-          <sphereGeometry args={[moon.radius, 16, 16]} />
+          <sphereGeometry args={[satellite.radius, 16, 16]} />
           <meshStandardMaterial
-            color={moon.color}
+            color={satellite.color}
             roughness={0.9}
-            emissive={moon.color}
+            emissive={satellite.color}
             emissiveIntensity={hovered ? 0.25 : 0.0}
           />
         </mesh>
 
-        {/* Moon label */}
+        {/* Satellite label */}
         {(showLabels || hovered) && (
           <Html
-            position={[0, moon.radius + 0.15, 0]}
+            position={[0, satellite.radius + 0.15, 0]}
             center
             style={{ pointerEvents: "none", userSelect: "none" }}
           >
             <div
               className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
             >
-              {moon.name}
+              {satellite.name}
             </div>
           </Html>
         )}

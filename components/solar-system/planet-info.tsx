@@ -34,7 +34,7 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
         <p className="text-sm text-muted-foreground leading-relaxed">
           {planet.description}
         </p>
-        
+
         <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
           <div>
             <p className="text-xs text-muted-foreground">Orbital Period</p>
@@ -48,11 +48,11 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
               {planet.rotationPeriod} Earth days
             </p>
           </div>
-          {planet.moons && planet.moons.length > 0 && (
+          {planet.satellites && planet.satellites.length > 0 && (
             <div className="col-span-2">
-              <p className="text-xs text-muted-foreground">Moons</p>
+              <p className="text-xs text-muted-foreground">Satellites</p>
               <p className="text-sm font-medium text-foreground">
-                {planet.moons.map(m => m.name).join(", ")}
+                {planet.satellites.map(m => m.name).join(", ")}
               </p>
             </div>
           )}

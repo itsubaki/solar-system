@@ -12,7 +12,7 @@ export interface PlanetData {
     outerRadius: number
     color: string
   }
-  moons?: {
+  satellites?: {
     name: string
     radius: number
     distance: number
@@ -57,7 +57,7 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 365,
     rotationPeriod: 1,
     color: "#6B93D6",
-    moons: [
+    satellites: [
       {
         name: "Moon",
         radius: 0.1,
@@ -75,7 +75,7 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 687,
     rotationPeriod: 1.03,
     color: "#C1440E",
-    moons: [
+    satellites: [
       {
         name: "Phobos",
         radius: 0.05,
@@ -100,7 +100,7 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 4333,
     rotationPeriod: 0.41,
     color: "#D8CA9D",
-    moons: [
+    satellites: [
       {
         name: "Io",
         radius: 0.12,
@@ -144,7 +144,7 @@ export const PLANETS: PlanetData[] = [
       outerRadius: 2.2,
       color: "#C4A35A"
     },
-    moons: [
+    satellites: [
       {
         name: "Titan",
         radius: 0.15,
@@ -176,7 +176,7 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 60190,
     rotationPeriod: 0.67,
     color: "#5B5DDF",
-    moons: [
+    satellites: [
       {
         name: "Triton",
         radius: 0.08,
