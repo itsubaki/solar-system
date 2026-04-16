@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect } from "react"
+import { Suspense, useState, useEffect, useRef } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Sun } from "./sun"
@@ -25,6 +25,51 @@ function CameraController({ isMobile }: { isMobile: boolean }) {
   return null
 }
 
+function InvertedOrbitControls() {
+  const controlsRef = useRef<any>(null)
+
+  useEffect(() => {
+    if (!controlsRef.current) return
+
+    const controls = controlsRef.current
+    
+    // Store original event handlers
+    const originalOnMouseMove = controls.onMouseMove?.bind(controls)
+    
+    // Override onMouseMove to invert vertical movement
+    const onMouseMove = (event: MouseEvent) => {
+      if (!controls.isRotating) return
+      
+      const clientX = event.clientX
+      const clientY = -event.clientY // Invert Y axis
+      
+      // Create a modified event with inverted Y
+      const modifiedEvent = new MouseEvent("mousemove", {
+        clientX: clientX,
+        clientY: window.innerHeight - event.clientY, // Invert screen position
+      })
+      
+      if (originalOnMouseMove) {
+        originalOnMouseMove(modifiedEvent)
+      }
+    }
+
+    // Invert rotateSpeed to achieve opposite effect
+    const originalRotateSpeed = controls.rotateSpeed
+    controls.rotateSpeed = -originalRotateSpeed
+  }, [])
+
+  return <OrbitControls
+    ref={controlsRef}
+    enablePan
+    enableZoom
+    enableRotate
+    minDistance={5}
+    maxDistance={80}
+    autoRotate={false}
+  />
+}
+
 function Scene({
   timeScale,
   showOrbits,
@@ -44,14 +89,7 @@ function Scene({
     <>
       <PerspectiveCamera makeDefault position={[30, -20, 30]} fov={60} />
       <CameraController isMobile={isMobile} />
-      <OrbitControls
-        enablePan
-        enableZoom
-        enableRotate
-        minDistance={5}
-        maxDistance={80}
-        autoRotate={false}
-      />
+      <InvertedOrbitControls />
       
       {/* Ambient light for general visibility */}
       <ambientLight intensity={0.05} />
