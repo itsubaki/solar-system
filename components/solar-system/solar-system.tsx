@@ -17,21 +17,11 @@ type OrbitControlsRef = {
 
 const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
+const DEFAULT_CAMERA_POSITION_ARRAY = [30, 30, 30] as const
 const MIN_CAMERA_DISTANCE = 5
 const MAX_CAMERA_DISTANCE = 80
 const KEY_ROTATE_PIXELS = 48
 const KEY_ZOOM_FACTOR = 0.9
-
-function CameraController() {
-  const { camera } = useThree()
-
-  useEffect(() => {
-    camera.position.copy(DEFAULT_CAMERA_POSITION)
-    camera.lookAt(DEFAULT_CAMERA_TARGET)
-  }, [camera])
-
-  return null
-}
 
 function InvertedOrbitControls() {
   const { camera, gl } = useThree()
@@ -50,6 +40,10 @@ function InvertedOrbitControls() {
       camera.lookAt(controls.target)
       controls.update()
     }
+
+    controls.target.copy(DEFAULT_CAMERA_TARGET)
+    camera.position.copy(DEFAULT_CAMERA_POSITION)
+    syncCamera()
 
     const orbitByPixels = (deltaX: number, deltaY: number) => {
       offset.copy(camera.position).sub(controls.target)
@@ -198,8 +192,12 @@ function Scene({
 }) {
   return (
     <>
-      <PerspectiveCamera makeDefault position={[30, -20, 30]} fov={60} />
-      <CameraController />
+      <PerspectiveCamera
+        makeDefault
+        position={DEFAULT_CAMERA_POSITION_ARRAY}
+        fov={60}
+        onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
+      />
       <InvertedOrbitControls />
 
       {/* Ambient light for general visibility */}
@@ -231,15 +229,25 @@ export function SolarSystem() {
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
 
   return (
-    <div className="relative w-full h-screen bg-background">
-      <Canvas>
-        <Suspense fallback={null}>
-          <Scene
-            selectedPlanet={selectedPlanet}
-            onSelectPlanet={setSelectedPlanet}
-          />
-        </Suspense>
-      </Canvas>
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
+      <div
+        className="absolute inset-0"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingRight: "env(safe-area-inset-right)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+          paddingLeft: "env(safe-area-inset-left)",
+        }}
+      >
+        <Canvas className="size-full">
+          <Suspense fallback={null}>
+            <Scene
+              selectedPlanet={selectedPlanet}
+              onSelectPlanet={setSelectedPlanet}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
 
       {/* Planet Info Panel */}
       {selectedPlanet && (
@@ -250,7 +258,12 @@ export function SolarSystem() {
       )}
 
       {/* Title */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center pointer-events-none">
+      <div
+        className="absolute left-1/2 -translate-x-1/2 text-center pointer-events-none"
+        style={{
+          top: "calc(env(safe-area-inset-top) + 1.5rem)",
+        }}
+      >
         <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
           Solar System
         </h1>
