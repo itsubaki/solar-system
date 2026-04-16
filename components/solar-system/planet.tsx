@@ -3,9 +3,13 @@
 import { useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
-import { DoubleSide } from "three"
+import { DoubleSide, Vector3 } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData } from "@/lib/planet-data"
+
+type FocusTargetRef = {
+  current: Vector3 | null
+}
 
 interface PlanetProps {
   data: PlanetData
@@ -14,11 +18,13 @@ interface PlanetProps {
   showLabels: boolean
   onSelect: (planet: PlanetData | null) => void
   isSelected: boolean
+  focusTargetRef?: FocusTargetRef | null
 }
 
-export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSelected }: PlanetProps) {
+export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
   const groupRef = useRef<Group>(null)
   const planetRef = useRef<Mesh>(null)
+  const worldPositionRef = useRef(new Vector3())
   const [hovered, setHovered] = useState(false)
 
   // Convert orbital period to angular velocity (radians per second)
@@ -31,6 +37,14 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
     }
     if (planetRef.current) {
       planetRef.current.rotation.y += delta * rotationSpeed * timeScale
+    }
+    if (focusTargetRef && planetRef.current) {
+      planetRef.current.getWorldPosition(worldPositionRef.current)
+      if (focusTargetRef.current) {
+        focusTargetRef.current.copy(worldPositionRef.current)
+      } else {
+        focusTargetRef.current = worldPositionRef.current.clone()
+      }
     }
   })
 

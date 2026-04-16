@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useState, useEffect, useRef } from "react"
-import { Canvas, useThree } from "@react-three/fiber"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
 import { Sun } from "./sun"
@@ -15,17 +15,38 @@ type OrbitControlsRef = {
   update: () => void
 }
 
+type FocusTargetRef = {
+  current: Vector3 | null
+}
+
 const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION_ARRAY = [30, 30, 30] as const
+const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
 const MIN_CAMERA_DISTANCE = 5
 const MAX_CAMERA_DISTANCE = 80
 const KEY_ROTATE_PIXELS = 48
 const KEY_ZOOM_FACTOR = 0.9
 
-function InvertedOrbitControls() {
+function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef }) {
   const { camera, gl } = useThree()
   const controlsRef = useRef<OrbitControlsRef | null>(null)
+  const followDeltaRef = useRef(new Vector3())
+
+  useFrame(() => {
+    const controls = controlsRef.current
+    const focusedTarget = focusTarget.current
+
+    if (!controls || !focusedTarget) return
+
+    followDeltaRef.current.subVectors(focusedTarget, controls.target)
+    if (followDeltaRef.current.lengthSq() === 0) return
+
+    camera.position.add(followDeltaRef.current)
+    controls.target.copy(focusedTarget)
+    camera.lookAt(controls.target)
+    controls.update()
+  })
 
   useEffect(() => {
     if (!controlsRef.current) return
@@ -71,8 +92,9 @@ function InvertedOrbitControls() {
     }
 
     const resetCamera = () => {
-      controls.target.copy(DEFAULT_CAMERA_TARGET)
-      camera.position.copy(DEFAULT_CAMERA_POSITION)
+      const resetTarget = focusTarget.current ?? DEFAULT_CAMERA_TARGET
+      controls.target.copy(resetTarget)
+      camera.position.copy(resetTarget).add(DEFAULT_CAMERA_OFFSET)
       syncCamera()
     }
 
@@ -170,7 +192,7 @@ function InvertedOrbitControls() {
       window.removeEventListener("pointercancel", endRotation)
       window.removeEventListener("keydown", onKeyDown)
     }
-  }, [camera, gl])
+  }, [camera, focusTarget, gl])
 
   return <OrbitControls
     ref={(instance) => {
@@ -192,6 +214,14 @@ function Scene({
   selectedPlanet: PlanetData | null
   onSelectPlanet: (planet: PlanetData | null) => void
 }) {
+  const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
+
+  useEffect(() => {
+    if (!selectedPlanet) {
+      focusedPlanetPositionRef.current = null
+    }
+  }, [selectedPlanet])
+
   return (
     <>
       <PerspectiveCamera
@@ -200,7 +230,7 @@ function Scene({
         fov={60}
         onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
       />
-      <InvertedOrbitControls />
+      <InvertedOrbitControls focusTarget={focusedPlanetPositionRef} />
 
       {/* Ambient light for general visibility */}
       <ambientLight intensity={0.05} />
@@ -221,6 +251,7 @@ function Scene({
           showLabels
           onSelect={onSelectPlanet}
           isSelected={selectedPlanet?.name === planet.name}
+          focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
         />
       ))}
     </>
