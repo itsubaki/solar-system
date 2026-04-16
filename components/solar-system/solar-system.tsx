@@ -323,8 +323,9 @@ export function SolarSystem() {
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
+      {/* 3Dシーン: ラベルなどはz-0で */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 z-0"
         style={{
           paddingTop: "env(safe-area-inset-top)",
           paddingRight: "env(safe-area-inset-right)",
@@ -344,7 +345,7 @@ export function SolarSystem() {
         </Canvas>
       </div>
 
-      {/* Planet Info Panel */}
+      {/* Planet Info Panel: z-20 */}
       {selectedPlanet && (
         <div className="relative z-20">
           <PlanetInfo
@@ -354,12 +355,13 @@ export function SolarSystem() {
         </div>
       )}
 
+      {/* Control Panel: z-30 */}
       <ControlPanel
         orbitSpeedIndex={orbitSpeedIndex}
         setOrbitSpeedIndex={setOrbitSpeedIndex}
       />
 
-      {/* Title */}
+      {/* Title: z-10 */}
       <div
         className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
         style={{
@@ -369,10 +371,8 @@ export function SolarSystem() {
         <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
           Solar System
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Interactive 3D Simulator
-        </p>
       </div>
+      {/* Clock: z-40 */}
       <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
     </div>
   )
