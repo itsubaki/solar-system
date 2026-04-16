@@ -322,7 +322,12 @@ function Scene({
 export function SolarSystem() {
   const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
+  const [showPlanetInfo, setShowPlanetInfo] = useState(false)
   const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
+
+  useEffect(() => {
+    if (selectedPlanet) setShowPlanetInfo(true)
+  }, [selectedPlanet])
 
   return (
     <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
@@ -341,18 +346,21 @@ export function SolarSystem() {
             <Scene
               orbitSpeedScale={orbitSpeedScale}
               selectedPlanet={selectedPlanet}
-              onSelectPlanet={setSelectedPlanet}
+              onSelectPlanet={(planet) => {
+                setSelectedPlanet(planet)
+                if (planet) setShowPlanetInfo(true)
+              }}
             />
           </Suspense>
         </Canvas>
       </div>
 
       {/* Planet Info Panel: z-20 */}
-      {selectedPlanet && (
+      {selectedPlanet && showPlanetInfo && (
         <div className="relative z-20">
           <PlanetInfo
             planet={selectedPlanet}
-            onClose={() => setSelectedPlanet(null)}
+            onClose={() => setShowPlanetInfo(false)}
           />
         </div>
       )}
