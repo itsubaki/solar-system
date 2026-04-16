@@ -33,30 +33,8 @@ function InvertedOrbitControls() {
 
     const controls = controlsRef.current
     
-    // Store original event handlers
-    const originalOnMouseMove = controls.onMouseMove?.bind(controls)
-    
-    // Override onMouseMove to invert vertical movement
-    const onMouseMove = (event: MouseEvent) => {
-      if (!controls.isRotating) return
-      
-      const clientX = event.clientX
-      const clientY = -event.clientY // Invert Y axis
-      
-      // Create a modified event with inverted Y
-      const modifiedEvent = new MouseEvent("mousemove", {
-        clientX: clientX,
-        clientY: window.innerHeight - event.clientY, // Invert screen position
-      })
-      
-      if (originalOnMouseMove) {
-        originalOnMouseMove(modifiedEvent)
-      }
-    }
-
-    // Invert rotateSpeed to achieve opposite effect
-    const originalRotateSpeed = controls.rotateSpeed
-    controls.rotateSpeed = -originalRotateSpeed
+    // Invert the rotate speed to reverse vertical/horizontal controls
+    controls.rotateSpeed = -0.005
   }, [])
 
   return <OrbitControls
@@ -67,6 +45,7 @@ function InvertedOrbitControls() {
     minDistance={5}
     maxDistance={80}
     autoRotate={false}
+    rotateSpeed={1}
   />
 }
 
