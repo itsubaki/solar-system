@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
+import { DoubleSide } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData } from "@/lib/planet-data"
 
@@ -39,7 +40,7 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
       {showOrbits && (
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[data.distance - 0.02, data.distance + 0.02, 128]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.15} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.15} side={DoubleSide} />
         </mesh>
       )}
 
@@ -70,7 +71,7 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
               color={data.rings.color}
               transparent
               opacity={0.7}
-              side={2}
+              side={DoubleSide}
             />
           </mesh>
         )}
