@@ -9,6 +9,7 @@ import { Planet } from "./planet"
 import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
 import { getInitialOrbitAngle, PLANETS, type PlanetData } from "@/lib/planet-data"
+import { SimulatedClock } from "./ui/simulated-clock"
 
 type OrbitControlsRef = {
   target: Vector3
@@ -372,6 +373,7 @@ export function SolarSystem() {
           Interactive 3D Simulator
         </p>
       </div>
+      <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
     </div>
   )
 }
