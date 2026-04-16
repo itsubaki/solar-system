@@ -77,7 +77,7 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
 
         {/* Moons */}
         {data.moons?.map((moon) => (
-          <Moon key={moon.name} moon={moon} timeScale={timeScale} />
+          <Moon key={moon.name} moon={moon} timeScale={timeScale} showLabels={showLabels} />
         ))}
 
         {/* Label */}
@@ -107,10 +107,12 @@ export function Planet({ data, timeScale, showOrbits, showLabels, onSelect, isSe
 interface MoonProps {
   moon: NonNullable<PlanetData["moons"]>[number]
   timeScale: number
+  showLabels: boolean
 }
 
-function Moon({ moon, timeScale }: MoonProps) {
+function Moon({ moon, timeScale, showLabels }: MoonProps) {
   const groupRef = useRef<Group>(null)
+  const [hovered, setHovered] = useState(false)
 
   const orbitalSpeed = (2 * Math.PI) / (moon.orbitalPeriod * 2)
 
@@ -122,10 +124,35 @@ function Moon({ moon, timeScale }: MoonProps) {
 
   return (
     <group ref={groupRef}>
-      <mesh position={[moon.distance, 0, 0]}>
-        <sphereGeometry args={[moon.radius, 16, 16]} />
-        <meshStandardMaterial color={moon.color} roughness={0.9} />
-      </mesh>
+      <group position={[moon.distance, 0, 0]}>
+        <mesh
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
+        >
+          <sphereGeometry args={[moon.radius, 16, 16]} />
+          <meshStandardMaterial
+            color={moon.color}
+            roughness={0.9}
+            emissive={moon.color}
+            emissiveIntensity={hovered ? 0.25 : 0.0}
+          />
+        </mesh>
+
+        {/* Moon label */}
+        {(showLabels || hovered) && (
+          <Html
+            position={[0, moon.radius + 0.15, 0]}
+            center
+            style={{ pointerEvents: "none", userSelect: "none" }}
+          >
+            <div
+              className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
+            >
+              {moon.name}
+            </div>
+          </Html>
+        )}
+      </group>
     </group>
   )
 }
