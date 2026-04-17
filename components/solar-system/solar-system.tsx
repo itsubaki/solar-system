@@ -329,7 +329,14 @@ export function SolarSystem() {
                 activeElement?.getAttribute("contenteditable") === "true";
             if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
 
-            if (event.key === ">") {
+            if (event.key === "r") {
+                event.preventDefault();
+                setShowPlanetInfo(false);
+            } else if (event.key === "R") {
+                event.preventDefault();
+                setSelectedPlanet(null);
+                setShowPlanetInfo(false);
+            } else if (event.key === ">") {
                 event.preventDefault();
                 if (PLANETS.length === 0) return;
                 let nextIndex = 0;
