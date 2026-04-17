@@ -1,11 +1,12 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
-import { DoubleSide, Vector3 } from "three"
+import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
+import { ringVertexShader, ringFragmentShader } from "./ring-shader"
 import { getSatelliteOrbitAngle } from "@/lib/planet-data"
 
 type FocusTargetRef = {
@@ -81,18 +82,25 @@ export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbit
           />
         </mesh>
 
-        {/* Rings (for Saturn, Uranus) */}
-        {data.rings && (
-          <mesh rotation={[Math.PI / 2.5, 0, 0]}>
-            <ringGeometry args={[data.rings.innerRadius, data.rings.outerRadius, 64]} />
-            <meshStandardMaterial
-              color={data.rings.color}
+        {/* Rings (multiple for Saturn, Uranus) */}
+        {Array.isArray(data.rings) && data.rings.map((ring, i) => (
+          <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
+            <ringGeometry args={[ring.innerRadius, ring.outerRadius, 64]} />
+            <shaderMaterial
+              attach="material"
+              vertexShader={ringVertexShader}
+              fragmentShader={ringFragmentShader}
               transparent
-              opacity={0.7}
               side={DoubleSide}
+              uniforms={useMemo(() => ({
+                innerColor: { value: new Color(ring.color) },
+                outerColor: { value: new Color("white") },
+                innerAlpha: { value: 0.7 },
+                outerAlpha: { value: 0.1 },
+              }), [ring.color])}
             />
           </mesh>
-        )}
+        ))}
 
         {/* Satellites */}
         {data.satellites?.map((satellite) => (

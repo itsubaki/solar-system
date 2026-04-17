@@ -10,6 +10,12 @@ export interface SatelliteData {
   meanLongitudeAtJ2000?: number
 }
 
+export interface RingData {
+  innerRadius: number
+  outerRadius: number
+  color: string
+}
+
 export interface PlanetData {
   name: string
   radius: number
@@ -19,11 +25,7 @@ export interface PlanetData {
   color: string
   emissive?: string
   emissiveIntensity?: number
-  rings?: {
-    innerRadius: number
-    outerRadius: number
-    color: string
-  }
+  rings?: RingData[]
   satellites?: SatelliteData[]
   description: string
 }
@@ -180,11 +182,7 @@ function solveKeplerEquation(meanAnomaly: number, eccentricity: number) {
   let eccentricAnomaly = meanAnomaly
 
   for (let i = 0; i < 6; i += 1) {
-    eccentricAnomaly -= (
-      eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly
-    ) / (
-        1 - eccentricity * Math.cos(eccentricAnomaly)
-      )
+    eccentricAnomaly -= (eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly) / (1 - eccentricity * Math.cos(eccentricAnomaly))
   }
 
   return eccentricAnomaly
@@ -328,11 +326,23 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 10759,
     rotationPeriod: 0.45,
     color: "#F4D59E",
-    rings: {
-      innerRadius: 1.2,
-      outerRadius: 2.2,
-      color: "#C4A35A"
-    },
+    rings: [
+      {
+        innerRadius: 0.85 * (74658 / 58232), // ≒ 1.09
+        outerRadius: 0.85 * (92000 / 58232), // ≒ 1.34
+        color: "#E5D7B9"
+      },
+      {
+        innerRadius: 0.85 * (92000 / 58232), // ≒ 1.34
+        outerRadius: 0.85 * (117580 / 58232), // ≒ 1.72
+        color: "#F4D59E"
+      },
+      {
+        innerRadius: 0.85 * (122170 / 58232), // ≒ 1.78
+        outerRadius: 0.85 * (136775 / 58232), // ≒ 1.99
+        color: "#F4D59E"
+      }
+    ],
     satellites: [
       {
         name: "Titan",
@@ -351,11 +361,23 @@ export const PLANETS: PlanetData[] = [
     orbitalPeriod: 30687,
     rotationPeriod: 0.72,
     color: "#B5E3E3",
-    rings: {
-      innerRadius: 0.8,
-      outerRadius: 1.1,
-      color: "#4A6670"
-    },
+    rings: [
+      {
+        innerRadius: 0.55 * (51149 / 25362), // ≒ 1.11
+        outerRadius: 0.55 * (51710 / 25362), // ≒ 1.12
+        color: "#B5E3E3"
+      },
+      {
+        innerRadius: 0.55 * (47176 / 25362), // ≒ 1.02
+        outerRadius: 0.55 * (47462 / 25362), // ≒ 1.03
+        color: "#A0C8C8"
+      },
+      {
+        innerRadius: 0.55 * (45619 / 25362), // ≒ 0.99
+        outerRadius: 0.55 * (45929 / 25362), // ≒ 1.00
+        color: "#7FC7C7"
+      }
+    ],
     description: "An ice giant that rotates on its side."
   },
   {
