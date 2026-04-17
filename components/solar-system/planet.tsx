@@ -173,7 +173,10 @@ function Satellite({
     const groupRef = useRef<Group>(null)
     const [hovered, setHovered] = useState(false)
     const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)
-    const orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    let orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    if (satellite.parentPlanetName === "Neptune" && satellite.name === "Triton") {
+        orbitalSpeed *= -1
+    }
 
     useFrame((_, delta) => {
         if (groupRef.current) {
