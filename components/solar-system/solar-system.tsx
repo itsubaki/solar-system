@@ -369,7 +369,7 @@ export function SolarSystem() {
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
-                className="absolute left-0 top-0 z-50 m-4 rounded-xl bg-card/90 p-4 text-xs text-card-foreground shadow-lg backdrop-blur pointer-events-none select-none"
+                className="absolute left-0 top-0 z-50 m-4 rounded-xl bg-transparent p-4 text-xs text-card-foreground pointer-events-none select-none hidden sm:block"
                 style={{ maxWidth: 260 }}
             >
                 <div className="font-semibold mb-2">Shortcuts</div>
