@@ -85,7 +85,6 @@ function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef })
   useFrame(() => {
     const controls = controlsRef.current
     const focusedTarget = focusTarget.current
-
     if (!controls || !focusedTarget) return
 
     followDeltaRef.current.subVectors(focusedTarget, controls.target)
@@ -285,6 +284,7 @@ function Scene({
         fov={60}
         onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
       />
+
       <InvertedOrbitControls focusTarget={focusedPlanetPositionRef} />
 
       <ambientLight intensity={0.05} />
