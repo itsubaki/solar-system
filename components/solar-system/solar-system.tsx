@@ -329,10 +329,7 @@ export function SolarSystem() {
                 activeElement?.getAttribute("contenteditable") === "true";
             if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
 
-            if (event.key === "r") {
-                event.preventDefault();
-                setShowPlanetInfo(false);
-            } else if (event.key === "R") {
+            if (event.key === "R") {
                 event.preventDefault();
                 setSelectedPlanet(null);
                 setShowPlanetInfo(false);
