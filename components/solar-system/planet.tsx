@@ -68,7 +68,11 @@ export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbit
         {/* Planet sphere */}
         <mesh
           ref={planetRef}
-          onClick={() => onSelect(isSelected ? null : data)}
+          onClick={() => {
+            if (!isSelected) {
+              onSelect(data)
+            }
+          }}
           onPointerOver={() => setHovered(true)}
           onPointerOut={() => setHovered(false)}
         >
