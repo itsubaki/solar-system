@@ -133,14 +133,23 @@ export function Planet({
                         position={[0, data.radius + 0.3, 0]}
                         center
                         style={{
-                            pointerEvents: "none",
+                            pointerEvents: "auto",
                             userSelect: "none",
                         }}
                     >
-                        <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                            }`}>
+                        <div
+                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                                }`}
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (!isSelected) {
+                                    onSelect(data);
+                                }
+                            }}
+                        >
                             {data.name}
                         </div>
                     </Html>
