@@ -369,6 +369,19 @@ export function SolarSystem() {
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
+                className="absolute left-0 top-0 z-50 m-4 rounded-xl bg-card/90 p-4 text-xs text-card-foreground shadow-lg backdrop-blur pointer-events-none select-none"
+                style={{ maxWidth: 260 }}
+            >
+                <div className="font-semibold mb-2">Shortcuts</div>
+                <ul className="space-y-1">
+                    <li><b>Arrow keys</b>: Rotate camera</li>
+                    <li><b>r</b>: Reset camera</li>
+                    <li><b>+</b> / <b>-</b>: Zoom in / out</li>
+                    <li><b>&gt;</b>: Next planet</li>
+                    <li><b>&lt;</b>: Previous planet</li>
+                </ul>
+            </div>
+            <div
                 className="absolute inset-0 z-0"
                 style={{
                     paddingTop: "env(safe-area-inset-top)",
