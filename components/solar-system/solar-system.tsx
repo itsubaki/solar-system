@@ -353,6 +353,12 @@ export function SolarSystem() {
                 }
                 setSelectedPlanet(PLANETS[prevIndex]);
                 setShowPlanetInfo(true);
+            } else if (event.key === "a") {
+                event.preventDefault();
+                setOrbitSpeedIndex((prev) => Math.max(0, prev - 1));
+            } else if (event.key === "s") {
+                event.preventDefault();
+                setOrbitSpeedIndex((prev) => Math.min(ORBIT_SPEED_OPTIONS.length - 1, prev + 1));
             }
         };
         window.addEventListener("keydown", handleKeyDown);
@@ -374,6 +380,7 @@ export function SolarSystem() {
                     <li><b>Arrow keys</b>: Rotate camera</li>
                     <li><b>r</b>: Reset camera</li>
                     <li><b>+</b> / <b>-</b>: Zoom in / out</li>
+                    <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                     <li><b>&gt;</b>: Next planet</li>
                     <li><b>&lt;</b>: Previous planet</li>
                 </ul>
