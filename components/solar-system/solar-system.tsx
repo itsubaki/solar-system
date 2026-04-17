@@ -178,53 +178,47 @@ function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef })
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
-      const activeElement = document.activeElement
+      const activeElement = document.activeElement;
       const isTypingTarget =
         activeElement instanceof HTMLInputElement ||
         activeElement instanceof HTMLTextAreaElement ||
         activeElement instanceof HTMLSelectElement ||
-        activeElement?.getAttribute("contenteditable") === "true"
+        activeElement?.getAttribute("contenteditable") === "true";
 
-      if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return
+      if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
 
       switch (event.key) {
         case "r":
         case "R":
-          event.preventDefault()
-          resetCamera()
-          break
+          event.preventDefault();
+          resetCamera();
+          break;
         case "ArrowUp":
-          event.preventDefault()
-          orbitByPixels(0, KEY_ROTATE_PIXELS)
-          break
+          event.preventDefault();
+          orbitByPixels(0, KEY_ROTATE_PIXELS);
+          break;
         case "ArrowDown":
-          event.preventDefault()
-          orbitByPixels(0, -KEY_ROTATE_PIXELS)
-          break
+          event.preventDefault();
+          orbitByPixels(0, -KEY_ROTATE_PIXELS);
+          break;
         case "ArrowLeft":
-          event.preventDefault()
-          orbitByPixels(-KEY_ROTATE_PIXELS, 0)
-          break
+          event.preventDefault();
+          orbitByPixels(-KEY_ROTATE_PIXELS, 0);
+          break;
         case "ArrowRight":
-          event.preventDefault()
-          orbitByPixels(KEY_ROTATE_PIXELS, 0)
-          break
+          event.preventDefault();
+          orbitByPixels(KEY_ROTATE_PIXELS, 0);
+          break;
         case "+":
-          event.preventDefault()
-          zoomByFactor(KEY_ZOOM_FACTOR)
-          break
+          event.preventDefault();
+          zoomByFactor(KEY_ZOOM_FACTOR);
+          break;
         case "-":
-          event.preventDefault()
-          zoomByFactor(1 / KEY_ZOOM_FACTOR)
-          break
+          event.preventDefault();
+          zoomByFactor(1 / KEY_ZOOM_FACTOR);
+          break;
         default:
-          if (event.code === "NumpadAdd") {
-            event.preventDefault()
-            zoomByFactor(KEY_ZOOM_FACTOR)
-          } else if (event.code === "NumpadSubtract") {
-            event.preventDefault()
-            zoomByFactor(1 / KEY_ZOOM_FACTOR)
-          }
+          break;
       }
     }
 
