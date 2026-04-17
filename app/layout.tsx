@@ -7,44 +7,44 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  viewportFit: 'cover' as const,
+    width: 'device-width',
+    initialScale: 1,
+    viewportFit: 'cover' as const,
 }
 
 export const metadata: Metadata = {
-  title: 'Solar System',
-  description: 'Interactive 3D Simulator of the Solar System.',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
+    title: 'Solar System',
+    description: 'Interactive 3D Simulator of the Solar System.',
+    icons: {
+        icon: [
+            {
+                url: '/icon-light-32x32.png',
+                media: '(prefers-color-scheme: light)',
+            },
+            {
+                url: '/icon-dark-32x32.png',
+                media: '(prefers-color-scheme: dark)',
+            },
+            {
+                url: '/icon.svg',
+                type: 'image/svg+xml',
+            },
+        ],
+        apple: '/apple-icon.png',
+    },
 }
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode
+    children: React.ReactNode
 }>) {
-  return (
-    <html lang="en" className="dark bg-background">
-      <body className="font-sans antialiased bg-background">
-        {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </body>
-    </html>
-  )
+    return (
+        <html lang="en" className="dark bg-background">
+            <body className="font-sans antialiased bg-background">
+                {children}
+                {process.env.NODE_ENV === 'production' && <Analytics />}
+            </body>
+        </html>
+    )
 }

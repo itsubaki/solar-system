@@ -10,186 +10,199 @@ import { ringVertexShader, ringFragmentShader } from "./ring-shader"
 import { getSatelliteOrbitAngle } from "@/lib/planet-data"
 
 type FocusTargetRef = {
-  current: Vector3 | null
+    current: Vector3 | null
 }
 
 const SECONDS_PER_DAY = 86400
 
 interface PlanetProps {
-  data: PlanetData
-  initialOrbitAngle?: number
-  orbitSpeedScale: number
-  showOrbits: boolean
-  showLabels: boolean
-  onSelect: (planet: PlanetData | null) => void
-  isSelected: boolean
-  focusTargetRef?: FocusTargetRef | null
+    data: PlanetData
+    initialOrbitAngle?: number
+    orbitSpeedScale: number
+    showOrbits: boolean
+    showLabels: boolean
+    onSelect: (planet: PlanetData | null) => void
+    isSelected: boolean
+    focusTargetRef?: FocusTargetRef | null
 }
 
-export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbits, showLabels, onSelect, isSelected, focusTargetRef }: PlanetProps) {
-  const groupRef = useRef<Group>(null)
-  const planetRef = useRef<Mesh>(null)
-  const worldPositionRef = useRef(new Vector3())
-  const [hovered, setHovered] = useState(false)
+export function Planet({
+    data,
+    initialOrbitAngle = 0,
+    orbitSpeedScale,
+    showOrbits,
+    showLabels,
+    onSelect,
+    isSelected,
+    focusTargetRef
+}: PlanetProps) {
+    const groupRef = useRef<Group>(null)
+    const planetRef = useRef<Mesh>(null)
+    const worldPositionRef = useRef(new Vector3())
+    const [hovered, setHovered] = useState(false)
 
-  // Real-time orbital speed scaled by the control panel multiplier.
-  const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
-  const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
+    // Real-time orbital speed scaled by the control panel multiplier.
+    const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * orbitalSpeed
-    }
-    if (planetRef.current) {
-      planetRef.current.rotation.y += delta * rotationSpeed
-    }
-    if (focusTargetRef && planetRef.current) {
-      planetRef.current.getWorldPosition(worldPositionRef.current)
-      if (focusTargetRef.current) {
-        focusTargetRef.current.copy(worldPositionRef.current)
-      } else {
-        focusTargetRef.current = worldPositionRef.current.clone()
-      }
-    }
-  })
+    useFrame((_, delta) => {
+        if (groupRef.current) {
+            groupRef.current.rotation.y += delta * orbitalSpeed
+        }
 
-  return (
-    <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
-      {/* Orbit path */}
-      {showOrbits && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[data.distance - 0.03, data.distance + 0.03, 128]} />
-          <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
-        </mesh>
-      )}
+        if (planetRef.current) {
+            planetRef.current.rotation.y += delta * rotationSpeed
+        }
 
-      {/* Planet group positioned at orbital distance */}
-      <group position={[data.distance, 0, 0]}>
-        {/* Planet sphere */}
-        <mesh
-          ref={planetRef}
-          onClick={() => {
-            if (!isSelected) {
-              onSelect(data)
+        if (focusTargetRef && planetRef.current) {
+            planetRef.current.getWorldPosition(worldPositionRef.current)
+            if (focusTargetRef.current) {
+                focusTargetRef.current.copy(worldPositionRef.current)
+            } else {
+                focusTargetRef.current = worldPositionRef.current.clone()
             }
-          }}
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
-        >
-          <sphereGeometry args={[data.radius, 32, 32]} />
-          <meshStandardMaterial
-            color={data.color}
-            emissive={data.emissive || data.color}
-            emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
-            roughness={0.8}
-            metalness={0.1}
-          />
-        </mesh>
+        }
+    })
 
-        {/* Rings (multiple for Saturn, Uranus) */}
-        {Array.isArray(data.rings) && data.rings.map((ring, i) => (
-          <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
-            <ringGeometry args={[ring.innerRadius, ring.outerRadius, 64]} />
-            <shaderMaterial
-              attach="material"
-              vertexShader={ringVertexShader}
-              fragmentShader={ringFragmentShader}
-              transparent
-              side={DoubleSide}
-              uniforms={useMemo(() => ({
-                innerColor: { value: new Color(ring.color) },
-                outerColor: { value: new Color("white") },
-                innerAlpha: { value: 0.7 },
-                outerAlpha: { value: 0.1 },
-              }), [ring.color])}
-            />
-          </mesh>
-        ))}
+    return (
+        <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
+            {/* Orbit path */}
+            {showOrbits && (
+                <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                    <ringGeometry args={[data.distance - 0.03, data.distance + 0.03, 128]} />
+                    <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
+                </mesh>
+            )}
 
-        {/* Satellites */}
-        {data.satellites?.map((satellite) => (
-          <Satellite
-            key={satellite.name}
-            satellite={{ ...satellite, parentPlanetName: data.name }}
-            orbitSpeedScale={orbitSpeedScale}
-            showLabels={showLabels}
-          />
-        ))}
+            {/* Planet group positioned at orbital distance */}
+            <group position={[data.distance, 0, 0]}>
+                {/* Planet sphere */}
+                <mesh
+                    ref={planetRef}
+                    onClick={() => {
+                        if (!isSelected) {
+                            onSelect(data)
+                        }
+                    }}
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                >
+                    <sphereGeometry args={[data.radius, 32, 32]} />
+                    <meshStandardMaterial
+                        color={data.color}
+                        emissive={data.emissive || data.color}
+                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
+                        roughness={0.8}
+                        metalness={0.1}
+                    />
+                </mesh>
 
-        {/* Label */}
-        {(showLabels || hovered || isSelected) && (
-          <Html
-            position={[0, data.radius + 0.3, 0]}
-            center
-            style={{
-              pointerEvents: "none",
-              userSelect: "none",
-            }}
-          >
-            <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-              ? "bg-primary text-primary-foreground"
-              : "bg-card/80 text-card-foreground backdrop-blur-sm"
-              }`}>
-              {data.name}
-            </div>
-          </Html>
-        )}
-      </group>
-    </group>
-  )
+                {/* Rings (multiple for Saturn, Uranus) */}
+                {Array.isArray(data.rings) && data.rings.map((ring, i) => (
+                    <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
+                        <ringGeometry args={[ring.innerRadius, ring.outerRadius, 64]} />
+                        <shaderMaterial
+                            attach="material"
+                            vertexShader={ringVertexShader}
+                            fragmentShader={ringFragmentShader}
+                            transparent
+                            side={DoubleSide}
+                            uniforms={useMemo(() => ({
+                                innerColor: { value: new Color(ring.color) },
+                                outerColor: { value: new Color("white") },
+                                innerAlpha: { value: 0.7 },
+                                outerAlpha: { value: 0.1 },
+                            }), [ring.color])}
+                        />
+                    </mesh>
+                ))}
+
+                {/* Satellites */}
+                {data.satellites?.map((satellite) => (
+                    <Satellite
+                        key={satellite.name}
+                        satellite={{ ...satellite, parentPlanetName: data.name }}
+                        orbitSpeedScale={orbitSpeedScale}
+                        showLabels={showLabels}
+                    />
+                ))}
+
+                {/* Label */}
+                {(showLabels || hovered || isSelected) && (
+                    <Html
+                        position={[0, data.radius + 0.3, 0]}
+                        center
+                        style={{
+                            pointerEvents: "none",
+                            userSelect: "none",
+                        }}
+                    >
+                        <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                            }`}>
+                            {data.name}
+                        </div>
+                    </Html>
+                )}
+            </group>
+        </group>
+    )
 }
 
 interface SatelliteProps {
-  satellite: SatelliteData & { parentPlanetName: string }
-  orbitSpeedScale: number
-  showLabels: boolean
+    satellite: SatelliteData & { parentPlanetName: string }
+    orbitSpeedScale: number
+    showLabels: boolean
 }
 
-function Satellite({ satellite, orbitSpeedScale, showLabels }: SatelliteProps) {
-  const groupRef = useRef<Group>(null)
-  const [hovered, setHovered] = useState(false)
+function Satellite({
+    satellite,
+    orbitSpeedScale,
+    showLabels,
+}: SatelliteProps) {
+    const groupRef = useRef<Group>(null)
+    const [hovered, setHovered] = useState(false)
+    const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)
+    const orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
 
-  const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)
+    useFrame((_, delta) => {
+        if (groupRef.current) {
+            groupRef.current.rotation.y += delta * orbitalSpeed
+        }
+    })
 
-  const orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    return (
+        <group ref={groupRef} rotation={[0, initialAngle, 0]}>
+            <group position={[satellite.distance, 0, 0]}>
+                <mesh
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                >
+                    <sphereGeometry args={[satellite.radius, 16, 16]} />
+                    <meshStandardMaterial
+                        color={satellite.color}
+                        roughness={0.9}
+                        emissive={satellite.color}
+                        emissiveIntensity={hovered ? 0.25 : 0.0}
+                    />
+                </mesh>
 
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * orbitalSpeed
-    }
-  })
-
-  return (
-    <group ref={groupRef} rotation={[0, initialAngle, 0]}>
-      <group position={[satellite.distance, 0, 0]}>
-        <mesh
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
-        >
-          <sphereGeometry args={[satellite.radius, 16, 16]} />
-          <meshStandardMaterial
-            color={satellite.color}
-            roughness={0.9}
-            emissive={satellite.color}
-            emissiveIntensity={hovered ? 0.25 : 0.0}
-          />
-        </mesh>
-
-        {/* Satellite label */}
-        {(showLabels || hovered) && (
-          <Html
-            position={[0, satellite.radius + 0.15, 0]}
-            center
-            style={{ pointerEvents: "none", userSelect: "none" }}
-          >
-            <div
-              className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
-            >
-              {satellite.name}
-            </div>
-          </Html>
-        )}
-      </group>
-    </group>
-  )
+                {/* Satellite label */}
+                {(showLabels || hovered) && (
+                    <Html
+                        position={[0, satellite.radius + 0.15, 0]}
+                        center
+                        style={{ pointerEvents: "none", userSelect: "none" }}
+                    >
+                        <div
+                            className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
+                        >
+                            {satellite.name}
+                        </div>
+                    </Html>
+                )}
+            </group>
+        </group>
+    )
 }
