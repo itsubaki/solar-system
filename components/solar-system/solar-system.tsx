@@ -326,6 +326,42 @@ export function SolarSystem() {
   const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      const isTypingTarget =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") === "true";
+      if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
+
+      if (event.key === ">") {
+        event.preventDefault();
+        if (PLANETS.length === 0) return;
+        let nextIndex = 0;
+        if (selectedPlanet) {
+          const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+          nextIndex = (currentIndex + 1) % PLANETS.length;
+        }
+        setSelectedPlanet(PLANETS[nextIndex]);
+        setShowPlanetInfo(true);
+      } else if (event.key === "<") {
+        event.preventDefault();
+        if (PLANETS.length === 0) return;
+        let prevIndex = PLANETS.length - 1;
+        if (selectedPlanet) {
+          const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+          prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
+        }
+        setSelectedPlanet(PLANETS[prevIndex]);
+        setShowPlanetInfo(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPlanet]);
+
+  useEffect(() => {
     if (selectedPlanet) setShowPlanetInfo(true)
   }, [selectedPlanet])
 
