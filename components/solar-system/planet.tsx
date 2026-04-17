@@ -57,8 +57,8 @@ export function Planet({ data, initialOrbitAngle = 0, orbitSpeedScale, showOrbit
       {/* Orbit path */}
       {showOrbits && (
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[data.distance - 0.02, data.distance + 0.02, 128]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.15} side={DoubleSide} />
+          <ringGeometry args={[data.distance - 0.03, data.distance + 0.03, 128]} />
+          <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
         </mesh>
       )}
 
