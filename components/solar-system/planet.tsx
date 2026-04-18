@@ -113,14 +113,14 @@ export function Planet({
                     </mesh>
                 ))}
 
-                {data.satellites?.map((satellite) => (
+                {/* {data.satellites?.map((satellite) => (
                     <Satellite
                         key={satellite.name}
                         satellite={{ ...satellite, parentPlanetName: data.name }}
                         orbitSpeedScale={orbitSpeedScale}
                         showLabels={showLabels}
                     />
-                ))}
+                ))} */}
 
                 {(showLabels || hovered || isSelected) && (
                     <Html

@@ -70,7 +70,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Moon",
                 radius: 1737.4,
-                distance: 6371 * 2,
+                distance: 6371 * 60.3,
                 orbitalPeriod: 27,
                 color: "#C4C4C4"
             }
@@ -88,7 +88,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Phobos",
                 radius: 11.267,
-                distance: 3389.5 * 1.8,
+                distance: 3389.5 * 2.8,
                 orbitalPeriod: 0.3,
                 color: "#8B7355"
             },
@@ -113,28 +113,28 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Io",
                 radius: 1821.6,
-                distance: 69911 * 1.5,
+                distance: 69911 * 6.0,
                 orbitalPeriod: 1.8,
                 color: "#E6C87A"
             },
             {
                 name: "Europa",
                 radius: 1560.8,
-                distance: 69911 * 1.8,
+                distance: 69911 * 9.6,
                 orbitalPeriod: 3.5,
                 color: "#C4B896"
             },
             {
                 name: "Ganymede",
                 radius: 2634.1,
-                distance: 69911 * 2.2,
+                distance: 69911 * 15.3,
                 orbitalPeriod: 7.2,
                 color: "#8B7355"
             },
             {
                 name: "Callisto",
                 radius: 2410.3,
-                distance: 69911 * 2.6,
+                distance: 69911 * 26.9,
                 orbitalPeriod: 16.7,
                 color: "#5C4033"
             }
@@ -179,7 +179,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Titan",
                 radius: 2574.7,
-                distance: 58232 * 3,
+                distance: 58232 * 21,
                 orbitalPeriod: 16,
                 color: "#E6A243"
             }
@@ -248,7 +248,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Triton",
                 radius: 1353.4,
-                distance: 24622 * 1.2,
+                distance: 24622 * 14.4,
                 orbitalPeriod: 5.9,
                 color: "#C4C4C4"
             }
