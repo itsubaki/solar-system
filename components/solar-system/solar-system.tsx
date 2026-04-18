@@ -378,11 +378,10 @@ export function SolarSystem() {
                 <div className="font-semibold mb-2">Shortcuts</div>
                 <ul className="space-y-1">
                     <li><b>Arrow keys</b>: Rotate camera</li>
-                    <li><b>r</b>: Reset camera</li>
+                    <li><b>r</b> / <b>R</b>: Reset camera</li>
                     <li><b>+</b> / <b>-</b>: Zoom in / out</li>
+                    <li><b>&lt;</b> / <b>&gt;</b>: Previous / Next planet</li>
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
-                    <li><b>&gt;</b>: Next planet</li>
-                    <li><b>&lt;</b>: Previous planet</li>
                 </ul>
             </div>
             <div
