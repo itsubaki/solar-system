@@ -196,7 +196,7 @@ function Satellite({
                         color={satellite.color}
                         roughness={0.9}
                         emissive={satellite.color}
-                        emissiveIntensity={hovered ? 0.25 : 0.0}
+                        emissiveIntensity={hovered ? 0.3 : 0.1}
                     />
                 </mesh>
 
