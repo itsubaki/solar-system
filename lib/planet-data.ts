@@ -31,20 +31,20 @@ export interface RingData {
 
 export const SUN_DATA = {
     name: "Sun",
-    radius: 0.0465,
-    km: 696000,
-    ratio: 0.0465 / 696000,
+    radius: 696_000 / 149_600_000 * 10, // radius / 1AU( = 149,600,000 km) * 10(scaleAU) 
+    ratio: 696_000 / 149_600_000 * 10 / 1_000, // radius x1000 -> volume x10^9
+    scaleAU: 10,
     color: "#FDB813",
     emissive: "#FDB813",
-    emissiveIntensity: 5,
+    emissiveIntensity: 2,
     description: "The Sun is a G-type main-sequence star at the center of our Solar System."
 }
 
 export const PLANETS: PlanetData[] = [
     {
         name: "Mercury",
-        radius: SUN_DATA.ratio * 2439.7,
-        distance: 3.871,
+        radius: 2439.7 * SUN_DATA.ratio,
+        distance: 0.39 * SUN_DATA.scaleAU,
         orbitalPeriod: 88,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
@@ -52,8 +52,8 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Venus",
-        radius: SUN_DATA.ratio * 6051.8,
-        distance: 7.233,
+        radius: 6051.8 * SUN_DATA.ratio,
+        distance: 0.72 * SUN_DATA.scaleAU,
         orbitalPeriod: 225,
         rotationPeriod: 243,
         color: "#E6C87A",
@@ -61,16 +61,16 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Earth",
-        radius: SUN_DATA.ratio * 6371,
-        distance: 10.0,
+        radius: 6371 * SUN_DATA.ratio,
+        distance: 1.00 * SUN_DATA.scaleAU,
         orbitalPeriod: 365,
         rotationPeriod: 1,
         color: "#6B93D6",
         satellites: [
             {
                 name: "Moon",
-                radius: SUN_DATA.ratio * 1737.4,
-                distance: 0.8,
+                radius: 1737.4 * SUN_DATA.ratio,
+                distance: 6371 * SUN_DATA.ratio + 0.8,
                 orbitalPeriod: 27,
                 color: "#C4C4C4"
             }
@@ -79,23 +79,23 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Mars",
-        radius: SUN_DATA.ratio * 3389.5,
-        distance: 15.237,
+        radius: 3389.5 * SUN_DATA.ratio,
+        distance: 1.52 * SUN_DATA.scaleAU,
         orbitalPeriod: 687,
         rotationPeriod: 1.03,
         color: "#C1440E",
         satellites: [
             {
                 name: "Phobos",
-                radius: SUN_DATA.ratio * 11.267,
-                distance: 0.5,
+                radius: 11.267 * SUN_DATA.ratio,
+                distance: 3389.5 * SUN_DATA.ratio + 0.5,
                 orbitalPeriod: 0.3,
                 color: "#8B7355"
             },
             {
                 name: "Deimos",
-                radius: SUN_DATA.ratio * 6.2,
-                distance: 0.7,
+                radius: 6.2 * SUN_DATA.ratio,
+                distance: 3389.5 * SUN_DATA.ratio + 0.7,
                 orbitalPeriod: 1.3,
                 color: "#8B7355"
             }
@@ -104,37 +104,37 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Jupiter",
-        radius: SUN_DATA.ratio * 69911,
-        distance: 52.026,
+        radius: 69911 * SUN_DATA.ratio,
+        distance: 5.20 * SUN_DATA.scaleAU,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
         satellites: [
             {
                 name: "Io",
-                radius: SUN_DATA.ratio * 1821.6,
-                distance: 1.0 * 3 + 1.5,
+                radius: 1821.6 * SUN_DATA.ratio,
+                distance: 69911 * SUN_DATA.ratio + 1.5,
                 orbitalPeriod: 1.8,
                 color: "#E6C87A"
             },
             {
                 name: "Europa",
-                radius: SUN_DATA.ratio * 1560.8,
-                distance: 1.0 * 3 + 1.8,
+                radius: 1560.8 * SUN_DATA.ratio,
+                distance: 69911 * SUN_DATA.ratio + 1.8,
                 orbitalPeriod: 3.5,
                 color: "#C4B896"
             },
             {
                 name: "Ganymede",
-                radius: SUN_DATA.ratio * 2634.1,
-                distance: 1.0 * 3 + 2.2,
+                radius: 2634.1 * SUN_DATA.ratio,
+                distance: 69911 * SUN_DATA.ratio + 2.2,
                 orbitalPeriod: 7.2,
                 color: "#8B7355"
             },
             {
                 name: "Callisto",
-                radius: SUN_DATA.ratio * 2410.3,
-                distance: 1.0 * 3 + 2.6,
+                radius: 2410.3 * SUN_DATA.ratio,
+                distance: 69911 * SUN_DATA.ratio + 2.6,
                 orbitalPeriod: 16.7,
                 color: "#5C4033"
             }
@@ -143,8 +143,8 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Saturn",
-        radius: SUN_DATA.ratio * 58232,
-        distance: 95.549,
+        radius: 58232 * SUN_DATA.ratio,
+        distance: 9.58 * SUN_DATA.scaleAU,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         color: "#F4D59E",
@@ -178,8 +178,8 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Titan",
-                radius: SUN_DATA.ratio * 2574.7,
-                distance: 5,
+                radius: 2574.7 * SUN_DATA.ratio,
+                distance: 58232 * SUN_DATA.ratio + 5,
                 orbitalPeriod: 16,
                 color: "#E6A243"
             }
@@ -188,8 +188,8 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Uranus",
-        radius: SUN_DATA.ratio * 25362,
-        distance: 192.184,
+        radius: 25362 * SUN_DATA.ratio,
+        distance: 19.20 * SUN_DATA.scaleAU,
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
@@ -239,16 +239,16 @@ export const PLANETS: PlanetData[] = [
     },
     {
         name: "Neptune",
-        radius: SUN_DATA.ratio * 24622,
-        distance: 301.104,
+        radius: 24622 * SUN_DATA.ratio,
+        distance: 30.05 * SUN_DATA.scaleAU,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         color: "#5B5DDF",
         satellites: [
             {
                 name: "Triton",
-                radius: SUN_DATA.ratio * 1353.4,
-                distance: 1.2,
+                radius: 1353.4 * SUN_DATA.ratio,
+                distance: 24622 * SUN_DATA.ratio + 1.2,
                 orbitalPeriod: 5.9,
                 color: "#C4C4C4"
             }
