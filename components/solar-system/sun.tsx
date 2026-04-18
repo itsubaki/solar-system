@@ -56,7 +56,7 @@ export function Sun({
 
             <pointLight
                 color="#FFF5E0"
-                intensity={500}
+                intensity={10}
                 distance={100}
                 decay={2}
             />

@@ -51,6 +51,12 @@ export function PlanetInfo({
                             {(planet.rotationPeriod ?? "")} Earth days
                         </p>
                     </div>
+                    <div >
+                        <p className="text-xs text-muted-foreground">Astronomical Unit</p>
+                        <p className="text-sm font-medium text-foreground">
+                            {planet.distance}
+                        </p>
+                    </div>
                     {planet.satellites && planet.satellites.length > 0 && (
                         <div className="col-span-2">
                             <p className="text-xs text-muted-foreground">Satellites</p>
