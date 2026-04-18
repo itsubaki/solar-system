@@ -14,7 +14,7 @@ export function Stars() {
 
         for (let i = 0; i < count; i++) {
             // Position stars in a sphere around the scene
-            const radius = 80 + Math.random() * 40
+            const radius = 1000 + Math.random() * 40
             const theta = Math.random() * Math.PI * 2
             const phi = Math.acos(2 * Math.random() - 1)
 
