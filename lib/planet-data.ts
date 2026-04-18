@@ -290,28 +290,28 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Io",
                 radius: (1821.6 / 71492) * 3,
-                distance: 1.5,
+                distance: 1.0 * 3 + 1.5,
                 orbitalPeriod: 1.8,
                 color: "#E6C87A"
             },
             {
                 name: "Europa",
                 radius: (1560.8 / 71492) * 3,
-                distance: 1.8,
+                distance: 1.0 * 3 + 1.8,
                 orbitalPeriod: 3.5,
                 color: "#C4B896"
             },
             {
                 name: "Ganymede",
                 radius: (2634.1 / 71492) * 3,
-                distance: 2.2,
+                distance: 1.0 * 3 + 2.2,
                 orbitalPeriod: 7.2,
                 color: "#8B7355"
             },
             {
                 name: "Callisto",
                 radius: (2410.3 / 71492) * 3,
-                distance: 2.6,
+                distance: 1.0 * 3 + 2.6,
                 orbitalPeriod: 16.7,
                 color: "#5C4033"
             }
@@ -356,7 +356,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Titan",
                 radius: (2574.7 / 71492) * 3,
-                distance: 2.5,
+                distance: (60268 / 71492) * 3 + 5,
                 orbitalPeriod: 16,
                 color: "#E6A243"
             }
