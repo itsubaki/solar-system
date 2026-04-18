@@ -327,18 +327,18 @@ export const PLANETS: PlanetData[] = [
         color: "#F4D59E",
         rings: [
             {
-                innerRadius: 0.85 * (74658 / 58232), // ≒ 1.09
-                outerRadius: 0.85 * (92000 / 58232), // ≒ 1.34
+                innerRadius: 0.85 * (74658 / 58232),
+                outerRadius: 0.85 * (92000 / 58232),
                 color: "#E5D7B9"
             },
             {
-                innerRadius: 0.85 * (92000 / 58232), // ≒ 1.34
-                outerRadius: 0.85 * (117580 / 58232), // ≒ 1.72
+                innerRadius: 0.85 * (92000 / 58232),
+                outerRadius: 0.85 * (117580 / 58232),
                 color: "#F4D59E"
             },
             {
-                innerRadius: 0.85 * (122170 / 58232), // ≒ 1.78
-                outerRadius: 0.85 * (136775 / 58232), // ≒ 1.99
+                innerRadius: 0.85 * (122170 / 58232),
+                outerRadius: 0.85 * (136775 / 58232),
                 color: "#F4D59E"
             }
         ],
@@ -362,18 +362,18 @@ export const PLANETS: PlanetData[] = [
         color: "#B5E3E3",
         rings: [
             {
-                innerRadius: 0.55 * (51149 / 25362), // ≒ 1.11
-                outerRadius: 0.55 * (51710 / 25362), // ≒ 1.12
+                innerRadius: 0.55 * (51149 / 25362),
+                outerRadius: 0.55 * (51710 / 25362),
                 color: "#B5E3E3"
             },
             {
-                innerRadius: 0.55 * (47176 / 25362), // ≒ 1.02
-                outerRadius: 0.55 * (47462 / 25362), // ≒ 1.03
+                innerRadius: 0.55 * (47176 / 25362),
+                outerRadius: 0.55 * (47462 / 25362),
                 color: "#A0C8C8"
             },
             {
-                innerRadius: 0.55 * (45619 / 25362), // ≒ 0.99
-                outerRadius: 0.55 * (45929 / 25362), // ≒ 1.00
+                innerRadius: 0.55 * (45619 / 25362),
+                outerRadius: 0.55 * (45929 / 25362),
                 color: "#7FC7C7"
             }
         ],
