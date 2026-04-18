@@ -243,6 +243,7 @@ function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef })
         enablePan={false}
         enableZoom
         enableRotate={false}
+        maxPolarAngle={Math.PI / 2 - Math.PI / 16}
         minDistance={MIN_CAMERA_DISTANCE}
         maxDistance={MAX_CAMERA_DISTANCE}
         autoRotate={false}
