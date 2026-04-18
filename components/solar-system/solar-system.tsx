@@ -35,7 +35,7 @@ const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION = new Vector3(15, 15, 15)
 const DEFAULT_CAMERA_POSITION_ARRAY = [15, 15, 15] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
-const MIN_CAMERA_DISTANCE = 5
+const MIN_CAMERA_DISTANCE = 10
 const MAX_CAMERA_DISTANCE = 1000
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
@@ -444,6 +444,10 @@ export function SolarSystem() {
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
                     Solar System
                 </h1>
+
+                <p className="text-sm text-muted-foreground mt-1">
+                    Planet radii are scaled 1000x
+                </p>
             </div>
 
             <div
