@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState, useMemo } from "react"
-import { useThree } from "@react-three/fiber"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
@@ -37,14 +36,10 @@ export function Planet({
     isSelected,
     focusTargetRef
 }: PlanetProps) {
-
     const groupRef = useRef<Group>(null)
     const planetRef = useRef<Mesh>(null)
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
-
-    const { camera } = useThree()
-    const [orbitThickness, setOrbitThickness] = useState(0.03)
 
     // Real-time orbital speed scaled by the control panel multiplier.
     const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
@@ -58,9 +53,6 @@ export function Planet({
         if (planetRef.current) {
             planetRef.current.rotation.y += delta * rotationSpeed
         }
-
-        const cameraDistance = camera.position.length()
-        setOrbitThickness(0.003 * cameraDistance)
 
         if (focusTargetRef && planetRef.current) {
             planetRef.current.getWorldPosition(worldPositionRef.current)
@@ -77,7 +69,7 @@ export function Planet({
             {/* Orbit path */}
             {showOrbits && (
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[data.distance - orbitThickness, data.distance + orbitThickness, 128]} />
+                    <ringGeometry args={[data.distance - 0.03, data.distance + 0.03, 128]} />
                     <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
                 </mesh>
             )}
