@@ -52,19 +52,25 @@ export function PlanetInfo({
                         </p>
                     </div>
                     <div >
+                        <p className="text-xs text-muted-foreground">Radius</p>
+                        <p className="text-sm font-medium text-foreground">
+                            {planet.radius} km
+                        </p>
+                    </div>
+                    <div >
                         <p className="text-xs text-muted-foreground">Astronomical Unit</p>
                         <p className="text-sm font-medium text-foreground">
                             {planet.distance / ASTRONOMICAL_UNIT}
                         </p>
                     </div>
-                    {planet.satellites && planet.satellites.length > 0 && (
+                    {/* {planet.satellites && planet.satellites.length > 0 && (
                         <div className="col-span-2">
                             <p className="text-xs text-muted-foreground">Satellites</p>
                             <p className="text-sm font-medium text-foreground">
                                 {planet.satellites.map(m => m.name ?? "").join(", ")}
                             </p>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </CardContent>
         </Card>
