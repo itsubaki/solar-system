@@ -88,14 +88,14 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Phobos",
                 radius: 11.267,
-                distance: 3389.5 * 1.5,
+                distance: 3389.5 * 1.8,
                 orbitalPeriod: 0.3,
                 color: "#8B7355"
             },
             {
                 name: "Deimos",
                 radius: 6.2,
-                distance: 3389.5 * 1.7,
+                distance: 3389.5 * 6.9,
                 orbitalPeriod: 1.3,
                 color: "#8B7355"
             }
