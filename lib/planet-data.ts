@@ -247,7 +247,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Moon",
                 radius: (1737.4 / 71492) * 3,
-                distance: 0.8,
+                distance: (6371 / 71492) * 3 + 0.8,
                 orbitalPeriod: 27,
                 color: "#C4C4C4"
             }
@@ -265,14 +265,14 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Phobos",
                 radius: (11.267 / 71492) * 3,
-                distance: 0.5,
+                distance: (3389.5 / 71492) * 3 + 0.5,
                 orbitalPeriod: 0.3,
                 color: "#8B7355"
             },
             {
                 name: "Deimos",
                 radius: (6.2 / 71492) * 3,
-                distance: 0.7,
+                distance: (3389.5 / 71492) * 3 + 0.7,
                 orbitalPeriod: 1.3,
                 color: "#8B7355"
             }
@@ -425,7 +425,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Triton",
                 radius: (1353.4 / 71492) * 3,
-                distance: 1.2,
+                distance: (24622 / 71492) * 3 + 1.2,
                 orbitalPeriod: 5.9,
                 color: "#C4C4C4"
             }
