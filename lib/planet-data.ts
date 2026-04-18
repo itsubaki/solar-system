@@ -29,10 +29,11 @@ export interface RingData {
     color: string
 }
 
+export const ASTRONOMICAL_UNIT = 149_600_000 // km
+
 export const SUN_DATA = {
     name: "Sun",
-    radius: 696_000 / 149_600_000, // radius / 1AU( = 149,600,000 km)
-    km: 149_600_000,
+    radius: 696_000 / ASTRONOMICAL_UNIT,
     color: "#FDB813",
     emissive: "#FDB813",
     emissiveIntensity: 2,

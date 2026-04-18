@@ -6,7 +6,7 @@ import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
-import { SUN_DATA } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT } from "@/lib/planet-data"
 import { getSatelliteOrbitAngle } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 
@@ -14,8 +14,9 @@ type FocusTargetRef = {
     current: Vector3 | null
 }
 
-const SECONDS_PER_DAY = 86400
-const RADIUS_SCALE = 1 / SUN_DATA.km * 1000
+const SECONDS_PER_DAY = 60 * 60 * 24 // 86400 seconds per day
+const RADIUS_SCALE = 1 / ASTRONOMICAL_UNIT * 1000
+const ORBIT_LINE_WIDTH = 0.001
 
 export function Planet({
     data,
@@ -67,7 +68,7 @@ export function Planet({
         <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
             {showOrbits && (
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[data.distance - 0.01, data.distance + 0.01, 128]} />
+                    <ringGeometry args={[data.distance - ORBIT_LINE_WIDTH, data.distance + ORBIT_LINE_WIDTH, 128]} />
                     <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
                 </mesh>
             )}
@@ -75,13 +76,13 @@ export function Planet({
             <group position={[data.distance, 0, 0]}>
                 <mesh
                     ref={planetRef}
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
                     onClick={() => {
                         if (!isSelected) {
                             onSelect(data)
                         }
                     }}
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
                 >
                     <sphereGeometry args={[data.radius * RADIUS_SCALE, 32, 32]} />
                     <meshStandardMaterial
