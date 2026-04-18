@@ -30,9 +30,9 @@ const ORBIT_SPEED_OPTIONS = [
     { label: "1 year / sec", multiplier: 31536000 },
 ] as const
 
-const DEFAULT_CAMERA_POSITION = new Vector3(30, 30, 30)
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
-const DEFAULT_CAMERA_POSITION_ARRAY = [30, 30, 30] as const
+const DEFAULT_CAMERA_POSITION = new Vector3(15, 15, 15)
+const DEFAULT_CAMERA_POSITION_ARRAY = [15, 15, 15] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
 const MIN_CAMERA_DISTANCE = 5
 const MAX_CAMERA_DISTANCE = 1000
