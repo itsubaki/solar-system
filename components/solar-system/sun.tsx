@@ -29,12 +29,12 @@ export function Sun({ onSelect, focusTargetRef }: SunProps) {
         } else if (focusTargetRef) {
             focusTargetRef.current = new (require("three").Vector3)(0, 0, 0)
         }
+
         if (onSelect) onSelect()
     }
 
     return (
         <group>
-            {/* Sun mesh */}
             <mesh ref={meshRef} onClick={handleClick}>
                 <sphereGeometry args={[SUN_DATA.radius, 64, 64]} />
                 <meshStandardMaterial
@@ -44,7 +44,6 @@ export function Sun({ onSelect, focusTargetRef }: SunProps) {
                 />
             </mesh>
 
-            {/* Sun glow effect */}
             <mesh scale={1.2}>
                 <sphereGeometry args={[SUN_DATA.radius, 32, 32]} />
                 <meshBasicMaterial
@@ -54,7 +53,6 @@ export function Sun({ onSelect, focusTargetRef }: SunProps) {
                 />
             </mesh>
 
-            {/* Point light from sun */}
             <pointLight
                 color="#FFF5E0"
                 intensity={500}

@@ -13,7 +13,6 @@ export function Stars() {
         const colors = new Float32Array(count * 3)
 
         for (let i = 0; i < count; i++) {
-            // Position stars in a sphere around the scene
             const radius = 1000 + Math.random() * 40
             const theta = Math.random() * Math.PI * 2
             const phi = Math.acos(2 * Math.random() - 1)
@@ -22,7 +21,6 @@ export function Stars() {
             positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta)
             positions[i * 3 + 2] = radius * Math.cos(phi)
 
-            // Vary star colors slightly (white to light blue/yellow)
             const colorVariation = Math.random()
             if (colorVariation < 0.7) {
                 // White stars

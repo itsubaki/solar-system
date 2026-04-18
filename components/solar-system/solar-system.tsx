@@ -8,7 +8,8 @@ import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
-import { getInitialOrbitAngle, PLANETS, type PlanetData } from "@/lib/planet-data"
+import { PLANETS, type PlanetData } from "@/lib/planet-data"
+import { getInitialOrbitAngle } from "@/lib/planet-angle"
 import { SimulatedClock } from "./ui/simulated-clock"
 
 type OrbitControlsRef = {
@@ -268,13 +269,16 @@ function Scene({
     )
 
     useEffect(() => {
-        if (!selectedPlanet) {
-            if (focusedPlanetPositionRef.current) {
-                focusedPlanetPositionRef.current.set(0, 0, 0)
-            } else {
-                focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
-            }
+        if (selectedPlanet) {
+            return
         }
+
+        if (focusedPlanetPositionRef.current) {
+            focusedPlanetPositionRef.current.set(0, 0, 0)
+            return
+        }
+
+        focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
     }, [selectedPlanet])
 
     return (
@@ -342,6 +346,7 @@ export function SolarSystem() {
                     const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
                     nextIndex = (currentIndex + 1) % PLANETS.length;
                 }
+
                 setSelectedPlanet(PLANETS[nextIndex]);
                 setShowPlanetInfo(true);
             } else if (event.key === "<") {
@@ -352,6 +357,7 @@ export function SolarSystem() {
                     const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
                     prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
                 }
+
                 setSelectedPlanet(PLANETS[prevIndex]);
                 setShowPlanetInfo(true);
             } else if (event.key === "a") {
@@ -362,6 +368,7 @@ export function SolarSystem() {
                 setOrbitSpeedIndex((prev) => Math.min(ORBIT_SPEED_OPTIONS.length - 1, prev + 1));
             }
         };
+
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [selectedPlanet]);
@@ -385,6 +392,7 @@ export function SolarSystem() {
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                 </ul>
             </div>
+
             <div
                 className="absolute inset-0 z-0"
                 style={{
@@ -409,7 +417,6 @@ export function SolarSystem() {
                 </Canvas>
             </div>
 
-            {/* Planet Info Panel: z-20 */}
             {selectedPlanet && showPlanetInfo && (
                 <div className="relative z-20">
                     <PlanetInfo

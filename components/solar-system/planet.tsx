@@ -6,8 +6,8 @@ import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
+import { getSatelliteOrbitAngle } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "./ring-shader"
-import { getSatelliteOrbitAngle } from "@/lib/planet-data"
 
 type FocusTargetRef = {
     current: Vector3 | null
@@ -41,7 +41,6 @@ export function Planet({
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
 
-    // Real-time orbital speed scaled by the control panel multiplier.
     const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
     const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
 
@@ -66,7 +65,6 @@ export function Planet({
 
     return (
         <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
-            {/* Orbit path */}
             {showOrbits && (
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
                     <ringGeometry args={[data.distance - 0.03, data.distance + 0.03, 128]} />
@@ -74,9 +72,7 @@ export function Planet({
                 </mesh>
             )}
 
-            {/* Planet group positioned at orbital distance */}
             <group position={[data.distance, 0, 0]}>
-                {/* Planet sphere */}
                 <mesh
                     ref={planetRef}
                     onClick={() => {
@@ -97,7 +93,6 @@ export function Planet({
                     />
                 </mesh>
 
-                {/* Rings (multiple for Saturn, Uranus) */}
                 {Array.isArray(data.rings) && data.rings.map((ring, i) => (
                     <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
                         <ringGeometry args={[ring.innerRadius, ring.outerRadius, 64]} />
@@ -117,7 +112,6 @@ export function Planet({
                     </mesh>
                 ))}
 
-                {/* Satellites */}
                 {data.satellites?.map((satellite) => (
                     <Satellite
                         key={satellite.name}
@@ -127,7 +121,6 @@ export function Planet({
                     />
                 ))}
 
-                {/* Label */}
                 {(showLabels || hovered || isSelected) && (
                     <Html
                         position={[0, data.radius + 0.3, 0]}
@@ -200,7 +193,6 @@ function Satellite({
                     />
                 </mesh>
 
-                {/* Satellite label */}
                 {(showLabels || hovered) && (
                     <Html
                         position={[0, satellite.radius + 0.15, 0]}
