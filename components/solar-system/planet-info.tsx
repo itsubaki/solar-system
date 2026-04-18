@@ -56,12 +56,6 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
                             </p>
                         </div>
                     )}
-                    {planet.rings && (
-                        <div className="col-span-2">
-                            <p className="text-xs text-muted-foreground">Rings</p>
-                            <p className="text-sm font-medium text-foreground">Yes</p>
-                        </div>
-                    )}
                 </div>
             </CardContent>
         </Card>
