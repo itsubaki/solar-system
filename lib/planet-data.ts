@@ -327,6 +327,11 @@ export const PLANETS: PlanetData[] = [
         color: "#F4D59E",
         rings: [
             {
+                innerRadius: 0.85 * (66900 / 58232),
+                outerRadius: 0.85 * (74510 / 58232),
+                color: "#E0D7C6"
+            },
+            {
                 innerRadius: 0.85 * (74658 / 58232),
                 outerRadius: 0.85 * (92000 / 58232),
                 color: "#E5D7B9"
