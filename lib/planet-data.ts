@@ -32,7 +32,7 @@ export interface RingData {
 export const SUN_DATA = {
     name: "Sun",
     radius: 696_000 / 149_600_000 * 10, // radius / 1AU( = 149,600,000 km) * 10(scaleAU) 
-    ratio: 696_000 / 149_600_000 * 10 / 1_000, // radius x1000 -> volume x10^9
+    ratio: 1 / 149_600_000 * 10 * 1000,
     scaleAU: 10,
     color: "#FDB813",
     emissive: "#FDB813",
@@ -70,7 +70,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Moon",
                 radius: 1737.4 * SUN_DATA.ratio,
-                distance: 6371 * SUN_DATA.ratio + 0.8,
+                distance: 6371 * SUN_DATA.ratio + 1,
                 orbitalPeriod: 27,
                 color: "#C4C4C4"
             }
@@ -179,7 +179,7 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Titan",
                 radius: 2574.7 * SUN_DATA.ratio,
-                distance: 58232 * SUN_DATA.ratio + 5,
+                distance: 58232 * SUN_DATA.ratio * 5,
                 orbitalPeriod: 16,
                 color: "#E6A243"
             }
