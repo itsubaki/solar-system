@@ -7,24 +7,13 @@ import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getSatelliteOrbitAngle } from "@/lib/planet-angle"
-import { ringVertexShader, ringFragmentShader } from "./ring-shader"
+import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 
 type FocusTargetRef = {
     current: Vector3 | null
 }
 
 const SECONDS_PER_DAY = 86400
-
-interface PlanetProps {
-    data: PlanetData
-    initialOrbitAngle?: number
-    orbitSpeedScale: number
-    showOrbits: boolean
-    showLabels: boolean
-    onSelect: (planet: PlanetData | null) => void
-    isSelected: boolean
-    focusTargetRef?: FocusTargetRef | null
-}
 
 export function Planet({
     data,
@@ -35,7 +24,16 @@ export function Planet({
     onSelect,
     isSelected,
     focusTargetRef
-}: PlanetProps) {
+}: {
+    data: PlanetData
+    initialOrbitAngle?: number
+    orbitSpeedScale: number
+    showOrbits: boolean
+    showLabels: boolean
+    onSelect: (planet: PlanetData | null) => void
+    isSelected: boolean
+    focusTargetRef?: FocusTargetRef | null
+}) {
     const groupRef = useRef<Group>(null)
     const planetRef = useRef<Mesh>(null)
     const worldPositionRef = useRef(new Vector3())
@@ -152,17 +150,15 @@ export function Planet({
     )
 }
 
-interface SatelliteProps {
-    satellite: SatelliteData & { parentPlanetName: string }
-    orbitSpeedScale: number
-    showLabels: boolean
-}
-
 function Satellite({
     satellite,
     orbitSpeedScale,
     showLabels,
-}: SatelliteProps) {
+}: {
+    satellite: SatelliteData & { parentPlanetName: string }
+    orbitSpeedScale: number
+    showLabels: boolean
+}) {
     const groupRef = useRef<Group>(null)
     const [hovered, setHovered] = useState(false)
     const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)

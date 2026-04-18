@@ -4,13 +4,13 @@ import { Suspense, useState, useEffect, useMemo, useRef } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
+import { PLANETS, type PlanetData } from "@/lib/planet-data"
+import { getInitialOrbitAngle } from "@/lib/planet-angle"
+import { SimulatedClock } from "./clock-simulated"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
-import { PLANETS, type PlanetData } from "@/lib/planet-data"
-import { getInitialOrbitAngle } from "@/lib/planet-angle"
-import { SimulatedClock } from "./ui/simulated-clock"
 
 type OrbitControlsRef = {
     target: Vector3
@@ -78,7 +78,11 @@ function ControlPanel({
     )
 }
 
-function InvertedOrbitControls({ focusTarget }: { focusTarget: FocusTargetRef }) {
+function InvertedOrbitControls({
+    focusTarget,
+}: {
+    focusTarget: FocusTargetRef,
+}) {
     const { camera, gl } = useThree()
     const controlsRef = useRef<OrbitControlsRef | null>(null)
     const followDeltaRef = useRef(new Vector3())

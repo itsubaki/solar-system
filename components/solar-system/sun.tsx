@@ -9,12 +9,13 @@ type FocusTargetRef = {
     current: Vector3 | null
 }
 
-interface SunProps {
+export function Sun({
+    onSelect,
+    focusTargetRef,
+}: {
     onSelect?: () => void
     focusTargetRef?: FocusTargetRef | null
-}
-
-export function Sun({ onSelect, focusTargetRef }: SunProps) {
+}) {
     const meshRef = useRef<Mesh>(null)
 
     useFrame((_, delta) => {

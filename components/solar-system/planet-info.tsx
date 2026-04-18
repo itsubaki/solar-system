@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import type { PlanetData } from "@/lib/planet-data"
 
-interface PlanetInfoProps {
+export function PlanetInfo({
+    planet,
+    onClose,
+}: {
     planet: PlanetData
     onClose: () => void
-}
-
-export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
+}) {
     return (
         <Card className="absolute top-6 right-6 w-72 bg-card/90 backdrop-blur-md border-border">
             <CardHeader className="pb-2 flex flex-row items-start justify-between">
@@ -21,6 +22,7 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
                     />
                     <CardTitle className="text-lg">{planet.name ?? ""}</CardTitle>
                 </div>
+
                 <Button
                     variant="ghost"
                     size="icon"
@@ -30,6 +32,7 @@ export function PlanetInfo({ planet, onClose }: PlanetInfoProps) {
                     <X className="h-4 w-4" />
                 </Button>
             </CardHeader>
+
             <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground leading-relaxed">
                     {planet.description ?? ""}

@@ -2,16 +2,18 @@
 
 import { useEffect, useState } from "react"
 
-type SimulatedClockProps = {
-    orbitSpeedScale: number
-}
-
-export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
+export function SimulatedClock({
+    orbitSpeedScale,
+}: {
+    orbitSpeedScale: number,
+}) {
     const [simTime, setSimTime] = useState<Date>(() => new Date())
+
     useEffect(() => {
         let mounted = true
         let lastReal = Date.now()
         let frameId: number
+
         const tick = () => {
             const now = Date.now()
             const elapsed = (now - lastReal) / 1000
@@ -21,6 +23,7 @@ export function SimulatedClock({ orbitSpeedScale }: SimulatedClockProps) {
                 frameId = requestAnimationFrame(tick)
             }
         }
+
         frameId = requestAnimationFrame(tick)
         return () => {
             mounted = false
