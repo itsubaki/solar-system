@@ -345,7 +345,12 @@ export const PLANETS: PlanetData[] = [
                 innerRadius: 0.85 * (122170 / 58232),
                 outerRadius: 0.85 * (136775 / 58232),
                 color: "#F4D59E"
-            }
+            },
+            {
+                innerRadius: 0.85 * (140180 / 58232),
+                outerRadius: 0.85 * (140680 / 58232),
+                color: "#E3E3F7"
+            },
         ],
         satellites: [
             {
