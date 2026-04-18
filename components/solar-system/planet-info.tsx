@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import type { PlanetData } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
 
 export function PlanetInfo({
     planet,
@@ -54,7 +54,7 @@ export function PlanetInfo({
                     <div >
                         <p className="text-xs text-muted-foreground">Astronomical Unit</p>
                         <p className="text-sm font-medium text-foreground">
-                            {planet.distance}
+                            {planet.distance / ASTRONOMICAL_UNIT}
                         </p>
                     </div>
                     {planet.satellites && planet.satellites.length > 0 && (

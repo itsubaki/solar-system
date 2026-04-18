@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useRef } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
-import { PLANETS, type PlanetData } from "@/lib/planet-data"
+import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
 import { getInitialOrbitAngle } from "@/lib/planet-angle"
 import { SimulatedClock } from "./clock-simulated"
 import { Sun } from "./sun"
@@ -35,10 +35,11 @@ const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
 const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
-const MIN_CAMERA_DISTANCE = 1
+const MIN_CAMERA_DISTANCE = 0.15
 const MAX_CAMERA_DISTANCE = 80
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
+const PLANET_SIZE_SCALE = 1000
 
 function ControlPanel({
     orbitSpeedIndex,
@@ -296,13 +297,14 @@ function Scene({
 
             <InvertedOrbitControls focusTarget={focusedPlanetPositionRef} />
 
-            <ambientLight intensity={0.05} />
-
             <Stars />
 
             <Sun
                 onSelect={() => onSelectPlanet(null)}
                 focusTargetRef={focusedPlanetPositionRef}
+                scale={{
+                    radius: 1 / ASTRONOMICAL_UNIT,
+                }}
             />
 
             {PLANETS.map((planet) => (
@@ -310,14 +312,20 @@ function Scene({
                     key={planet.name}
                     data={planet}
                     initialOrbitAngle={initialOrbitAngles[planet.name]}
-                    orbitSpeedScale={orbitSpeedScale}
                     showOrbits
                     showLabels
                     onSelect={onSelectPlanet}
                     isSelected={selectedPlanet?.name === planet.name}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
+                    scale={{
+                        distance: 1 / ASTRONOMICAL_UNIT,
+                        radius: 1 / ASTRONOMICAL_UNIT * PLANET_SIZE_SCALE,
+                        orbitSpeed: orbitSpeedScale,
+                    }}
                 />
             ))}
+
+            <ambientLight intensity={0.05} />
         </>
     )
 }

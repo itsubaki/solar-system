@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import type { Mesh, Vector3 } from "three"
-import { SUN_DATA } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT, SUN_DATA } from "@/lib/planet-data"
 
 type FocusTargetRef = {
     current: Vector3 | null
@@ -12,9 +12,11 @@ type FocusTargetRef = {
 export function Sun({
     onSelect,
     focusTargetRef,
+    scale,
 }: {
     onSelect?: () => void
     focusTargetRef?: FocusTargetRef | null
+    scale: { radius: number }
 }) {
     const meshRef = useRef<Mesh>(null)
 
@@ -34,10 +36,11 @@ export function Sun({
         if (onSelect) onSelect()
     }
 
+    const radius = SUN_DATA.radius * scale.radius
     return (
         <group>
             <mesh ref={meshRef} onClick={handleClick}>
-                <sphereGeometry args={[SUN_DATA.radius, 64, 64]} />
+                <sphereGeometry args={[radius, 64, 64]} />
                 <meshStandardMaterial
                     color={SUN_DATA.color}
                     emissive={SUN_DATA.emissive}
@@ -46,7 +49,7 @@ export function Sun({
             </mesh>
 
             <mesh scale={1.2}>
-                <sphereGeometry args={[SUN_DATA.radius, 32, 32]} />
+                <sphereGeometry args={[radius, 32, 32]} />
                 <meshBasicMaterial
                     color="#FDB813"
                     transparent

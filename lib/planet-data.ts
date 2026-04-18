@@ -29,22 +29,23 @@ export interface RingData {
     color: string
 }
 
-export const ASTRONOMICAL_UNIT = 149_600_000 // km
 
 export const SUN_DATA = {
     name: "Sun",
-    radius: 696_000 / ASTRONOMICAL_UNIT,
+    radius: 696_000,
     color: "#FDB813",
     emissive: "#FDB813",
     emissiveIntensity: 2,
     description: "The Sun is a G-type main-sequence star at the center of our Solar System."
 }
 
+export const ASTRONOMICAL_UNIT = 149_600_000 // km
+
 export const PLANETS: PlanetData[] = [
     {
         name: "Mercury",
         radius: 2439.7,
-        distance: 0.39,
+        distance: ASTRONOMICAL_UNIT * 0.39,
         orbitalPeriod: 88,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
@@ -53,7 +54,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Venus",
         radius: 6051.8,
-        distance: 0.72,
+        distance: ASTRONOMICAL_UNIT * 0.72,
         orbitalPeriod: 225,
         rotationPeriod: 243,
         color: "#E6C87A",
@@ -62,7 +63,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Earth",
         radius: 6371,
-        distance: 1.00,
+        distance: ASTRONOMICAL_UNIT * 1.00,
         orbitalPeriod: 365,
         rotationPeriod: 1,
         color: "#6B93D6",
@@ -80,7 +81,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Mars",
         radius: 3389.5,
-        distance: 1.52,
+        distance: ASTRONOMICAL_UNIT * 1.52,
         orbitalPeriod: 687,
         rotationPeriod: 1.03,
         color: "#C1440E",
@@ -105,7 +106,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Jupiter",
         radius: 69911,
-        distance: 5.20,
+        distance: ASTRONOMICAL_UNIT * 5.20,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
@@ -144,7 +145,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Saturn",
         radius: 58232,
-        distance: 9.58,
+        distance: ASTRONOMICAL_UNIT * 9.58,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         color: "#F4D59E",
@@ -189,7 +190,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Uranus",
         radius: 25362,
-        distance: 19.20,
+        distance: ASTRONOMICAL_UNIT * 19.20,
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
@@ -240,7 +241,7 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Neptune",
         radius: 24622,
-        distance: 30.05,
+        distance: ASTRONOMICAL_UNIT * 30.05,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         color: "#5B5DDF",

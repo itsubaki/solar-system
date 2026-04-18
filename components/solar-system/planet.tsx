@@ -6,7 +6,6 @@ import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
-import { ASTRONOMICAL_UNIT } from "@/lib/planet-data"
 import { getSatelliteOrbitAngle } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 
@@ -15,20 +14,21 @@ type FocusTargetRef = {
 }
 
 const SECONDS_PER_DAY = 60 * 60 * 24 // 86400 seconds per day
-const RADIUS_SCALE = 1 / ASTRONOMICAL_UNIT * 1000
-const ORBIT_LINE_WIDTH = 0.001
+const ORBIT_LINE_WIDTH = 0.01
 
 export function Planet({
     data,
     initialOrbitAngle = 0,
-    orbitSpeedScale,
     showOrbits,
     showLabels,
     onSelect,
     isSelected,
-    focusTargetRef
+    focusTargetRef,
+    scale,
 }: {
     data: PlanetData
+    distanceScale: number
+    radiusScale: number
     initialOrbitAngle?: number
     orbitSpeedScale: number
     showOrbits: boolean
@@ -36,13 +36,18 @@ export function Planet({
     onSelect: (planet: PlanetData | null) => void
     isSelected: boolean
     focusTargetRef?: FocusTargetRef | null
+    scale: {
+        distance: number,
+        radius: number,
+        orbitSpeed: number,
+    }
 }) {
     const groupRef = useRef<Group>(null)
     const planetRef = useRef<Mesh>(null)
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
 
-    const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * scale.orbitSpeed
     const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
 
     useFrame((_, delta) => {
@@ -58,22 +63,30 @@ export function Planet({
             planetRef.current.getWorldPosition(worldPositionRef.current)
             if (focusTargetRef.current) {
                 focusTargetRef.current.copy(worldPositionRef.current)
-            } else {
-                focusTargetRef.current = worldPositionRef.current.clone()
+                return
             }
+
+            focusTargetRef.current = worldPositionRef.current.clone()
         }
     })
+
+    const distance = data.distance * scale.distance
+    const radius = data.radius * scale.radius
 
     return (
         <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
             {showOrbits && (
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[data.distance - ORBIT_LINE_WIDTH, data.distance + ORBIT_LINE_WIDTH, 128]} />
+                    <ringGeometry args={[
+                        distance - ORBIT_LINE_WIDTH,
+                        distance + ORBIT_LINE_WIDTH,
+                        128,
+                    ]} />
                     <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
                 </mesh>
             )}
 
-            <group position={[data.distance, 0, 0]}>
+            <group position={[distance, 0, 0]}>
                 <mesh
                     ref={planetRef}
                     onPointerOver={() => setHovered(true)}
@@ -84,7 +97,7 @@ export function Planet({
                         }
                     }}
                 >
-                    <sphereGeometry args={[data.radius * RADIUS_SCALE, 32, 32]} />
+                    <sphereGeometry args={[radius, 32, 32]} />
                     <meshStandardMaterial
                         color={data.color}
                         emissive={data.emissive || data.color}
@@ -96,7 +109,7 @@ export function Planet({
 
                 {Array.isArray(data.rings) && data.rings.map((ring, i) => (
                     <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
-                        <ringGeometry args={[ring.innerRadius * RADIUS_SCALE, ring.outerRadius * RADIUS_SCALE, 64]} />
+                        <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
                         <shaderMaterial
                             attach="material"
                             vertexShader={ringVertexShader}
@@ -117,14 +130,18 @@ export function Planet({
                     <Satellite
                         key={satellite.name}
                         satellite={{ ...satellite, parentPlanetName: data.name }}
-                        orbitSpeedScale={orbitSpeedScale}
                         showLabels={showLabels}
+                        scale={{
+                            distance: scale.distance,
+                            radius: scale.radius,
+                            orbitSpeed: scale.orbitSpeed,
+                        }}
                     />
                 ))} */}
 
                 {(showLabels || hovered || isSelected) && (
                     <Html
-                        position={[0, data.radius * RADIUS_SCALE + 0.02, 0]}
+                        position={[0, radius + 0.02, 0]}
                         center
                         style={{
                             pointerEvents: "auto",
@@ -155,17 +172,21 @@ export function Planet({
 
 function Satellite({
     satellite,
-    orbitSpeedScale,
     showLabels,
+    scale,
 }: {
     satellite: SatelliteData & { parentPlanetName: string }
-    orbitSpeedScale: number
     showLabels: boolean
+    scale: {
+        distance: number,
+        radius: number,
+        orbitSpeed: number,
+    }
 }) {
     const groupRef = useRef<Group>(null)
     const [hovered, setHovered] = useState(false)
     const initialAngle = getSatelliteOrbitAngle(satellite.parentPlanetName, satellite)
-    let orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * orbitSpeedScale
+    let orbitalSpeed = ((2 * Math.PI) / (satellite.orbitalPeriod * SECONDS_PER_DAY)) * scale.orbitSpeed
     if (satellite.parentPlanetName === "Neptune" && satellite.name === "Triton") {
         orbitalSpeed *= -1
     }
@@ -176,14 +197,17 @@ function Satellite({
         }
     })
 
+    const distance = satellite.distance * scale.distance
+    const radius = satellite.radius * scale.radius
+
     return (
         <group ref={groupRef} rotation={[0, initialAngle, 0]}>
-            <group position={[satellite.distance * RADIUS_SCALE, 0, 0]}>
+            <group position={[distance, 0, 0]}>
                 <mesh
                     onPointerOver={() => setHovered(true)}
                     onPointerOut={() => setHovered(false)}
                 >
-                    <sphereGeometry args={[satellite.radius * RADIUS_SCALE, 16, 16]} />
+                    <sphereGeometry args={[radius, 16, 16]} />
                     <meshStandardMaterial
                         color={satellite.color}
                         roughness={0.9}
@@ -194,7 +218,7 @@ function Satellite({
 
                 {(showLabels || hovered) && (
                     <Html
-                        position={[0, satellite.radius * RADIUS_SCALE + 0.02, 0]}
+                        position={[0, radius + 0.02, 0]}
                         center
                         style={{ pointerEvents: "none", userSelect: "none" }}
                     >
