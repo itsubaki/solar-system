@@ -31,7 +31,7 @@ export interface RingData {
 
 export const SUN_DATA = {
     name: "Sun",
-    radius: 2,
+    radius: 0.0465,
     color: "#FDB813",
     emissive: "#FDB813",
     emissiveIntensity: 5,
