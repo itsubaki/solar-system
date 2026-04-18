@@ -385,6 +385,31 @@ export const PLANETS: PlanetData[] = [
                 innerRadius: 0.55 * (45619 / 25362),
                 outerRadius: 0.55 * (45929 / 25362),
                 color: "#7FC7C7"
+            },
+            {
+                innerRadius: 0.55 * (44718 / 25362),
+                outerRadius: 0.55 * (44918 / 25362),
+                color: "#E3D7F7"
+            },
+            {
+                innerRadius: 0.55 * (41837 / 25362),
+                outerRadius: 0.55 * (42067 / 25362),
+                color: "#D7F7E3"
+            },
+            {
+                innerRadius: 0.55 * (41837 / 25362),
+                outerRadius: 0.55 * (41939 / 25362),
+                color: "#F7E3D7"
+            },
+            {
+                innerRadius: 0.55 * (41939 / 25362),
+                outerRadius: 0.55 * (42067 / 25362),
+                color: "#E3F7D7"
+            },
+            {
+                innerRadius: 0.55 * (42067 / 25362),
+                outerRadius: 0.55 * (42190 / 25362),
+                color: "#D7E3F7"
             }
         ],
         description: "An ice giant that rotates on its side."
