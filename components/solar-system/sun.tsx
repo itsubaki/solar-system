@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import type { Mesh, Vector3 } from "three"
-import { ASTRONOMICAL_UNIT, SUN_DATA } from "@/lib/planet-data"
+import { SUN_DATA } from "@/lib/planet-data"
 
 type FocusTargetRef = {
     current: Vector3 | null
