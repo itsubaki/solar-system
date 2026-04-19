@@ -387,6 +387,13 @@ export function SolarSystem() {
         if (selectedPlanet) setShowPlanetInfo(true)
     }, [selectedPlanet])
 
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, []);
+
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
@@ -465,6 +472,13 @@ export function SolarSystem() {
             >
                 <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
             </div>
+
+            <input
+                ref={inputRef}
+                type="text"
+                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}
+                aria-hidden="true"
+            />
         </div>
     )
 }
