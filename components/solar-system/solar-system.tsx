@@ -435,7 +435,7 @@ export function SolarSystem() {
 
             <button
                 aria-label="Previous planet"
-                className="absolute left-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 hover:text-accent focus:outline-none select-none block sm:hidden"
+                className="absolute left-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 focus:outline-none select-none block sm:hidden transition-colors hover:bg-primary/15 hover:text-primary"
                 style={{ pointerEvents: "auto", background: "none" }}
                 onClick={selectPrevPlanet}
                 tabIndex={0}
@@ -445,7 +445,7 @@ export function SolarSystem() {
 
             <button
                 aria-label="Next planet"
-                className="absolute right-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 hover:text-accent focus:outline-none select-none block sm:hidden"
+                className="absolute right-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 focus:outline-none select-none block sm:hidden transition-colors hover:bg-primary/15 hover:text-primary"
                 style={{ pointerEvents: "auto", background: "none" }}
                 onClick={selectNextPlanet}
                 tabIndex={0}
