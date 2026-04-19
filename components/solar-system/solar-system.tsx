@@ -6,7 +6,7 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
 import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
 import { getInitialOrbitAngle } from "@/lib/planet-angle"
-import { SimulatedClock } from "./clock-simulated"
+import { Clock } from "./clock"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Stars } from "./stars"
@@ -52,7 +52,7 @@ function ControlPanel({
 
     return (
         <div
-            className="absolute z-30 w-64 rounded-2xl border border-border bg-card/85 p-4 shadow-2xl backdrop-blur-md"
+            className="absolute z-30 w-62 rounded-2xl border border-border bg-card/85 p-4 shadow-2xl backdrop-blur-md"
             style={{
                 right: "calc(env(safe-area-inset-right) + 1rem)",
                 bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
@@ -395,6 +395,28 @@ export function SolarSystem() {
         if (selectedPlanet) setShowPlanetInfo(true)
     }, [selectedPlanet])
 
+    const selectNextPlanet = () => {
+        if (PLANETS.length === 0) return;
+        let nextIndex = 0;
+        if (selectedPlanet) {
+            const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+            nextIndex = (currentIndex + 1) % PLANETS.length;
+        }
+        setSelectedPlanet(PLANETS[nextIndex]);
+        setShowPlanetInfo(true);
+    };
+
+    const selectPrevPlanet = () => {
+        if (PLANETS.length === 0) return;
+        let prevIndex = PLANETS.length - 1;
+        if (selectedPlanet) {
+            const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+            prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
+        }
+        setSelectedPlanet(PLANETS[prevIndex]);
+        setShowPlanetInfo(true);
+    };
+
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
@@ -410,6 +432,26 @@ export function SolarSystem() {
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                 </ul>
             </div>
+
+            <button
+                aria-label="Previous planet"
+                className="absolute left-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-primary bg-transparent border-none p-2 m-0 hover:text-accent focus:outline-none select-none"
+                style={{ pointerEvents: "auto", background: "none" }}
+                onClick={selectPrevPlanet}
+                tabIndex={0}
+            >
+                &lt;
+            </button>
+
+            <button
+                aria-label="Next planet"
+                className="absolute right-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-primary bg-transparent border-none p-2 m-0 hover:text-accent focus:outline-none select-none"
+                style={{ pointerEvents: "auto", background: "none" }}
+                onClick={selectNextPlanet}
+                tabIndex={0}
+            >
+                &gt;
+            </button>
 
             <div
                 className="absolute inset-0 z-0"
@@ -471,7 +513,7 @@ export function SolarSystem() {
                     bottom: "calc(env(safe-area-inset-bottom) + 7.5rem)",
                 }}
             >
-                <SimulatedClock orbitSpeedScale={orbitSpeedScale} />
+                <Clock orbitSpeedScale={orbitSpeedScale} />
             </div>
         </div>
     )

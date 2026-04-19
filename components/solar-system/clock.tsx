@@ -2,40 +2,55 @@
 
 import { useEffect, useState } from "react"
 
-export function Clock() {
-    const [time, setTime] = useState<string>("")
+export function Clock({
+    orbitSpeedScale,
+}: {
+    orbitSpeedScale: number,
+}) {
+    const [simTime, setSimTime] = useState<Date>(() => new Date())
 
     useEffect(() => {
-        const update = () => {
-            const now = new Date()
-            const y = now.getFullYear()
-            const m = String(now.getMonth() + 1).padStart(2, '0')
-            const d = String(now.getDate()).padStart(2, '0')
-            const date = `${y}/${m}/${d}`
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-            setTime(`${date} ${time}`)
+        let mounted = true
+        let lastReal = Date.now()
+        let frameId: number
+
+        const tick = () => {
+            const now = Date.now()
+            const elapsed = (now - lastReal) / 1000
+            lastReal = now
+            if (mounted) {
+                setSimTime((prev) => prev ? new Date(prev.getTime() + elapsed * 1000 * orbitSpeedScale) : new Date())
+                frameId = requestAnimationFrame(tick)
+            }
         }
 
-        update()
-        const timer = setInterval(update, 1000)
-        return () => clearInterval(timer)
-    }, [])
+        frameId = requestAnimationFrame(tick)
+        return () => {
+            mounted = false
+            cancelAnimationFrame(frameId)
+        }
+    }, [orbitSpeedScale])
+
+    const y = simTime.getFullYear()
+    const m = String(simTime.getMonth() + 1).padStart(2, '0')
+    const d = String(simTime.getDate()).padStart(2, '0')
+    const date = `${y}/${m}/${d}`
+    const time = simTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 
     return (
         <div style={{
-            position: 'fixed',
-            top: 16,
-            right: 24,
-            zIndex: 1000,
+            position: 'relative',
             background: 'rgba(0,0,0,0.5)',
             color: 'white',
             padding: '6px 16px',
             borderRadius: 8,
-            fontSize: 18,
+            fontSize: 12,
             fontFamily: 'monospace',
             letterSpacing: 1,
             pointerEvents: 'none',
             userSelect: 'none',
-        }}>{time}</div>
+            minWidth: 120,
+            textAlign: 'center',
+        }}>{date} {time}</div>
     )
 }
