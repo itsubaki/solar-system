@@ -163,7 +163,7 @@ export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
     return normalizeRadians(-heliocentricLongitude)
 }
 
-function degToRad(degrees: number) {
+export function degToRad(degrees: number) {
     return (degrees * Math.PI) / 180
 }
 

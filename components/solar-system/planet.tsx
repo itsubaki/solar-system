@@ -6,7 +6,7 @@ import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
-import { getSatelliteOrbitAngle } from "@/lib/planet-angle"
+import { getSatelliteOrbitAngle, degToRad } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 
 type FocusTargetRef = {
@@ -108,7 +108,7 @@ export function Planet({
                 </mesh>
 
                 {Array.isArray(data.rings) && data.rings.map((ring, i) => (
-                    <mesh key={i} rotation={[Math.PI / 2.5, 0, 0]}>
+                    <mesh key={i} rotation={[Math.PI / 2 + degToRad(data.obliquity), 0, 0]}>
                         <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
                         <shaderMaterial
                             attach="material"

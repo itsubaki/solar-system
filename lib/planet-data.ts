@@ -2,6 +2,7 @@ export interface PlanetData {
     name: string
     radius: number
     distance: number
+    obliquity: number
     orbitalPeriod: number
     rotationPeriod: number
     color: string
@@ -16,6 +17,7 @@ export interface SatelliteData {
     name: string
     radius: number
     distance: number
+    obliquity: number
     orbitalPeriod: number
     color: string
     eccentricity?: number
@@ -46,6 +48,7 @@ export const PLANETS: PlanetData[] = [
         name: "Mercury",
         radius: 2439.7,
         distance: ASTRONOMICAL_UNIT * 0.39,
+        obliquity: 0.034,
         orbitalPeriod: 88,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
@@ -55,6 +58,7 @@ export const PLANETS: PlanetData[] = [
         name: "Venus",
         radius: 6051.8,
         distance: ASTRONOMICAL_UNIT * 0.72,
+        obliquity: 177.4,
         orbitalPeriod: 225,
         rotationPeriod: 243,
         color: "#E6C87A",
@@ -64,6 +68,7 @@ export const PLANETS: PlanetData[] = [
         name: "Earth",
         radius: 6371,
         distance: ASTRONOMICAL_UNIT * 1.00,
+        obliquity: 23.44,
         orbitalPeriod: 365,
         rotationPeriod: 1,
         color: "#6B93D6",
@@ -72,6 +77,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Moon",
                 radius: 1737.4,
                 distance: 6371 * 60.3,
+                obliquity: 6.68,
                 orbitalPeriod: 27,
                 color: "#C4C4C4"
             }
@@ -82,6 +88,7 @@ export const PLANETS: PlanetData[] = [
         name: "Mars",
         radius: 3389.5,
         distance: ASTRONOMICAL_UNIT * 1.52,
+        obliquity: 25.19,
         orbitalPeriod: 687,
         rotationPeriod: 1.03,
         color: "#C1440E",
@@ -90,6 +97,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Phobos",
                 radius: 11.267,
                 distance: 3389.5 * 2.8,
+                obliquity: 0.0,
                 orbitalPeriod: 0.3,
                 color: "#8B7355"
             },
@@ -97,6 +105,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Deimos",
                 radius: 6.2,
                 distance: 3389.5 * 6.9,
+                obliquity: 0.0,
                 orbitalPeriod: 1.3,
                 color: "#8B7355"
             }
@@ -107,6 +116,7 @@ export const PLANETS: PlanetData[] = [
         name: "Jupiter",
         radius: 69911,
         distance: ASTRONOMICAL_UNIT * 5.20,
+        obliquity: 3.13,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
@@ -115,6 +125,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Io",
                 radius: 1821.6,
                 distance: 69911 * 6.0,
+                obliquity: 0.0,
                 orbitalPeriod: 1.8,
                 color: "#E6C87A"
             },
@@ -122,6 +133,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Europa",
                 radius: 1560.8,
                 distance: 69911 * 9.6,
+                obliquity: 0.0,
                 orbitalPeriod: 3.5,
                 color: "#C4B896"
             },
@@ -129,6 +141,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Ganymede",
                 radius: 2634.1,
                 distance: 69911 * 15.3,
+                obliquity: 0.0,
                 orbitalPeriod: 7.2,
                 color: "#8B7355"
             },
@@ -136,6 +149,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Callisto",
                 radius: 2410.3,
                 distance: 69911 * 26.9,
+                obliquity: 0.0,
                 orbitalPeriod: 16.7,
                 color: "#5C4033"
             }
@@ -146,6 +160,7 @@ export const PLANETS: PlanetData[] = [
         name: "Saturn",
         radius: 58232,
         distance: ASTRONOMICAL_UNIT * 9.58,
+        obliquity: 26.73,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         color: "#F4D59E",
@@ -181,6 +196,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Titan",
                 radius: 2574.7,
                 distance: 58232 * 21,
+                obliquity: 0.0,
                 orbitalPeriod: 16,
                 color: "#E6A243"
             }
@@ -191,6 +207,7 @@ export const PLANETS: PlanetData[] = [
         name: "Uranus",
         radius: 25362,
         distance: ASTRONOMICAL_UNIT * 19.20,
+        obliquity: 97.77,
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
@@ -242,6 +259,7 @@ export const PLANETS: PlanetData[] = [
         name: "Neptune",
         radius: 24622,
         distance: ASTRONOMICAL_UNIT * 30.05,
+        obliquity: 28.32,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         color: "#5B5DDF",
@@ -250,6 +268,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Triton",
                 radius: 1353.4,
                 distance: 24622 * 14.4,
+                obliquity: 0.0,
                 orbitalPeriod: 5.9,
                 color: "#C4C4C4"
             }
