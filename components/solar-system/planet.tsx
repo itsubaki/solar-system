@@ -48,7 +48,11 @@ export function Planet({
     const [hovered, setHovered] = useState(false)
 
     const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * scale.orbitSpeed
-    const rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
+    let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
+    if (data.name === "Venus") {
+        // Venus has a retrograde rotation
+        rotationSpeed *= -1
+    }
 
     useFrame((_, delta) => {
         if (groupRef.current) {
