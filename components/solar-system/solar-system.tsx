@@ -312,8 +312,6 @@ function Scene({
                     key={planet.name}
                     data={planet}
                     initialOrbitAngle={initialOrbitAngles[planet.name]}
-                    showOrbits
-                    showLabels
                     onSelect={onSelectPlanet}
                     isSelected={selectedPlanet?.name === planet.name}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}

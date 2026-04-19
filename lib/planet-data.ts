@@ -31,7 +31,6 @@ export interface RingData {
     color: string
 }
 
-
 export const SUN_DATA = {
     name: "Sun",
     radius: 696_000,

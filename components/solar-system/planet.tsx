@@ -19,8 +19,6 @@ const ORBIT_LINE_WIDTH = 0.01
 export function Planet({
     data,
     initialOrbitAngle = 0,
-    showOrbits,
-    showLabels,
     onSelect,
     isSelected,
     focusTargetRef,
@@ -31,8 +29,6 @@ export function Planet({
     radiusScale: number
     initialOrbitAngle?: number
     orbitSpeedScale: number
-    showOrbits: boolean
-    showLabels: boolean
     onSelect: (planet: PlanetData | null) => void
     isSelected: boolean
     focusTargetRef?: FocusTargetRef | null
@@ -79,16 +75,14 @@ export function Planet({
 
     return (
         <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
-            {showOrbits && (
-                <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                    <ringGeometry args={[
-                        distance - ORBIT_LINE_WIDTH,
-                        distance + ORBIT_LINE_WIDTH,
-                        128,
-                    ]} />
-                    <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
-                </mesh>
-            )}
+            <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                <ringGeometry args={[
+                    distance - ORBIT_LINE_WIDTH,
+                    distance + ORBIT_LINE_WIDTH,
+                    128,
+                ]} />
+                <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
+            </mesh>
 
             <group position={[distance, 0, 0]}>
                 <mesh
@@ -134,7 +128,6 @@ export function Planet({
                     <Satellite
                         key={satellite.name}
                         satellite={{ ...satellite, parentPlanetName: data.name }}
-                        showLabels={showLabels}
                         scale={{
                             distance: scale.distance,
                             radius: scale.radius,
@@ -143,32 +136,31 @@ export function Planet({
                     />
                 ))} */}
 
-                {(showLabels || hovered || isSelected) && (
-                    <Html
-                        position={[0, radius + 0.02, 0]}
-                        center
-                        style={{
-                            pointerEvents: "auto",
-                            userSelect: "none",
+
+                <Html
+                    position={[0, radius + 0.02, 0]}
+                    center
+                    style={{
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                    }}
+                >
+                    <div
+                        className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                            }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isSelected) {
+                                onSelect(data);
+                            }
                         }}
                     >
-                        <div
-                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                                }`}
-                            style={{ cursor: "pointer" }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (!isSelected) {
-                                    onSelect(data);
-                                }
-                            }}
-                        >
-                            {data.name}
-                        </div>
-                    </Html>
-                )}
+                        {data.name}
+                    </div>
+                </Html>
             </group>
         </group>
     )
@@ -176,11 +168,9 @@ export function Planet({
 
 function Satellite({
     satellite,
-    showLabels,
     scale,
 }: {
     satellite: SatelliteData & { parentPlanetName: string }
-    showLabels: boolean
     scale: {
         distance: number,
         radius: number,
@@ -220,19 +210,18 @@ function Satellite({
                     />
                 </mesh>
 
-                {(showLabels || hovered) && (
-                    <Html
-                        position={[0, radius + 0.02, 0]}
-                        center
-                        style={{ pointerEvents: "none", userSelect: "none" }}
+
+                <Html
+                    position={[0, radius + 0.02, 0]}
+                    center
+                    style={{ pointerEvents: "none", userSelect: "none" }}
+                >
+                    <div
+                        className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
                     >
-                        <div
-                            className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
-                        >
-                            {satellite.name}
-                        </div>
-                    </Html>
-                )}
+                        {satellite.name}
+                    </div>
+                </Html>
             </group>
         </group>
     )
