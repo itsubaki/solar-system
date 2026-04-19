@@ -34,32 +34,32 @@ export function PlanetInfo({
             </CardHeader>
 
             <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                     {planet.description ?? ""}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
+                <div className="grid grid-cols-[3fr_7fr] gap-3 pt-2 border-t border-border">
                     <div >
                         <p className="text-[10px] text-muted-foreground">Radius</p>
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs font-medium text-foreground">
                             {planet.radius} km
                         </p>
                     </div>
                     <div >
                         <p className="text-[10px] text-muted-foreground">Distance from the Sun</p>
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs font-medium text-foreground">
                             {planet.distance} km / {(planet.distance / ASTRONOMICAL_UNIT).toFixed(2)} AU
                         </p>
                     </div>
                     <div>
                         <p className="text-[10px] text-muted-foreground">Orbital Period</p>
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs font-medium text-foreground">
                             {(planet.orbitalPeriod ?? "")} days
                         </p>
                     </div>
                     <div>
                         <p className="text-[10px] text-muted-foreground">Day Length</p>
-                        <p className="text-sm font-medium text-foreground">
+                        <p className="text-xs font-medium text-foreground">
                             {(planet.rotationPeriod ?? "")} Earth days
                         </p>
                     </div>
