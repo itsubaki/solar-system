@@ -25,10 +25,7 @@ export function Planet({
     scale,
 }: {
     data: PlanetData
-    distanceScale: number
-    radiusScale: number
     initialOrbitAngle?: number
-    orbitSpeedScale: number
     onSelect: (planet: PlanetData | null) => void
     isSelected: boolean
     focusTargetRef?: FocusTargetRef | null
