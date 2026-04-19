@@ -13,8 +13,8 @@ export function PlanetInfo({
     onClose: () => void
 }) {
     return (
-        <Card className="absolute top-6 right-6 w-72 bg-card/90 backdrop-blur-md border-border">
-            <CardHeader className="pb-2 flex flex-row items-start justify-between">
+        <Card className="absolute top-6 right-6 w-84 bg-card/90 backdrop-blur-md border-border">
+            <CardHeader className="flex flex-row items-start justify-between">
                 <div className="flex items-center gap-3">
                     <div
                         className="w-8 h-8 rounded-full shadow-lg"
@@ -39,28 +39,28 @@ export function PlanetInfo({
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
-                    <div>
-                        <p className="text-xs text-muted-foreground">Orbital Period</p>
-                        <p className="text-sm font-medium text-foreground">
-                            {(planet.orbitalPeriod ?? "")} days
-                        </p>
-                    </div>
-                    <div>
-                        <p className="text-xs text-muted-foreground">Day Length</p>
-                        <p className="text-sm font-medium text-foreground">
-                            {(planet.rotationPeriod ?? "")} Earth days
-                        </p>
-                    </div>
                     <div >
-                        <p className="text-xs text-muted-foreground">Radius</p>
+                        <p className="text-[10px] text-muted-foreground">Radius</p>
                         <p className="text-sm font-medium text-foreground">
                             {planet.radius} km
                         </p>
                     </div>
                     <div >
-                        <p className="text-xs text-muted-foreground">Astronomical Unit</p>
+                        <p className="text-[10px] text-muted-foreground">Distance from the Sun</p>
                         <p className="text-sm font-medium text-foreground">
-                            {planet.distance / ASTRONOMICAL_UNIT}
+                            {planet.distance} km / {(planet.distance / ASTRONOMICAL_UNIT).toFixed(2)} AU
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-muted-foreground">Orbital Period</p>
+                        <p className="text-sm font-medium text-foreground">
+                            {(planet.orbitalPeriod ?? "")} days
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-muted-foreground">Day Length</p>
+                        <p className="text-sm font-medium text-foreground">
+                            {(planet.rotationPeriod ?? "")} Earth days
                         </p>
                     </div>
                     {/* {planet.satellites && planet.satellites.length > 0 && (
