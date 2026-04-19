@@ -44,7 +44,7 @@ export function SimulatedClock({
             color: 'white',
             padding: '6px 16px',
             borderRadius: 8,
-            fontSize: 18,
+            fontSize: 12,
             fontFamily: 'monospace',
             letterSpacing: 1,
             pointerEvents: 'none',
