@@ -42,25 +42,25 @@ export function PlanetInfo({
                     <div >
                         <p className="text-[10px] text-muted-foreground">Radius</p>
                         <p className="text-xs font-medium text-foreground">
-                            {planet.radius} km
+                            {planet.radius.toLocaleString()} km
                         </p>
                     </div>
                     <div >
                         <p className="text-[10px] text-muted-foreground">Distance from the Sun</p>
                         <p className="text-xs font-medium text-foreground">
-                            {planet.distance} km / {(planet.distance / ASTRONOMICAL_UNIT).toFixed(2)} AU
+                            {planet.distance.toLocaleString()} km / {(planet.distance / ASTRONOMICAL_UNIT)} AU
                         </p>
                     </div>
                     <div>
                         <p className="text-[10px] text-muted-foreground">Orbital Period</p>
                         <p className="text-xs font-medium text-foreground">
-                            {(planet.orbitalPeriod ?? "")} days
+                            {(planet.orbitalPeriod.toLocaleString() ?? "")} days
                         </p>
                     </div>
                     <div>
                         <p className="text-[10px] text-muted-foreground">Day Length</p>
                         <p className="text-xs font-medium text-foreground">
-                            {(planet.rotationPeriod ?? "")} Earth days
+                            {(planet.rotationPeriod.toLocaleString() ?? "")} Earth days
                         </p>
                     </div>
                     {/* {planet.satellites && planet.satellites.length > 0 && (
