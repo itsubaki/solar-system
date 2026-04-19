@@ -8,7 +8,6 @@ import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getSatelliteOrbitAngle, degToRad } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
-import { useThree } from "@react-three/fiber";
 
 type FocusTargetRef = {
     current: Vector3 | null
@@ -43,8 +42,6 @@ export function Planet({
     const planetRef = useRef<Mesh>(null)
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
-    const { camera } = useThree(); // Access the camera object
-    const [dynamicOrbitLineWidth, setDynamicOrbitLineWidth] = useState(ORBIT_LINE_WIDTH);
 
     const orbitalSpeed = ((2 * Math.PI) / (data.orbitalPeriod * SECONDS_PER_DAY)) * scale.orbitSpeed
     let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
@@ -71,10 +68,6 @@ export function Planet({
 
             focusTargetRef.current = worldPositionRef.current.clone()
         }
-
-        // Adjust ORBIT_LINE_WIDTH based on camera zoom level
-        const zoomFactor = camera.position.length(); // Distance from the origin
-        setDynamicOrbitLineWidth(0.01 * zoomFactor * 0.1); // Scale factor for line width
     })
 
     const distance = data.distance * scale.distance
@@ -84,8 +77,8 @@ export function Planet({
         <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
             <mesh rotation={[-Math.PI / 2, 0, 0]}>
                 <ringGeometry args={[
-                    distance - dynamicOrbitLineWidth,
-                    distance + dynamicOrbitLineWidth,
+                    distance - ORBIT_LINE_WIDTH,
+                    distance + ORBIT_LINE_WIDTH,
                     128,
                 ]} />
                 <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
