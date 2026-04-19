@@ -344,38 +344,46 @@ export function SolarSystem() {
                 activeElement?.getAttribute("contenteditable") === "true";
             if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
 
-            if (event.key === "R") {
-                event.preventDefault();
-                setSelectedPlanet(null);
-                setShowPlanetInfo(false);
-            } else if (event.key === ">") {
-                event.preventDefault();
-                if (PLANETS.length === 0) return;
-                let nextIndex = 0;
-                if (selectedPlanet) {
-                    const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-                    nextIndex = (currentIndex + 1) % PLANETS.length;
-                }
+            switch (event.key) {
+                case "R":
+                    event.preventDefault();
+                    setSelectedPlanet(null);
+                    setShowPlanetInfo(false);
+                    break;
+                case ">":
+                    event.preventDefault();
+                    if (PLANETS.length === 0) return;
+                    let nextIndex = 0;
+                    if (selectedPlanet) {
+                        const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+                        nextIndex = (currentIndex + 1) % PLANETS.length;
+                    }
 
-                setSelectedPlanet(PLANETS[nextIndex]);
-                setShowPlanetInfo(true);
-            } else if (event.key === "<") {
-                event.preventDefault();
-                if (PLANETS.length === 0) return;
-                let prevIndex = PLANETS.length - 1;
-                if (selectedPlanet) {
-                    const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-                    prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
-                }
+                    setSelectedPlanet(PLANETS[nextIndex]);
+                    setShowPlanetInfo(true);
+                    break;
+                case "<":
+                    event.preventDefault();
+                    if (PLANETS.length === 0) return;
+                    let prevIndex = PLANETS.length - 1;
+                    if (selectedPlanet) {
+                        const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
+                        prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
+                    }
 
-                setSelectedPlanet(PLANETS[prevIndex]);
-                setShowPlanetInfo(true);
-            } else if (event.key === "a") {
-                event.preventDefault();
-                setOrbitSpeedIndex((prev) => Math.max(0, prev - 1));
-            } else if (event.key === "s") {
-                event.preventDefault();
-                setOrbitSpeedIndex((prev) => Math.min(ORBIT_SPEED_OPTIONS.length - 1, prev + 1));
+                    setSelectedPlanet(PLANETS[prevIndex]);
+                    setShowPlanetInfo(true);
+                    break;
+                case "a":
+                    event.preventDefault();
+                    setOrbitSpeedIndex((prev) => Math.max(0, prev - 1));
+                    break;
+                case "s":
+                    event.preventDefault();
+                    setOrbitSpeedIndex((prev) => Math.min(ORBIT_SPEED_OPTIONS.length - 1, prev + 1));
+                    break;
+                default:
+                    break;
             }
         };
 

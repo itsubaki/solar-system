@@ -136,7 +136,6 @@ export function Planet({
                     />
                 ))} */}
 
-
                 <Html
                     position={[0, radius + 0.02, 0]}
                     center
