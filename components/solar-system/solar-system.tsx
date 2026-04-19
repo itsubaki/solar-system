@@ -453,7 +453,7 @@ export function SolarSystem() {
                     Solar System
                 </h1>
 
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                     Planet radius ×1000 (volume ×10<sup>9</sup>)
                 </p>
             </div>
