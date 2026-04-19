@@ -178,8 +178,7 @@ function InvertedOrbitControls({
 
             lastX = event.clientX
             lastY = event.clientY
-
-            orbitByPixels(deltaX, deltaY)
+            orbitByPixels(deltaX, -deltaY)
         }
 
         const onKeyDown = (event: KeyboardEvent) => {
