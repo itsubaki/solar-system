@@ -41,45 +41,7 @@ const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
 const PLANET_SIZE_SCALE = 1000
 
-function ControlPanel({
-    orbitSpeedIndex,
-    setOrbitSpeedIndex,
-}: {
-    orbitSpeedIndex: number
-    setOrbitSpeedIndex: (value: number) => void
-}) {
-    const currentOption = ORBIT_SPEED_OPTIONS[orbitSpeedIndex]
-
-    return (
-        <div
-            className="absolute z-30 w-62 rounded-2xl border border-border bg-card/85 p-4 shadow-2xl backdrop-blur-md"
-            style={{
-                right: "calc(env(safe-area-inset-right) + 1rem)",
-                bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
-            }}
-        >
-            <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-semibold text-card-foreground">Orbit Speed</p>
-                <span className="rounded-full bg-primary/15 px-2 py-1 text-[11px] font-medium text-primary">
-                    {currentOption.label}
-                </span>
-            </div>
-
-            <input
-                aria-label="Orbit speed"
-                className="mt-4 w-full accent-primary"
-                max={ORBIT_SPEED_OPTIONS.length - 1}
-                min={0}
-                onChange={(event) => setOrbitSpeedIndex(Number(event.target.value))}
-                step={1}
-                type="range"
-                value={orbitSpeedIndex}
-            />
-        </div>
-    )
-}
-
-function InvertedOrbitControls({
+function PlanetOrbitControls({
     focusTarget,
 }: {
     focusTarget: FocusTargetRef,
@@ -294,7 +256,7 @@ function Scene({
                 onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
             />
 
-            <InvertedOrbitControls focusTarget={focusedPlanetPositionRef} />
+            <PlanetOrbitControls focusTarget={focusedPlanetPositionRef} />
 
             <Stars />
 
@@ -419,6 +381,21 @@ export function SolarSystem() {
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
+                className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
+                style={{
+                    top: "calc(env(safe-area-inset-top) + 1.5rem)",
+                }}
+            >
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                    Solar System
+                </h1>
+
+                <p className="text-xs text-muted-foreground mt-1">
+                    Planet radius x1000 (volume x10<sup>9</sup>)
+                </p>
+            </div>
+
+            <div
                 className="absolute left-0 top-0 z-50 m-4 rounded-xl bg-transparent p-4 text-xs text-card-foreground pointer-events-none select-none hidden sm:block"
                 style={{ maxWidth: 260 }}
             >
@@ -485,34 +462,24 @@ export function SolarSystem() {
                 </div>
             )}
 
-            <ControlPanel
-                orbitSpeedIndex={orbitSpeedIndex}
-                setOrbitSpeedIndex={setOrbitSpeedIndex}
-            />
-
             <div
-                className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
-                style={{
-                    top: "calc(env(safe-area-inset-top) + 1.5rem)",
-                }}
-            >
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                    Solar System
-                </h1>
-
-                <p className="text-xs text-muted-foreground mt-1">
-                    Planet radius x1000 (volume x10<sup>9</sup>)
-                </p>
-            </div>
-
-            <div
-                className="absolute z-40"
+                className="absolute z-40 flex items-center gap-2"
                 style={{
                     right: "calc(env(safe-area-inset-right) + 1.5rem)",
-                    bottom: "calc(env(safe-area-inset-bottom) + 7.5rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
                 }}
             >
                 <Clock orbitSpeedScale={orbitSpeedScale} />
+
+                <button
+                    type="button"
+                    className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-medium text-primary transition hover:bg-primary/30 focus:outline-none"
+                    style={{ cursor: "pointer", minWidth: "100px" }}
+                    aria-label="Change orbit speed"
+                    onClick={() => setOrbitSpeedIndex((prev) => (prev + 1) % ORBIT_SPEED_OPTIONS.length)}
+                >
+                    {ORBIT_SPEED_OPTIONS[orbitSpeedIndex].label}
+                </button>
             </div>
         </div>
     )
