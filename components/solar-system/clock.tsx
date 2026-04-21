@@ -42,7 +42,7 @@ export function Clock({
             position: 'relative',
             background: 'rgba(0,0,0,0.5)',
             color: 'white',
-            padding: '6px 16px',
+            padding: '6px',
             borderRadius: 8,
             fontSize: 12,
             fontFamily: 'monospace',

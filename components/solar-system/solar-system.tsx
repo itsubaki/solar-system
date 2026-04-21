@@ -463,7 +463,7 @@ export function SolarSystem() {
             )}
 
             <div
-                className="absolute z-40 flex items-center gap-2"
+                className="absolute z-40 flex flex-col items-end gap-1"
                 style={{
                     right: "calc(env(safe-area-inset-right) + 1.5rem)",
                     bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
@@ -474,7 +474,7 @@ export function SolarSystem() {
                 <button
                     type="button"
                     className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-medium text-primary transition hover:bg-primary/30 focus:outline-none"
-                    style={{ cursor: "pointer", minWidth: "100px" }}
+                    style={{ cursor: "pointer", minWidth: "100px", marginRight: "6px" }}
                     aria-label="Change orbit speed"
                     onClick={() => setOrbitSpeedIndex((prev) => (prev + 1) % ORBIT_SPEED_OPTIONS.length)}
                 >
