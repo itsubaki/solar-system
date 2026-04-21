@@ -31,6 +31,13 @@ const ORBIT_SPEED_OPTIONS = [
     { label: "1 year / sec", multiplier: 31536000 },
 ] as const
 
+const PLANET_SCALE_OPTIONS = [
+    { scale: 1, label: "x1", sup: "0" },
+    { scale: 10, label: "x10", sup: "3" },
+    { scale: 100, label: "x100", sup: "6" },
+    { scale: 1000, label: "x1,000", sup: "9" },
+] as const
+
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
 const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
@@ -39,7 +46,6 @@ const MIN_CAMERA_DISTANCE = 0.15
 const MAX_CAMERA_DISTANCE = 80
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
-const PLANET_SIZE_SCALE = 1000
 
 function PlanetOrbitControls({
     focusTarget,
@@ -221,10 +227,16 @@ function Scene({
     orbitSpeedScale,
     selectedPlanet,
     onSelectPlanet,
+    planetScale,
+    planetScaleLabel,
+    planetScaleSup,
 }: {
     orbitSpeedScale: number
     selectedPlanet: PlanetData | null
     onSelectPlanet: (planet: PlanetData | null) => void
+    planetScale: number
+    planetScaleLabel: string
+    planetScaleSup: string
 }) {
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
     const initialOrbitAngles = useMemo(
@@ -278,7 +290,7 @@ function Scene({
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
-                        radius: 1 / ASTRONOMICAL_UNIT * PLANET_SIZE_SCALE,
+                        radius: 1 / ASTRONOMICAL_UNIT * planetScale,
                         orbitSpeed: orbitSpeedScale,
                     }}
                 />
@@ -291,9 +303,13 @@ function Scene({
 
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
+    const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
     const [showPlanetInfo, setShowPlanetInfo] = useState(false)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
+    const planetScale = PLANET_SCALE_OPTIONS[planetScaleIndex].scale
+    const planetScaleLabel = PLANET_SCALE_OPTIONS[planetScaleIndex].label
+    const planetScaleSup = PLANET_SCALE_OPTIONS[planetScaleIndex].sup
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -371,7 +387,7 @@ export function SolarSystem() {
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
             <div
-                className="absolute left-1/2 z-10 -translate-x-1/2 text-center pointer-events-none"
+                className="absolute left-1/2 z-10 -translate-x-1/2 text-center select-none"
                 style={{
                     top: "calc(env(safe-area-inset-top) + 1.5rem)",
                 }}
@@ -380,9 +396,15 @@ export function SolarSystem() {
                     Solar System
                 </h1>
 
-                <p className="text-xs text-muted-foreground mt-1">
-                    Planet radius x1000 (volume x10<sup>9</sup>)
-                </p>
+                <button
+                    type="button"
+                    className="text-xs text-muted-foreground mt-1 bg-transparent border-none p-0 m-0 cursor-pointer font-normal select-none"
+                    style={{ outline: "none" }}
+                    aria-label="Change planet scale"
+                    onClick={() => setPlanetScaleIndex((prev) => (prev + 1) % PLANET_SCALE_OPTIONS.length)}
+                >
+                    Planet radius {planetScaleLabel} (volume x10<sup>{planetScaleSup}</sup>)
+                </button>
             </div>
 
             <div
@@ -448,6 +470,9 @@ export function SolarSystem() {
                                     setShowPlanetInfo(!!planet);
                                 }
                             }}
+                            planetScale={planetScale}
+                            planetScaleLabel={planetScaleLabel}
+                            planetScaleSup={planetScaleSup}
                         />
                     </Suspense>
                 </Canvas>
