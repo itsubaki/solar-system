@@ -319,9 +319,7 @@ export function SolarSystem() {
                         const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
                         nextIndex = (currentIndex + 1) % PLANETS.length;
                     }
-
                     setSelectedPlanet(PLANETS[nextIndex]);
-                    setShowPlanetInfo(true);
                     break;
                 case "<":
                     event.preventDefault();
@@ -331,9 +329,7 @@ export function SolarSystem() {
                         const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
                         prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
                     }
-
                     setSelectedPlanet(PLANETS[prevIndex]);
-                    setShowPlanetInfo(true);
                     break;
                 case "a":
                     event.preventDefault();
@@ -352,10 +348,6 @@ export function SolarSystem() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [selectedPlanet]);
 
-    useEffect(() => {
-        if (selectedPlanet) setShowPlanetInfo(true)
-    }, [selectedPlanet])
-
     const selectNextPlanet = () => {
         if (PLANETS.length === 0) return;
         let nextIndex = 0;
@@ -364,7 +356,6 @@ export function SolarSystem() {
             nextIndex = (currentIndex + 1) % PLANETS.length;
         }
         setSelectedPlanet(PLANETS[nextIndex]);
-        setShowPlanetInfo(true);
     };
 
     const selectPrevPlanet = () => {
@@ -375,7 +366,6 @@ export function SolarSystem() {
             prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
         }
         setSelectedPlanet(PLANETS[prevIndex]);
-        setShowPlanetInfo(true);
     };
 
     return (
