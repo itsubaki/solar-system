@@ -445,8 +445,18 @@ export function SolarSystem() {
                             orbitSpeedScale={orbitSpeedScale}
                             selectedPlanet={selectedPlanet}
                             onSelectPlanet={(planet) => {
-                                setSelectedPlanet(planet)
-                                if (planet) setShowPlanetInfo(true)
+                                if (planet && selectedPlanet && planet.name === selectedPlanet.name) {
+                                    setShowPlanetInfo((prev) => {
+                                        if (prev) {
+                                            return false;
+                                        } else {
+                                            return true;
+                                        }
+                                    });
+                                } else {
+                                    setSelectedPlanet(planet);
+                                    setShowPlanetInfo(!!planet);
+                                }
                             }}
                         />
                     </Suspense>

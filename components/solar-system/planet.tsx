@@ -87,9 +87,7 @@ export function Planet({
                     onPointerOver={() => setHovered(true)}
                     onPointerOut={() => setHovered(false)}
                     onClick={() => {
-                        if (!isSelected) {
-                            onSelect(data)
-                        }
+                        onSelect(data)
                     }}
                 >
                     <sphereGeometry args={[radius, 32, 32]} />
@@ -149,9 +147,7 @@ export function Planet({
                         style={{ cursor: "pointer" }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            if (!isSelected) {
-                                onSelect(data);
-                            }
+                            onSelect(data);
                         }}
                     >
                         {data.name}
