@@ -31,6 +31,8 @@ export interface RingData {
     color: string
 }
 
+export const ASTRONOMICAL_UNIT = 149_600_000 // km
+
 export const SUN_DATA = {
     name: "Sun",
     radius: 696_000,
@@ -39,8 +41,6 @@ export const SUN_DATA = {
     emissiveIntensity: 2,
     description: "The Sun is a G-type main-sequence star at the center of our Solar System."
 }
-
-export const ASTRONOMICAL_UNIT = 149_600_000 // km
 
 export const PLANETS: PlanetData[] = [
     {
