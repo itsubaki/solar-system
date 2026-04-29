@@ -354,6 +354,14 @@ export function SolarSystem() {
                     event.preventDefault();
                     setOrbitSpeedIndex((prev) => Math.min(ORBIT_SPEED_OPTIONS.length - 1, prev + 1));
                     break;
+                case "z":
+                    event.preventDefault();
+                    setPlanetScaleIndex((prev) => Math.max(0, prev - 1));
+                    break;
+                case "x":
+                    event.preventDefault();
+                    setPlanetScaleIndex((prev) => Math.min(PLANET_SCALE_OPTIONS.length - 1, prev + 1));
+                    break;
                 default:
                     break;
             }
@@ -417,6 +425,7 @@ export function SolarSystem() {
                     <li><b>+</b> / <b>-</b>: Zoom in / out</li>
                     <li><b>&lt;</b> / <b>&gt;</b>: Previous / Next planet</li>
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
+                    <li><b>z</b> / <b>x</b>: Scale planet radius</li>
                 </ul>
             </div>
 
