@@ -55,9 +55,9 @@ function AxialTiltIndicator({
             <mesh>
                 <cylinderGeometry args={[axisRadius, axisRadius, axisLength, 12]} />
                 <meshBasicMaterial
-                    color={highlighted ? "#ffffff" : "#cbd5e1"}
+                    color={highlighted ? "#dbeafe" : "#94a3b8"}
                     transparent
-                    opacity={highlighted ? 0.95 : 0.8}
+                    opacity={highlighted ? 0.45 : 0.22}
                     depthWrite={false}
                 />
             </mesh>
