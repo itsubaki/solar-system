@@ -5,11 +5,14 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
 import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
+import { PROBES, type ProbeData } from "@/lib/probe-data"
 import { Clock } from "./clock"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
+import { Probe } from "./probe"
 import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
+import { ProbeInfo } from "./probe-info"
 
 type OrbitControlsRef = {
     target: Vector3
@@ -231,12 +234,18 @@ function PlanetOrbitControls({
 
 function Scene({
     selectedPlanet,
+    selectedProbe,
+    showProbes,
     onSelectPlanet,
+    onSelectProbe,
     planetScaleOption,
     simTimeRef,
 }: {
     selectedPlanet: PlanetData | null
+    selectedProbe: ProbeData | null
+    showProbes: boolean
     onSelectPlanet: (planet: PlanetData | null) => void
+    onSelectProbe: (probe: ProbeData | null) => void
     planetScaleOption: PlanetScaleOption
     simTimeRef: { current: Date }
 }) {
@@ -254,7 +263,7 @@ function Scene({
     })
 
     useEffect(() => {
-        if (selectedPlanet) {
+        if (selectedPlanet || selectedProbe) {
             return
         }
 
@@ -264,7 +273,7 @@ function Scene({
         }
 
         focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
-    }, [selectedPlanet])
+    }, [selectedPlanet, selectedProbe])
 
     return (
         <>
@@ -280,7 +289,10 @@ function Scene({
             <Stars />
 
             <Sun
-                onSelect={() => onSelectPlanet(null)}
+                onSelect={() => {
+                    onSelectPlanet(null)
+                    onSelectProbe(null)
+                }}
                 focusTargetRef={focusedPlanetPositionRef}
                 scale={{
                     radius: 1 / ASTRONOMICAL_UNIT,
@@ -303,6 +315,21 @@ function Scene({
                 />
             ))}
 
+            {showProbes && PROBES.map((probe) => (
+                <Probe
+                    key={probe.name}
+                    data={probe}
+                    onSelect={onSelectProbe}
+                    isSelected={selectedProbe?.name === probe.name}
+                    focusTargetRef={selectedProbe?.name === probe.name ? focusedPlanetPositionRef : null}
+                    simTimeRef={simTimeRef}
+                    scale={{
+                        distance: 1 / ASTRONOMICAL_UNIT,
+                        radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
+                    }}
+                />
+            ))}
+
             <ambientLight intensity={0.05} />
         </>
     )
@@ -311,7 +338,9 @@ function Scene({
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
+    const [showProbes, setShowProbes] = useState(false)
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
+    const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
     const [showPlanetInfo, setShowPlanetInfo] = useState(false)
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
@@ -361,6 +390,7 @@ export function SolarSystem() {
                 case "R":
                     event.preventDefault();
                     setSelectedPlanet(null);
+                    setSelectedProbe(null);
                     setShowPlanetInfo(false);
                     break;
                 case ">":
@@ -398,6 +428,18 @@ export function SolarSystem() {
                 case "x":
                     event.preventDefault();
                     setPlanetScaleIndex((prev) => Math.min(PLANET_SCALE_OPTIONS.length - 1, prev + 1));
+                    break;
+                case "v":
+                case "V":
+                    event.preventDefault();
+                    setShowProbes((prev) => {
+                        const next = !prev;
+                        if (!next) {
+                            setSelectedProbe(null);
+                            setShowPlanetInfo(false);
+                        }
+                        return next;
+                    });
                     break;
                 default:
                     break;
@@ -463,6 +505,7 @@ export function SolarSystem() {
                     <li><b>&lt;</b> / <b>&gt;</b>: Previous / Next planet</li>
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                     <li><b>z</b> / <b>x</b>: Scale planet radius</li>
+                    <li><b>v</b>: Show / hide Voyager probes</li>
                 </ul>
             </div>
 
@@ -500,6 +543,8 @@ export function SolarSystem() {
                     <Suspense fallback={null}>
                         <Scene
                             selectedPlanet={selectedPlanet}
+                            selectedProbe={selectedProbe}
+                            showProbes={showProbes}
                             onSelectPlanet={(planet) => {
                                 if (planet && selectedPlanet && planet.name === selectedPlanet.name) {
                                     setShowPlanetInfo((prev) => {
@@ -511,7 +556,23 @@ export function SolarSystem() {
                                     });
                                 } else {
                                     setSelectedPlanet(planet);
+                                    setSelectedProbe(null);
                                     setShowPlanetInfo(!!planet);
+                                }
+                            }}
+                            onSelectProbe={(probe) => {
+                                if (probe && selectedProbe && probe.name === selectedProbe.name) {
+                                    setShowPlanetInfo((prev) => {
+                                        if (prev) {
+                                            return false;
+                                        } else {
+                                            return true;
+                                        }
+                                    });
+                                } else {
+                                    setSelectedProbe(probe);
+                                    setSelectedPlanet(null);
+                                    setShowPlanetInfo(!!probe);
                                 }
                             }}
                             planetScaleOption={planetScaleOption}
@@ -525,6 +586,15 @@ export function SolarSystem() {
                 <div className="relative z-20">
                     <PlanetInfo
                         planet={selectedPlanet}
+                        onClose={() => setShowPlanetInfo(false)}
+                    />
+                </div>
+            )}
+
+            {selectedProbe && showPlanetInfo && (
+                <div className="relative z-20">
+                    <ProbeInfo
+                        probe={selectedProbe}
                         onClose={() => setShowPlanetInfo(false)}
                     />
                 </div>
