@@ -36,6 +36,9 @@ export interface RingData {
     innerRadius: number
     outerRadius: number
     color: string
+    outerColor?: string
+    innerAlpha?: number
+    outerAlpha?: number
 }
 
 export const ASTRONOMICAL_UNIT = 149_600_000 // km
@@ -316,46 +319,112 @@ export const PLANETS: PlanetData[] = [
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
+        // Radii follow the NASA PDS Ring-Moon Systems Node table for Uranus's named rings.
+        // Ring order and broad color families follow NASA's Uranus facts page.
         rings: [
             {
-                innerRadius: 51149,
-                outerRadius: 51710,
-                color: "#B5E3E3"
+                innerRadius: 37850,
+                outerRadius: 41350,
+                color: "#5d676d",
+                outerColor: "#8b989d",
+                innerAlpha: 0.32,
+                outerAlpha: 0.06
             },
             {
-                innerRadius: 47176,
-                outerRadius: 47462,
-                color: "#A0C8C8"
+                innerRadius: 41837.235,
+                outerRadius: 41838.765,
+                color: "#7c858a",
+                outerColor: "#a2adb2",
+                innerAlpha: 0.72,
+                outerAlpha: 0.18
             },
             {
-                innerRadius: 45619,
-                outerRadius: 45929,
-                color: "#7FC7C7"
+                innerRadius: 42232.86,
+                outerRadius: 42235.14,
+                color: "#7e888d",
+                outerColor: "#a7b1b5",
+                innerAlpha: 0.74,
+                outerAlpha: 0.2
             },
             {
-                innerRadius: 44718,
-                outerRadius: 44918,
-                color: "#E3D7F7"
+                innerRadius: 42569.835,
+                outerRadius: 42572.165,
+                color: "#7b8489",
+                outerColor: "#a1abb0",
+                innerAlpha: 0.76,
+                outerAlpha: 0.22
             },
             {
-                innerRadius: 41837,
-                outerRadius: 42067,
-                color: "#D7F7E3"
+                innerRadius: 44713.77,
+                outerRadius: 44722.23,
+                color: "#8e979b",
+                outerColor: "#b9c2c6",
+                innerAlpha: 0.8,
+                outerAlpha: 0.24
             },
             {
-                innerRadius: 41837,
-                outerRadius: 41939,
-                color: "#F7E3D7"
+                innerRadius: 45656.255,
+                outerRadius: 45665.745,
+                color: "#8a9398",
+                outerColor: "#b6c0c5",
+                innerAlpha: 0.82,
+                outerAlpha: 0.26
             },
             {
-                innerRadius: 41939,
-                outerRadius: 42067,
-                color: "#E3F7D7"
+                innerRadius: 47175.2,
+                outerRadius: 47176.8,
+                color: "#899398",
+                outerColor: "#b9c5c9",
+                innerAlpha: 0.78,
+                outerAlpha: 0.22
             },
             {
-                innerRadius: 42067,
-                outerRadius: 42190,
-                color: "#D7E3F7"
+                innerRadius: 47625.925,
+                outerRadius: 47628.075,
+                color: "#879095",
+                outerColor: "#b3bec3",
+                innerAlpha: 0.74,
+                outerAlpha: 0.18
+            },
+            {
+                innerRadius: 48297.7,
+                outerRadius: 48302.3,
+                color: "#8f989d",
+                outerColor: "#bcc6ca",
+                innerAlpha: 0.74,
+                outerAlpha: 0.18
+            },
+            {
+                innerRadius: 50022.85,
+                outerRadius: 50025.15,
+                color: "#93a0a6",
+                outerColor: "#c6d2d7",
+                innerAlpha: 0.76,
+                outerAlpha: 0.2
+            },
+            {
+                innerRadius: 51119.95,
+                outerRadius: 51178.05,
+                color: "#d4dee1",
+                outerColor: "#f1f6f6",
+                innerAlpha: 0.88,
+                outerAlpha: 0.34
+            },
+            {
+                innerRadius: 65400,
+                outerRadius: 69200,
+                color: "#9a6f63",
+                outerColor: "#caa18d",
+                innerAlpha: 0.26,
+                outerAlpha: 0.04
+            },
+            {
+                innerRadius: 89200,
+                outerRadius: 106200,
+                color: "#7aa6bd",
+                outerColor: "#c5deea",
+                innerAlpha: 0.18,
+                outerAlpha: 0.02
             }
         ],
         description: "An ice giant that rotates on its side."

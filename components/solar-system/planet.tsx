@@ -121,9 +121,9 @@ export function Planet({
     const ringUniforms = useMemo(
         () => data.rings?.map((ring) => ({
             innerColor: { value: new Color(ring.color) },
-            outerColor: { value: new Color("white") },
-            innerAlpha: { value: 0.7 },
-            outerAlpha: { value: 0.1 },
+            outerColor: { value: new Color(ring.outerColor ?? "white") },
+            innerAlpha: { value: ring.innerAlpha ?? 0.7 },
+            outerAlpha: { value: ring.outerAlpha ?? 0.1 },
         })) ?? [],
         [data.rings]
     )
