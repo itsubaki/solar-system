@@ -119,7 +119,7 @@ export function Planet({
     return (
         <group rotation={[0, longitudeOfAscendingNode, 0]}>
             <group rotation={[0, 0, orbitalInclination]}>
-                <OrbitLine points={orbitPoints} color="#8fd3ff" />
+                <OrbitLine points={orbitPoints} color={data.color} />
 
                 <group
                     ref={groupRef}
