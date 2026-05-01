@@ -244,7 +244,7 @@ export function Planet({
                     ))} */}
 
                     <Html
-                        position={[0, radius + 0.02, 0]}
+                        position={[0, radius + 0.1, 0]}
                         center
                         style={{
                             pointerEvents: "auto",
