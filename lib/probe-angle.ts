@@ -7,31 +7,33 @@ type ProbeTrajectoryState = {
     angle: number
     radiusScale: number
     x: number
+    y: number
     z: number
 }
 
 export function getProbeTrajectoryPosition(probe: ProbeData, at = new Date()): ProbeTrajectoryState {
     const {
-        startDate,
+        referenceDate,
         startDistanceAu,
+        referenceDistanceAu,
         speedAuPerYear,
         maxDistanceAu,
-        headingDegrees = 0,
     } = probe.escapeTrajectory
-    const elapsedDays = (at.getTime() - Date.parse(startDate)) / MS_PER_DAY
+    const elapsedDays = (at.getTime() - Date.parse(referenceDate)) / MS_PER_DAY
     const distanceAu = Math.min(
         maxDistanceAu,
-        Math.max(startDistanceAu, startDistanceAu + (elapsedDays / 365.25) * speedAuPerYear)
+        Math.max(startDistanceAu, referenceDistanceAu + (elapsedDays / 365.25) * speedAuPerYear)
     )
     const baselineDistanceAu = probe.distance / KM_PER_AU
-    const heading = degToRad(headingDegrees)
     const radiusScale = distanceAu / baselineDistanceAu
+    const direction = getProbeDirection(probe)
 
     return {
-        angle: normalizeRadians(-heading),
+        angle: normalizeRadians(Math.atan2(-direction.z, direction.x)),
         radiusScale,
-        x: radiusScale * Math.cos(heading),
-        z: -radiusScale * Math.sin(heading),
+        x: radiusScale * direction.x,
+        y: radiusScale * direction.y,
+        z: radiusScale * direction.z,
     }
 }
 
@@ -39,11 +41,10 @@ export function getProbeTrajectoryPath(probe: ProbeData, segments = 256) {
     const {
         startDistanceAu,
         maxDistanceAu,
-        headingDegrees = 0,
     } = probe.escapeTrajectory
     const baselineDistanceAu = probe.distance / KM_PER_AU
-    const heading = degToRad(headingDegrees)
-    const points: Array<{ x: number; z: number }> = []
+    const direction = getProbeDirection(probe)
+    const points: Array<{ x: number; y: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
         const progress = i / segments
@@ -51,12 +52,25 @@ export function getProbeTrajectoryPath(probe: ProbeData, segments = 256) {
         const normalizedDistance = distanceAu / baselineDistanceAu
 
         points.push({
-            x: normalizedDistance * Math.cos(heading),
-            z: -normalizedDistance * Math.sin(heading),
+            x: normalizedDistance * direction.x,
+            y: normalizedDistance * direction.y,
+            z: normalizedDistance * direction.z,
         })
     }
 
     return points
+}
+
+function getProbeDirection(probe: ProbeData) {
+    const longitude = degToRad(probe.direction.eclipticLongitudeDegrees)
+    const latitude = degToRad(probe.direction.eclipticLatitudeDegrees)
+    const projectedRadius = Math.cos(latitude)
+
+    return {
+        x: projectedRadius * Math.cos(longitude),
+        y: Math.sin(latitude),
+        z: -projectedRadius * Math.sin(longitude),
+    }
 }
 
 function degToRad(degrees: number) {

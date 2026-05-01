@@ -2,10 +2,17 @@ import { ASTRONOMICAL_UNIT, type PoleDirection } from "./planet-data"
 
 export interface EscapeTrajectoryData {
     startDate: string
+    referenceDate: string
     startDistanceAu: number
+    referenceDistanceAu: number
     speedAuPerYear: number
     maxDistanceAu: number
-    headingDegrees?: number
+}
+
+export interface ProbeDirectionData {
+    eclipticLongitudeDegrees: number
+    eclipticLatitudeDegrees: number
+    source: string
 }
 
 export interface ProbeData {
@@ -14,8 +21,7 @@ export interface ProbeData {
     displayRadius: number
     distance: number
     poleDirection: PoleDirection
-    orbitalInclination: number
-    longitudeOfAscendingNode: number
+    direction: ProbeDirectionData
     color: string
     emissive?: string
     emissiveIntensity?: number
@@ -28,17 +34,22 @@ export const PROBES: ProbeData[] = [
         name: "Voyager 1",
         radius: 0.0018,
         displayRadius: 5000,
-        distance: ASTRONOMICAL_UNIT * 166,
+        distance: ASTRONOMICAL_UNIT * 170.488,
         poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 35,
-        longitudeOfAscendingNode: 255,
+        direction: {
+            eclipticLongitudeDegrees: 257.0963,
+            eclipticLatitudeDegrees: 35.3257,
+            source: "Heavens-Above sky coordinates, 2026-05-01 reference"
+        },
         color: "#9FD8FF",
         emissive: "#E6F6FF",
         emissiveIntensity: 0.8,
         escapeTrajectory: {
             startDate: "1977-09-05T12:56:00Z",
+            referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
-            speedAuPerYear: 3.39,
+            referenceDistanceAu: 170.488,
+            speedAuPerYear: 3.569,
             maxDistanceAu: 190,
         },
         description: "NASA's farthest spacecraft, launched in 1977 and now moving through interstellar space beyond the heliosphere."
@@ -47,17 +58,22 @@ export const PROBES: ProbeData[] = [
         name: "Voyager 2",
         radius: 0.0018,
         displayRadius: 5000,
-        distance: ASTRONOMICAL_UNIT * 139,
+        distance: ASTRONOMICAL_UNIT * 142.717,
         poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: -31,
-        longitudeOfAscendingNode: 289,
+        direction: {
+            eclipticLongitudeDegrees: 290.4529,
+            eclipticLatitudeDegrees: -38.498,
+            source: "Heavens-Above sky coordinates, 2026-05-01 reference"
+        },
         color: "#FFE3A1",
         emissive: "#FFF7DD",
         emissiveIntensity: 0.8,
         escapeTrajectory: {
             startDate: "1977-08-20T14:29:00Z",
+            referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
-            speedAuPerYear: 2.84,
+            referenceDistanceAu: 142.717,
+            speedAuPerYear: 3.219,
             maxDistanceAu: 160,
         },
         description: "The only probe to visit Uranus and Neptune, continuing outward on an interstellar mission after its 1977 launch."

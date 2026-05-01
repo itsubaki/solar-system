@@ -8,6 +8,7 @@ type CometOrbitState = {
     angle: number
     radiusScale: number
     x: number
+    y: number
     z: number
 }
 
@@ -22,39 +23,81 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
         Math.sqrt(1 + orbitalElements.eccentricity) * Math.sin(eccentricAnomaly / 2),
         Math.sqrt(1 - orbitalElements.eccentricity) * Math.cos(eccentricAnomaly / 2)
     )
-    const longitude = trueAnomaly + degToRad(orbitalElements.argumentOfPerihelion)
     const radiusAu = semiMajorAxisAu * (1 - orbitalElements.eccentricity * Math.cos(eccentricAnomaly))
     const baselineDistanceAu = comet.distance / KM_PER_AU
     const radiusScale = radiusAu / baselineDistanceAu
+    const worldPosition = getWorldOrbitPoint(
+        radiusScale,
+        trueAnomaly,
+        degToRad(orbitalElements.argumentOfPerihelion),
+        degToRad(comet.longitudeOfAscendingNode),
+        degToRad(comet.orbitalInclination)
+    )
 
     return {
-        angle: normalizeRadians(-longitude),
+        angle: normalizeRadians(Math.atan2(-worldPosition.z, worldPosition.x)),
         radiusScale,
-        x: radiusScale * Math.cos(longitude),
-        z: -radiusScale * Math.sin(longitude),
+        x: worldPosition.x,
+        y: worldPosition.y,
+        z: worldPosition.z,
     }
 }
 
 export function getCometOrbitPath(comet: CometData, segments = 512) {
     const { orbitalElements } = comet
     const semiMajorAxisAu = orbitalElements.perihelionDistanceAu / (1 - orbitalElements.eccentricity)
-    const semiMinorAxisAu = semiMajorAxisAu * Math.sqrt(1 - orbitalElements.eccentricity * orbitalElements.eccentricity)
-    const perihelionAngle = degToRad(orbitalElements.argumentOfPerihelion)
     const baselineDistanceAu = comet.distance / KM_PER_AU
-    const points: Array<{ x: number; z: number }> = []
+    const argumentOfPerihelion = degToRad(orbitalElements.argumentOfPerihelion)
+    const longitudeOfAscendingNode = degToRad(comet.longitudeOfAscendingNode)
+    const orbitalInclination = degToRad(comet.orbitalInclination)
+    const points: Array<{ x: number; y: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
         const eccentricAnomaly = (FULL_TURN * i) / segments
-        const localXAu = semiMajorAxisAu * (Math.cos(eccentricAnomaly) - orbitalElements.eccentricity)
-        const localZAu = semiMinorAxisAu * Math.sin(eccentricAnomaly)
+        const trueAnomaly = 2 * Math.atan2(
+            Math.sqrt(1 + orbitalElements.eccentricity) * Math.sin(eccentricAnomaly / 2),
+            Math.sqrt(1 - orbitalElements.eccentricity) * Math.cos(eccentricAnomaly / 2)
+        )
+        const radiusAu = semiMajorAxisAu * (1 - orbitalElements.eccentricity * Math.cos(eccentricAnomaly))
+        const radiusScale = radiusAu / baselineDistanceAu
 
-        points.push({
-            x: (localXAu * Math.cos(perihelionAngle) - localZAu * Math.sin(perihelionAngle)) / baselineDistanceAu,
-            z: -(localXAu * Math.sin(perihelionAngle) + localZAu * Math.cos(perihelionAngle)) / baselineDistanceAu,
-        })
+        points.push(
+            getWorldOrbitPoint(
+                radiusScale,
+                trueAnomaly,
+                argumentOfPerihelion,
+                longitudeOfAscendingNode,
+                orbitalInclination
+            )
+        )
     }
 
     return points
+}
+
+function getWorldOrbitPoint(
+    radiusScale: number,
+    trueAnomaly: number,
+    argumentOfPerihelion: number,
+    longitudeOfAscendingNode: number,
+    orbitalInclination: number
+) {
+    const argumentOfLatitude = trueAnomaly + argumentOfPerihelion
+    const standardX = radiusScale * (
+        Math.cos(longitudeOfAscendingNode) * Math.cos(argumentOfLatitude) -
+        Math.sin(longitudeOfAscendingNode) * Math.sin(argumentOfLatitude) * Math.cos(orbitalInclination)
+    )
+    const standardY = radiusScale * (
+        Math.sin(longitudeOfAscendingNode) * Math.cos(argumentOfLatitude) +
+        Math.cos(longitudeOfAscendingNode) * Math.sin(argumentOfLatitude) * Math.cos(orbitalInclination)
+    )
+    const standardZ = radiusScale * Math.sin(argumentOfLatitude) * Math.sin(orbitalInclination)
+
+    return {
+        x: standardX,
+        y: standardZ,
+        z: -standardY,
+    }
 }
 
 function degToRad(degrees: number) {

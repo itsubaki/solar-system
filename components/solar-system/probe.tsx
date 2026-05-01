@@ -61,13 +61,11 @@ export function Probe({
     const [hovered, setHovered] = useState(false)
     const distance = data.distance * scale.distance
     const radius = data.displayRadius * scale.radius
-    const orbitalInclination = degToRad(data.orbitalInclination)
-    const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
     const initialTrajectoryPosition = useMemo(() => getProbeTrajectoryPosition(data), [data])
     const trajectoryPoints = useMemo(
         () => getProbeTrajectoryPath(data).map((point) => [
             distance * point.x,
-            0,
+            distance * point.y,
             distance * point.z,
         ] as [number, number, number]),
         [data, distance]
@@ -78,7 +76,7 @@ export function Probe({
             const trajectoryPosition = getProbeTrajectoryPosition(data, simTimeRef.current)
             groupRef.current.position.set(
                 distance * trajectoryPosition.x,
-                0,
+                distance * trajectoryPosition.y,
                 distance * trajectoryPosition.z
             )
         }
@@ -95,62 +93,56 @@ export function Probe({
     })
 
     return (
-        <group rotation={[0, longitudeOfAscendingNode, 0]}>
-            <group rotation={[0, 0, orbitalInclination]}>
-                <TrajectoryLine points={trajectoryPoints} color={data.color} />
+        <>
+            <TrajectoryLine points={trajectoryPoints} color={data.color} />
 
-                <group
-                    ref={groupRef}
-                    position={[
-                        distance * initialTrajectoryPosition.x,
-                        0,
-                        distance * initialTrajectoryPosition.z,
-                    ]}
+            <group
+                ref={groupRef}
+                position={[
+                    distance * initialTrajectoryPosition.x,
+                    distance * initialTrajectoryPosition.y,
+                    distance * initialTrajectoryPosition.z,
+                ]}
+            >
+                <mesh
+                    ref={probeRef}
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                    onClick={() => onSelect(data)}
                 >
-                    <mesh
-                        ref={probeRef}
-                        onPointerOver={() => setHovered(true)}
-                        onPointerOut={() => setHovered(false)}
-                        onClick={() => onSelect(data)}
-                    >
-                        <sphereGeometry args={[radius, 16, 16]} />
-                        <meshStandardMaterial
-                            color={data.color}
-                            emissive={data.emissive || data.color}
-                            emissiveIntensity={hovered || isSelected ? 0.45 : data.emissiveIntensity ?? 0.15}
-                            roughness={0.7}
-                            metalness={0.2}
-                        />
-                    </mesh>
+                    <sphereGeometry args={[radius, 16, 16]} />
+                    <meshStandardMaterial
+                        color={data.color}
+                        emissive={data.emissive || data.color}
+                        emissiveIntensity={hovered || isSelected ? 0.45 : data.emissiveIntensity ?? 0.15}
+                        roughness={0.7}
+                        metalness={0.2}
+                    />
+                </mesh>
 
-                    <Html
-                        position={[0, radius + 0.1, 0]}
-                        center
-                        style={{
-                            pointerEvents: "auto",
-                            userSelect: "none",
+                <Html
+                    position={[0, radius + 0.1, 0]}
+                    center
+                    style={{
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                    }}
+                >
+                    <div
+                        className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                            }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            onSelect(data)
                         }}
                     >
-                        <div
-                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                                }`}
-                            style={{ cursor: "pointer" }}
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                onSelect(data)
-                            }}
-                        >
-                            {data.name}
-                        </div>
-                    </Html>
-                </group>
+                        {data.name}
+                    </div>
+                </Html>
             </group>
-        </group>
+        </>
     )
-}
-
-function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
 }

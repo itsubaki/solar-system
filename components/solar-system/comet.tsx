@@ -61,13 +61,11 @@ export function Comet({
     const [hovered, setHovered] = useState(false)
     const distance = data.distance * scale.distance
     const radius = data.displayRadius * scale.radius
-    const orbitalInclination = degToRad(data.orbitalInclination)
-    const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
     const initialOrbitPosition = useMemo(() => getCometOrbitPosition(data), [data])
     const orbitPoints = useMemo(
         () => getCometOrbitPath(data).map((point) => [
             distance * point.x,
-            0,
+            distance * point.y,
             distance * point.z,
         ] as [number, number, number]),
         [data, distance]
@@ -78,7 +76,7 @@ export function Comet({
             const orbitPosition = getCometOrbitPosition(data, simTimeRef.current)
             groupRef.current.position.set(
                 distance * orbitPosition.x,
-                0,
+                distance * orbitPosition.y,
                 distance * orbitPosition.z
             )
         }
@@ -95,67 +93,61 @@ export function Comet({
     })
 
     return (
-        <group rotation={[0, longitudeOfAscendingNode, 0]}>
-            <group rotation={[0, 0, orbitalInclination]}>
-                <OrbitLine points={orbitPoints} color={data.color} />
+        <>
+            <OrbitLine points={orbitPoints} color={data.color} />
 
-                <group
-                    ref={groupRef}
-                    position={[
-                        distance * initialOrbitPosition.x,
-                        0,
-                        distance * initialOrbitPosition.z,
-                    ]}
+            <group
+                ref={groupRef}
+                position={[
+                    distance * initialOrbitPosition.x,
+                    distance * initialOrbitPosition.y,
+                    distance * initialOrbitPosition.z,
+                ]}
+            >
+                <mesh
+                    ref={cometRef}
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                    onClick={() => onSelect(data)}
                 >
-                    <mesh
-                        ref={cometRef}
-                        onPointerOver={() => setHovered(true)}
-                        onPointerOut={() => setHovered(false)}
-                        onClick={() => onSelect(data)}
-                    >
-                        <sphereGeometry args={[radius, 16, 16]} />
-                        <meshStandardMaterial
-                            color={data.color}
-                            emissive={data.emissive || data.color}
-                            emissiveIntensity={hovered || isSelected ? 0.45 : data.emissiveIntensity ?? 0.18}
-                            roughness={0.9}
-                            metalness={0.02}
-                        />
-                    </mesh>
+                    <sphereGeometry args={[radius, 16, 16]} />
+                    <meshStandardMaterial
+                        color={data.color}
+                        emissive={data.emissive || data.color}
+                        emissiveIntensity={hovered || isSelected ? 0.45 : data.emissiveIntensity ?? 0.18}
+                        roughness={0.9}
+                        metalness={0.02}
+                    />
+                </mesh>
 
-                    <mesh position={[radius * 1.6, 0, 0]}>
-                        <coneGeometry args={[radius * 0.7, radius * 3.5, 12]} />
-                        <meshBasicMaterial color="#dffcff" transparent opacity={hovered || isSelected ? 0.45 : 0.22} />
-                    </mesh>
+                <mesh position={[radius * 1.6, 0, 0]}>
+                    <coneGeometry args={[radius * 0.7, radius * 3.5, 12]} />
+                    <meshBasicMaterial color="#dffcff" transparent opacity={hovered || isSelected ? 0.45 : 0.22} />
+                </mesh>
 
-                    <Html
-                        position={[0, radius + 0.1, 0]}
-                        center
-                        style={{
-                            pointerEvents: "auto",
-                            userSelect: "none",
+                <Html
+                    position={[0, radius + 0.1, 0]}
+                    center
+                    style={{
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                    }}
+                >
+                    <div
+                        className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                            }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            onSelect(data)
                         }}
                     >
-                        <div
-                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                                }`}
-                            style={{ cursor: "pointer" }}
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                onSelect(data)
-                            }}
-                        >
-                            {data.name}
-                        </div>
-                    </Html>
-                </group>
+                        {data.name}
+                    </div>
+                </Html>
             </group>
-        </group>
+        </>
     )
-}
-
-function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
 }
