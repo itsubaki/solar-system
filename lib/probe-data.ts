@@ -34,12 +34,12 @@ export const PROBES: ProbeData[] = [
         name: "Voyager 1",
         radius: 0.0018,
         displayRadius: 5000,
-        distance: ASTRONOMICAL_UNIT * 170.488,
+        distance: ASTRONOMICAL_UNIT * 170.425289,
         poleDirection: { longitude: 0, latitude: 90 },
         direction: {
-            eclipticLongitudeDegrees: 257.0963,
-            eclipticLatitudeDegrees: 35.3257,
-            source: "Heavens-Above sky coordinates, 2026-05-01 reference"
+            eclipticLongitudeDegrees: 256.729,
+            eclipticLatitudeDegrees: 35.157,
+            source: "NASA/JPL Horizons heliocentric ecliptic vector, 2026-05-01 TDB reference"
         },
         color: "#9FD8FF",
         emissive: "#E6F6FF",
@@ -48,7 +48,7 @@ export const PROBES: ProbeData[] = [
             startDate: "1977-09-05T12:56:00Z",
             referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
-            referenceDistanceAu: 170.488,
+            referenceDistanceAu: 170.425289,
             speedAuPerYear: 3.569,
             maxDistanceAu: 190,
         },
@@ -58,12 +58,12 @@ export const PROBES: ProbeData[] = [
         name: "Voyager 2",
         radius: 0.0018,
         displayRadius: 5000,
-        distance: ASTRONOMICAL_UNIT * 142.717,
+        distance: ASTRONOMICAL_UNIT * 142.756110,
         poleDirection: { longitude: 0, latitude: 90 },
         direction: {
-            eclipticLongitudeDegrees: 290.4529,
-            eclipticLatitudeDegrees: -38.498,
-            source: "Heavens-Above sky coordinates, 2026-05-01 reference"
+            eclipticLongitudeDegrees: 290.689,
+            eclipticLatitudeDegrees: -38.418,
+            source: "NASA/JPL Horizons heliocentric ecliptic vector, 2026-05-01 TDB reference"
         },
         color: "#FFE3A1",
         emissive: "#FFF7DD",
@@ -72,7 +72,7 @@ export const PROBES: ProbeData[] = [
             startDate: "1977-08-20T14:29:00Z",
             referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
-            referenceDistanceAu: 142.717,
+            referenceDistanceAu: 142.756110,
             speedAuPerYear: 3.219,
             maxDistanceAu: 160,
         },
