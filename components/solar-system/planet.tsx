@@ -2,7 +2,7 @@
 
 import { useRef, useState, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
-import { Html, Line } from "@react-three/drei"
+import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
@@ -13,10 +13,30 @@ type FocusTargetRef = {
     current: Vector3 | null
 }
 
-const BASE_ORBIT_LINE_WIDTH = 0.01
-const BASE_CAMERA_DISTANCE = Math.sqrt(12)
-const MIN_ORBIT_LINE_WIDTH = 0.002
-const MAX_ORBIT_LINE_WIDTH = 0.08
+type OrbitPoint = [number, number, number]
+
+function OrbitLine({
+    points,
+    color,
+}: {
+    points: OrbitPoint[]
+    color: string
+}) {
+    const positions = useMemo(() => new Float32Array(points.flat()), [points])
+
+    return (
+        <line>
+            <bufferGeometry>
+                <bufferAttribute
+                    attach="attributes-position"
+                    args={[positions, 3]}
+                    count={positions.length / 3}
+                />
+            </bufferGeometry>
+            <lineBasicMaterial color={color} />
+        </line>
+    )
+}
 
 export function Planet({
     data,
@@ -44,6 +64,7 @@ export function Planet({
     const [hovered, setHovered] = useState(false)
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
+    void cameraDistance
     const orbitalInclination = degToRad(data.orbitalInclination)
     const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
     const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
@@ -95,22 +116,10 @@ export function Planet({
             focusTargetRef.current = worldPositionRef.current.clone()
         }
     })
-    const orbitLineWidth = useMemo(() => {
-        const scaledWidth = BASE_ORBIT_LINE_WIDTH * (cameraDistance / BASE_CAMERA_DISTANCE)
-        return Math.min(MAX_ORBIT_LINE_WIDTH, Math.max(MIN_ORBIT_LINE_WIDTH, scaledWidth))
-    }, [cameraDistance])
-
     return (
         <group rotation={[0, longitudeOfAscendingNode, 0]}>
             <group rotation={[0, 0, orbitalInclination]}>
-                <Line
-                    points={orbitPoints}
-                    color="#4fc3f7"
-                    transparent
-                    opacity={0.4}
-                    lineWidth={orbitLineWidth}
-                    worldUnits
-                />
+                <OrbitLine points={orbitPoints} color="#8fd3ff" />
 
                 <group
                     ref={groupRef}
@@ -240,14 +249,7 @@ function Satellite({
 
     return (
         <>
-            <Line
-                points={orbitPoints}
-                color="#4fc3f7"
-                transparent
-                opacity={0.25}
-                lineWidth={0.002}
-                worldUnits
-            />
+            <OrbitLine points={orbitPoints} color="#8fd3ff" />
 
             <group
                 ref={groupRef}
