@@ -103,6 +103,11 @@ const PLANET_ORBITAL_PHASES: Record<string, {
         longitudeOfPerihelion: -23.94363,
         meanLongitudeAtJ2000: -4.55343,
     },
+    Ceres: {
+        eccentricity: 0.07957631994408416,
+        longitudeOfPerihelion: 153.54938555433483,
+        meanLongitudeAtJ2000: 385.0891185587054,
+    },
     Jupiter: {
         eccentricity: 0.04839266,
         longitudeOfPerihelion: 14.72848,
@@ -127,6 +132,21 @@ const PLANET_ORBITAL_PHASES: Record<string, {
         eccentricity: 0.24880766,
         longitudeOfPerihelion: 224.06676,
         meanLongitudeAtJ2000: 238.92881,
+    },
+    Haumea: {
+        eccentricity: 0.1957748236999078,
+        longitudeOfPerihelion: 362.685623066236,
+        meanLongitudeAtJ2000: 585.0132756143271,
+    },
+    Makemake: {
+        eccentricity: 0.1604249925523523,
+        longitudeOfPerihelion: 376.3443476128863,
+        meanLongitudeAtJ2000: 545.664625586251,
+    },
+    Eris: {
+        eccentricity: 0.4369649682100509,
+        longitudeOfPerihelion: 186.7594587351884,
+        meanLongitudeAtJ2000: 397.2088478471641,
     },
 }
 
