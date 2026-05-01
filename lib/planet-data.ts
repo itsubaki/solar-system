@@ -1,8 +1,15 @@
+export interface PoleDirection {
+    longitude: number
+    latitude: number
+}
+
 export interface PlanetData {
     name: string
     radius: number
     distance: number
-    obliquity: number
+    poleDirection: PoleDirection
+    orbitalInclination: number
+    longitudeOfAscendingNode: number
     orbitalPeriod: number
     rotationPeriod: number
     color: string
@@ -33,6 +40,28 @@ export interface RingData {
 
 export const ASTRONOMICAL_UNIT = 149_600_000 // km
 
+export function getPlanetObliquity(planet: PlanetData) {
+    const poleLongitude = (planet.poleDirection.longitude * Math.PI) / 180
+    const poleLatitude = (planet.poleDirection.latitude * Math.PI) / 180
+    const orbitalInclination = (planet.orbitalInclination * Math.PI) / 180
+    const ascendingNodeLongitude = (planet.longitudeOfAscendingNode * Math.PI) / 180
+
+    const cosPoleLatitude = Math.cos(poleLatitude)
+    const poleX = cosPoleLatitude * Math.cos(poleLongitude)
+    const poleY = Math.sin(poleLatitude)
+    const poleZ = -cosPoleLatitude * Math.sin(poleLongitude)
+
+    const orbitNormalX = -Math.sin(ascendingNodeLongitude) * Math.sin(orbitalInclination)
+    const orbitNormalY = Math.cos(orbitalInclination)
+    const orbitNormalZ = -Math.cos(ascendingNodeLongitude) * Math.sin(orbitalInclination)
+
+    const dot = poleX * orbitNormalX + poleY * orbitNormalY + poleZ * orbitNormalZ
+    const clampedDot = Math.max(-1, Math.min(1, dot))
+    const angle = Math.acos(clampedDot)
+
+    return (Math.min(angle, Math.PI - angle) * 180) / Math.PI
+}
+
 export const SUN_DATA = {
     name: "Sun",
     radius: 696_000,
@@ -47,7 +76,9 @@ export const PLANETS: PlanetData[] = [
         name: "Mercury",
         radius: 2439.7,
         distance: ASTRONOMICAL_UNIT * 0.39,
-        obliquity: 0.034,
+        poleDirection: { longitude: 318.41, latitude: 82.99 },
+        orbitalInclination: 7.005,
+        longitudeOfAscendingNode: 48.331,
         orbitalPeriod: 88,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
@@ -57,9 +88,11 @@ export const PLANETS: PlanetData[] = [
         name: "Venus",
         radius: 6051.8,
         distance: ASTRONOMICAL_UNIT * 0.72,
-        obliquity: 177.4,
+        poleDirection: { longitude: 30.187, latitude: 88.761 },
+        orbitalInclination: 3.395,
+        longitudeOfAscendingNode: 76.68,
         orbitalPeriod: 225,
-        rotationPeriod: 243,
+        rotationPeriod: -243,
         color: "#E6C87A",
         description: "Similar in size to Earth, with a thick toxic atmosphere."
     },
@@ -67,7 +100,9 @@ export const PLANETS: PlanetData[] = [
         name: "Earth",
         radius: 6371,
         distance: ASTRONOMICAL_UNIT * 1.00,
-        obliquity: 23.44,
+        poleDirection: { longitude: 90, latitude: 66.561 },
+        orbitalInclination: 0,
+        longitudeOfAscendingNode: 0,
         orbitalPeriod: 365,
         rotationPeriod: 1,
         color: "#6B93D6",
@@ -87,7 +122,9 @@ export const PLANETS: PlanetData[] = [
         name: "Mars",
         radius: 3389.5,
         distance: ASTRONOMICAL_UNIT * 1.52,
-        obliquity: 25.19,
+        poleDirection: { longitude: 352.908, latitude: 63.282 },
+        orbitalInclination: 1.85,
+        longitudeOfAscendingNode: 49.558,
         orbitalPeriod: 687,
         rotationPeriod: 1.03,
         color: "#C1440E",
@@ -115,7 +152,9 @@ export const PLANETS: PlanetData[] = [
         name: "Jupiter",
         radius: 69911,
         distance: ASTRONOMICAL_UNIT * 5.20,
-        obliquity: 3.13,
+        poleDirection: { longitude: 247.818, latitude: 87.783 },
+        orbitalInclination: 1.303,
+        longitudeOfAscendingNode: 100.464,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
@@ -159,7 +198,9 @@ export const PLANETS: PlanetData[] = [
         name: "Saturn",
         radius: 58232,
         distance: ASTRONOMICAL_UNIT * 9.58,
-        obliquity: 26.73,
+        poleDirection: { longitude: 79.528, latitude: 61.948 },
+        orbitalInclination: 2.485,
+        longitudeOfAscendingNode: 113.665,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         color: "#F4D59E",
@@ -206,7 +247,9 @@ export const PLANETS: PlanetData[] = [
         name: "Uranus",
         radius: 25362,
         distance: ASTRONOMICAL_UNIT * 19.20,
-        obliquity: 97.77,
+        poleDirection: { longitude: 257.647, latitude: 7.722 },
+        orbitalInclination: 0.773,
+        longitudeOfAscendingNode: 74.006,
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
@@ -258,7 +301,9 @@ export const PLANETS: PlanetData[] = [
         name: "Neptune",
         radius: 24622,
         distance: ASTRONOMICAL_UNIT * 30.05,
-        obliquity: 28.32,
+        poleDirection: { longitude: 319.235, latitude: 61.974 },
+        orbitalInclination: 1.77,
+        longitudeOfAscendingNode: 131.784,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         color: "#5B5DDF",
@@ -273,5 +318,17 @@ export const PLANETS: PlanetData[] = [
             }
         ],
         description: "The windiest planet with supersonic storms."
+    },
+    {
+        name: "Pluto",
+        radius: 1188.3,
+        distance: ASTRONOMICAL_UNIT * 39.48,
+        poleDirection: { longitude: 137.351, latitude: -22.816 },
+        orbitalInclination: 17.16,
+        longitudeOfAscendingNode: 110.299,
+        orbitalPeriod: 90560,
+        rotationPeriod: 6.39,
+        color: "#B89C7A",
+        description: "A dwarf planet in the Kuiper Belt with a strongly inclined, eccentric orbit."
     }
 ]

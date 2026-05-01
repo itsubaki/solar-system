@@ -5,7 +5,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
 import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
-import { getInitialOrbitAngle } from "@/lib/planet-angle"
 import { Clock } from "./clock"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
@@ -24,7 +23,7 @@ type FocusTargetRef = {
 const ORBIT_SPEED_OPTIONS = [
     { label: "Real-time", multiplier: 1 },
     { label: "1 min / sec", multiplier: 60 },
-    { label: "1 hr / sec", multiplier: 3600 },
+    { label: "1 hour / sec", multiplier: 3600 },
     { label: "1 day / sec", multiplier: 86400 },
     { label: "1 week / sec", multiplier: 604800 },
     { label: "30 days / sec", multiplier: 2592000 },
@@ -48,7 +47,7 @@ const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
 const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
 const MIN_CAMERA_DISTANCE = 0.15
-const MAX_CAMERA_DISTANCE = 80
+const MAX_CAMERA_DISTANCE = 100
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
 
@@ -229,25 +228,19 @@ function PlanetOrbitControls({
 }
 
 function Scene({
-    orbitSpeedScale,
     selectedPlanet,
     onSelectPlanet,
     planetScaleOption,
+    simTimeRef,
 }: {
-    orbitSpeedScale: number
     selectedPlanet: PlanetData | null
     onSelectPlanet: (planet: PlanetData | null) => void
     planetScaleOption: PlanetScaleOption
+    simTimeRef: { current: Date }
 }) {
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
     const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
     const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_OFFSET.length())
-    const initialOrbitAngles = useMemo(
-        () => Object.fromEntries(
-            PLANETS.map((planet) => [planet.name, getInitialOrbitAngle(planet, new Date())])
-        ),
-        []
-    )
 
     useFrame(({ camera }) => {
         const currentTarget = focusedPlanetPositionRef.current ?? DEFAULT_CAMERA_TARGET
@@ -296,15 +289,14 @@ function Scene({
                 <Planet
                     key={planet.name}
                     data={planet}
-                    initialOrbitAngle={initialOrbitAngles[planet.name]}
                     onSelect={onSelectPlanet}
                     isSelected={selectedPlanet?.name === planet.name}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
                     cameraDistance={cameraDistance}
+                    simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
                         radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
-                        orbitSpeed: orbitSpeedScale,
                     }}
                 />
             ))}
@@ -319,8 +311,39 @@ export function SolarSystem() {
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
     const [showPlanetInfo, setShowPlanetInfo] = useState(false)
+    const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
+    const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
+
+    useEffect(() => {
+        let frameId: number
+        let lastReal = Date.now()
+        let lastPublished = lastReal
+
+        const tick = () => {
+            const now = Date.now()
+            const elapsedMilliseconds = now - lastReal
+            lastReal = now
+
+            simTimeRef.current = new Date(
+                simTimeRef.current.getTime() + elapsedMilliseconds * orbitSpeedScale
+            )
+
+            if (now - lastPublished >= 250) {
+                lastPublished = now
+                setDisplaySimTime(new Date(simTimeRef.current.getTime()))
+            }
+
+            frameId = requestAnimationFrame(tick)
+        }
+
+        frameId = requestAnimationFrame(tick)
+
+        return () => {
+            cancelAnimationFrame(frameId)
+        }
+    }, [orbitSpeedScale])
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -474,7 +497,6 @@ export function SolarSystem() {
                 <Canvas className="size-full touch-none">
                     <Suspense fallback={null}>
                         <Scene
-                            orbitSpeedScale={orbitSpeedScale}
                             selectedPlanet={selectedPlanet}
                             onSelectPlanet={(planet) => {
                                 if (planet && selectedPlanet && planet.name === selectedPlanet.name) {
@@ -491,6 +513,7 @@ export function SolarSystem() {
                                 }
                             }}
                             planetScaleOption={planetScaleOption}
+                            simTimeRef={simTimeRef}
                         />
                     </Suspense>
                 </Canvas>
@@ -512,7 +535,7 @@ export function SolarSystem() {
                     bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
                 }}
             >
-                <Clock orbitSpeedScale={orbitSpeedScale} />
+                <Clock simTime={displaySimTime} />
 
                 <button
                     type="button"

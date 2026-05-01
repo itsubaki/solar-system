@@ -50,7 +50,7 @@ export function Stars() {
     })
 
     return (
-        <points ref={ref}>
+        <points ref={ref} renderOrder={-1}>
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
@@ -68,6 +68,7 @@ export function Stars() {
                 vertexColors
                 transparent
                 opacity={0.8}
+                depthWrite={false}
                 sizeAttenuation
             />
         </points>
