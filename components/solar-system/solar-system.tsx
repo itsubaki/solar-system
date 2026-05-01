@@ -40,6 +40,8 @@ const PLANET_SCALE_OPTIONS: readonly PlanetScaleOption[] = [
     { scale: 10, label: "x10", sup: "3" },
     { scale: 100, label: "x100", sup: "6" },
     { scale: 1000, label: "x1,000", sup: "9" },
+    { scale: 2000, label: "x2,000", sup: "9.903" },
+    { scale: 3000, label: "x3,000", sup: "10.431" },
 ]
 
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
