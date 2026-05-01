@@ -92,7 +92,7 @@ export const PLANETS: PlanetData[] = [
         orbitalInclination: 3.395,
         longitudeOfAscendingNode: 76.68,
         orbitalPeriod: 225,
-        rotationPeriod: 243,
+        rotationPeriod: -243,
         color: "#E6C87A",
         description: "Similar in size to Earth, with a thick toxic atmosphere."
     },

@@ -60,7 +60,7 @@ export function PlanetInfo({
                     <div>
                         <p className="text-[10px] text-muted-foreground">Day Length</p>
                         <p className="text-xs font-medium text-foreground">
-                            {(planet.rotationPeriod.toLocaleString() ?? "")} Earth days
+                            {(Math.abs(planet.rotationPeriod).toLocaleString() ?? "")} Earth days
                         </p>
                     </div>
                     {/* {planet.satellites && planet.satellites.length > 0 && (

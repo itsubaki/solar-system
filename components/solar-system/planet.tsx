@@ -152,11 +152,6 @@ export function Planet({
     }, [localPoleVector])
 
     let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
-    if (data.name === "Venus") {
-        // Venus has a retrograde rotation
-        rotationSpeed *= -1
-    }
-
     useFrame((_, delta) => {
         if (groupRef.current) {
             const orbitPosition = getPlanetOrbitPosition(data, simTimeRef.current)
