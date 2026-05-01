@@ -3,6 +3,8 @@ export interface PlanetData {
     radius: number
     distance: number
     obliquity: number
+    orbitalInclination: number
+    longitudeOfAscendingNode: number
     orbitalPeriod: number
     rotationPeriod: number
     color: string
@@ -48,6 +50,8 @@ export const PLANETS: PlanetData[] = [
         radius: 2439.7,
         distance: ASTRONOMICAL_UNIT * 0.39,
         obliquity: 0.034,
+        orbitalInclination: 7.005,
+        longitudeOfAscendingNode: 48.331,
         orbitalPeriod: 88,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
@@ -58,6 +62,8 @@ export const PLANETS: PlanetData[] = [
         radius: 6051.8,
         distance: ASTRONOMICAL_UNIT * 0.72,
         obliquity: 177.4,
+        orbitalInclination: 3.395,
+        longitudeOfAscendingNode: 76.68,
         orbitalPeriod: 225,
         rotationPeriod: 243,
         color: "#E6C87A",
@@ -68,6 +74,8 @@ export const PLANETS: PlanetData[] = [
         radius: 6371,
         distance: ASTRONOMICAL_UNIT * 1.00,
         obliquity: 23.44,
+        orbitalInclination: 0,
+        longitudeOfAscendingNode: 0,
         orbitalPeriod: 365,
         rotationPeriod: 1,
         color: "#6B93D6",
@@ -88,6 +96,8 @@ export const PLANETS: PlanetData[] = [
         radius: 3389.5,
         distance: ASTRONOMICAL_UNIT * 1.52,
         obliquity: 25.19,
+        orbitalInclination: 1.85,
+        longitudeOfAscendingNode: 49.558,
         orbitalPeriod: 687,
         rotationPeriod: 1.03,
         color: "#C1440E",
@@ -116,6 +126,8 @@ export const PLANETS: PlanetData[] = [
         radius: 69911,
         distance: ASTRONOMICAL_UNIT * 5.20,
         obliquity: 3.13,
+        orbitalInclination: 1.303,
+        longitudeOfAscendingNode: 100.464,
         orbitalPeriod: 4333,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
@@ -160,6 +172,8 @@ export const PLANETS: PlanetData[] = [
         radius: 58232,
         distance: ASTRONOMICAL_UNIT * 9.58,
         obliquity: 26.73,
+        orbitalInclination: 2.485,
+        longitudeOfAscendingNode: 113.665,
         orbitalPeriod: 10759,
         rotationPeriod: 0.45,
         color: "#F4D59E",
@@ -207,6 +221,8 @@ export const PLANETS: PlanetData[] = [
         radius: 25362,
         distance: ASTRONOMICAL_UNIT * 19.20,
         obliquity: 97.77,
+        orbitalInclination: 0.773,
+        longitudeOfAscendingNode: 74.006,
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
@@ -259,6 +275,8 @@ export const PLANETS: PlanetData[] = [
         radius: 24622,
         distance: ASTRONOMICAL_UNIT * 30.05,
         obliquity: 28.32,
+        orbitalInclination: 1.77,
+        longitudeOfAscendingNode: 131.784,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
         color: "#5B5DDF",
@@ -273,5 +291,17 @@ export const PLANETS: PlanetData[] = [
             }
         ],
         description: "The windiest planet with supersonic storms."
+    },
+    {
+        name: "Pluto",
+        radius: 1188.3,
+        distance: ASTRONOMICAL_UNIT * 39.48,
+        obliquity: 122.53,
+        orbitalInclination: 17.16,
+        longitudeOfAscendingNode: 110.299,
+        orbitalPeriod: 90560,
+        rotationPeriod: 6.39,
+        color: "#B89C7A",
+        description: "A dwarf planet in the Kuiper Belt with a strongly inclined, eccentric orbit."
     }
 ]

@@ -110,6 +110,11 @@ const PLANET_ORBITAL_PHASES: Record<string, {
         longitudeOfPerihelion: 44.96476,
         meanLongitudeAtJ2000: -55.12003,
     },
+    Pluto: {
+        eccentricity: 0.24880766,
+        longitudeOfPerihelion: 224.06676,
+        meanLongitudeAtJ2000: 238.92881,
+    },
 }
 
 export function getSatelliteOrbitAngle(

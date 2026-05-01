@@ -69,90 +69,94 @@ export function Planet({
 
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
+    const orbitalInclination = degToRad(data.orbitalInclination)
+    const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
 
     return (
-        <group ref={groupRef} rotation={[0, initialOrbitAngle, 0]}>
-            <mesh rotation={[-Math.PI / 2, 0, 0]}>
-                <ringGeometry args={[
-                    distance - ORBIT_LINE_WIDTH,
-                    distance + ORBIT_LINE_WIDTH,
-                    128,
-                ]} />
-                <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
-            </mesh>
-
-            <group position={[distance, 0, 0]}>
-                <mesh
-                    ref={planetRef}
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                    onClick={() => {
-                        onSelect(data)
-                    }}
-                >
-                    <sphereGeometry args={[radius, 32, 32]} />
-                    <meshStandardMaterial
-                        color={data.color}
-                        emissive={data.emissive || data.color}
-                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
-                        roughness={0.8}
-                        metalness={0.1}
-                    />
+        <group rotation={[0, longitudeOfAscendingNode, 0]}>
+            <group ref={groupRef} rotation={[0, initialOrbitAngle, orbitalInclination]}>
+                <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                    <ringGeometry args={[
+                        distance - ORBIT_LINE_WIDTH,
+                        distance + ORBIT_LINE_WIDTH,
+                        128,
+                    ]} />
+                    <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
                 </mesh>
 
-                {Array.isArray(data.rings) && data.rings.map((ring, i) => (
-                    <mesh key={i} rotation={[Math.PI / 2 + degToRad(data.obliquity), 0, 0]}>
-                        <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
-                        <shaderMaterial
-                            attach="material"
-                            vertexShader={ringVertexShader}
-                            fragmentShader={ringFragmentShader}
-                            transparent
-                            side={DoubleSide}
-                            uniforms={useMemo(() => ({
-                                innerColor: { value: new Color(ring.color) },
-                                outerColor: { value: new Color("white") },
-                                innerAlpha: { value: 0.7 },
-                                outerAlpha: { value: 0.1 },
-                            }), [ring.color])}
-                        />
-                    </mesh>
-                ))}
-
-                {/* {data.satellites?.map((satellite) => (
-                    <Satellite
-                        key={satellite.name}
-                        satellite={{ ...satellite, parentPlanetName: data.name }}
-                        scale={{
-                            distance: scale.distance,
-                            radius: scale.radius,
-                            orbitSpeed: scale.orbitSpeed,
-                        }}
-                    />
-                ))} */}
-
-                <Html
-                    position={[0, radius + 0.02, 0]}
-                    center
-                    style={{
-                        pointerEvents: "auto",
-                        userSelect: "none",
-                    }}
-                >
-                    <div
-                        className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                            }`}
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onSelect(data);
+                <group position={[distance, 0, 0]}>
+                    <mesh
+                        ref={planetRef}
+                        onPointerOver={() => setHovered(true)}
+                        onPointerOut={() => setHovered(false)}
+                        onClick={() => {
+                            onSelect(data)
                         }}
                     >
-                        {data.name}
-                    </div>
-                </Html>
+                        <sphereGeometry args={[radius, 32, 32]} />
+                        <meshStandardMaterial
+                            color={data.color}
+                            emissive={data.emissive || data.color}
+                            emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
+                            roughness={0.8}
+                            metalness={0.1}
+                        />
+                    </mesh>
+
+                    {Array.isArray(data.rings) && data.rings.map((ring, i) => (
+                        <mesh key={i} rotation={[Math.PI / 2 + degToRad(data.obliquity), 0, 0]}>
+                            <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
+                            <shaderMaterial
+                                attach="material"
+                                vertexShader={ringVertexShader}
+                                fragmentShader={ringFragmentShader}
+                                transparent
+                                side={DoubleSide}
+                                uniforms={useMemo(() => ({
+                                    innerColor: { value: new Color(ring.color) },
+                                    outerColor: { value: new Color("white") },
+                                    innerAlpha: { value: 0.7 },
+                                    outerAlpha: { value: 0.1 },
+                                }), [ring.color])}
+                            />
+                        </mesh>
+                    ))}
+
+                    {/* {data.satellites?.map((satellite) => (
+                        <Satellite
+                            key={satellite.name}
+                            satellite={{ ...satellite, parentPlanetName: data.name }}
+                            scale={{
+                                distance: scale.distance,
+                                radius: scale.radius,
+                                orbitSpeed: scale.orbitSpeed,
+                            }}
+                        />
+                    ))} */}
+
+                    <Html
+                        position={[0, radius + 0.02, 0]}
+                        center
+                        style={{
+                            pointerEvents: "auto",
+                            userSelect: "none",
+                        }}
+                    >
+                        <div
+                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                                }`}
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onSelect(data);
+                            }}
+                        >
+                            {data.name}
+                        </div>
+                    </Html>
+                </group>
             </group>
         </group>
     )
