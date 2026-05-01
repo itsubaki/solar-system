@@ -371,8 +371,8 @@ export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
     const [showDwarfPlanets, setShowDwarfPlanets] = useState(true)
-    const [showComets, setShowComets] = useState(true)
-    const [showProbes, setShowProbes] = useState(true)
+    const [showComets, setShowComets] = useState(false)
+    const [showProbes, setShowProbes] = useState(false)
     const [showPlanetInfo, setShowPlanetInfo] = useState(true)
     const [selectedComet, setSelectedComet] = useState<CometData | null>(null)
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
