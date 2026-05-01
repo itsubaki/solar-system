@@ -3,7 +3,7 @@
 import { useRef, useState, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
-import { DoubleSide, Vector3, Color } from "three"
+import { DoubleSide, Vector3, Color, Quaternion } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getPlanetOrbitPath, getPlanetOrbitPosition, getSatelliteOrbitPath, getSatelliteOrbitPosition, degToRad } from "@/lib/planet-angle"
@@ -14,6 +14,9 @@ type FocusTargetRef = {
 }
 
 type OrbitPoint = [number, number, number]
+
+const SCENE_UP = new Vector3(0, 1, 0)
+const SCENE_FORWARD = new Vector3(0, 0, 1)
 
 function OrbitLine({
     points,
@@ -40,18 +43,18 @@ function OrbitLine({
 
 function AxialTiltIndicator({
     radius,
-    tilt,
+    quaternion,
     highlighted,
 }: {
     radius: number
-    tilt: number
+    quaternion: Quaternion
     highlighted: boolean
 }) {
     const axisLength = radius * 2.8
     const axisRadius = Math.max(radius * 0.03, 0.0015)
 
     return (
-        <group rotation={[tilt, 0, 0]}>
+        <group quaternion={quaternion}>
             <mesh>
                 <cylinderGeometry args={[axisRadius, axisRadius, axisLength, 12]} />
                 <meshBasicMaterial
@@ -62,6 +65,18 @@ function AxialTiltIndicator({
                 />
             </mesh>
         </group>
+    )
+}
+
+function getPoleVector(longitude: number, latitude: number) {
+    const lambda = degToRad(longitude)
+    const beta = degToRad(latitude)
+    const cosBeta = Math.cos(beta)
+
+    return new Vector3(
+        cosBeta * Math.cos(lambda),
+        Math.sin(beta),
+        -cosBeta * Math.sin(lambda)
     )
 }
 
@@ -94,7 +109,6 @@ export function Planet({
     void cameraDistance
     const orbitalInclination = degToRad(data.orbitalInclination)
     const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
-    const axialTilt = -degToRad(data.obliquity)
     const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
     const orbitPoints = useMemo(
         () => getPlanetOrbitPath(data).map((point) => [
@@ -113,6 +127,29 @@ export function Planet({
         })) ?? [],
         [data.rings]
     )
+    const orbitPlaneQuaternion = useMemo(() => {
+        const nodeRotation = new Quaternion().setFromAxisAngle(SCENE_UP, longitudeOfAscendingNode)
+        const inclinationRotation = new Quaternion().setFromAxisAngle(
+            new Vector3(0, 0, 1),
+            orbitalInclination
+        )
+
+        return nodeRotation.multiply(inclinationRotation)
+    }, [longitudeOfAscendingNode, orbitalInclination])
+    const localPoleVector = useMemo(() => {
+        return getPoleVector(
+            data.poleDirection.longitude,
+            data.poleDirection.latitude
+        )
+            .applyQuaternion(orbitPlaneQuaternion.clone().invert())
+            .normalize()
+    }, [data.poleDirection.latitude, data.poleDirection.longitude, orbitPlaneQuaternion])
+    const axisQuaternion = useMemo(() => {
+        return new Quaternion().setFromUnitVectors(SCENE_UP, localPoleVector)
+    }, [localPoleVector])
+    const ringQuaternion = useMemo(() => {
+        return new Quaternion().setFromUnitVectors(SCENE_FORWARD, localPoleVector)
+    }, [localPoleVector])
 
     let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
     if (data.name === "Venus") {
@@ -177,23 +214,27 @@ export function Planet({
 
                     <AxialTiltIndicator
                         radius={radius}
-                        tilt={axialTilt}
+                        quaternion={axisQuaternion}
                         highlighted={hovered || isSelected}
                     />
 
-                    {Array.isArray(data.rings) && data.rings.map((ring, i) => (
-                        <mesh key={i} rotation={[Math.PI / 2 + axialTilt, 0, 0]}>
-                            <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
-                            <shaderMaterial
-                                attach="material"
-                                vertexShader={ringVertexShader}
-                                fragmentShader={ringFragmentShader}
-                                transparent
-                                side={DoubleSide}
-                                uniforms={ringUniforms[i]}
-                            />
-                        </mesh>
-                    ))}
+                    {Array.isArray(data.rings) && (
+                        <group quaternion={ringQuaternion}>
+                            {data.rings.map((ring, i) => (
+                                <mesh key={i}>
+                                    <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
+                                    <shaderMaterial
+                                        attach="material"
+                                        vertexShader={ringVertexShader}
+                                        fragmentShader={ringFragmentShader}
+                                        transparent
+                                        side={DoubleSide}
+                                        uniforms={ringUniforms[i]}
+                                    />
+                                </mesh>
+                            ))}
+                        </group>
+                    )}
 
                     {/* {data.satellites?.map((satellite) => (
                         <Satellite

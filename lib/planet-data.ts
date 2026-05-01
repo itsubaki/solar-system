@@ -1,8 +1,14 @@
+export interface PoleDirection {
+    longitude: number
+    latitude: number
+}
+
 export interface PlanetData {
     name: string
     radius: number
     distance: number
     obliquity: number
+    poleDirection: PoleDirection
     orbitalInclination: number
     longitudeOfAscendingNode: number
     orbitalPeriod: number
@@ -50,6 +56,7 @@ export const PLANETS: PlanetData[] = [
         radius: 2439.7,
         distance: ASTRONOMICAL_UNIT * 0.39,
         obliquity: 0.034,
+        poleDirection: { longitude: 318.41, latitude: 82.99 },
         orbitalInclination: 7.005,
         longitudeOfAscendingNode: 48.331,
         orbitalPeriod: 88,
@@ -62,6 +69,7 @@ export const PLANETS: PlanetData[] = [
         radius: 6051.8,
         distance: ASTRONOMICAL_UNIT * 0.72,
         obliquity: 177.4,
+        poleDirection: { longitude: 30.187, latitude: 88.761 },
         orbitalInclination: 3.395,
         longitudeOfAscendingNode: 76.68,
         orbitalPeriod: 225,
@@ -74,6 +82,7 @@ export const PLANETS: PlanetData[] = [
         radius: 6371,
         distance: ASTRONOMICAL_UNIT * 1.00,
         obliquity: 23.44,
+        poleDirection: { longitude: 90, latitude: 66.561 },
         orbitalInclination: 0,
         longitudeOfAscendingNode: 0,
         orbitalPeriod: 365,
@@ -96,6 +105,7 @@ export const PLANETS: PlanetData[] = [
         radius: 3389.5,
         distance: ASTRONOMICAL_UNIT * 1.52,
         obliquity: 25.19,
+        poleDirection: { longitude: 352.908, latitude: 63.282 },
         orbitalInclination: 1.85,
         longitudeOfAscendingNode: 49.558,
         orbitalPeriod: 687,
@@ -126,6 +136,7 @@ export const PLANETS: PlanetData[] = [
         radius: 69911,
         distance: ASTRONOMICAL_UNIT * 5.20,
         obliquity: 3.13,
+        poleDirection: { longitude: 247.818, latitude: 87.783 },
         orbitalInclination: 1.303,
         longitudeOfAscendingNode: 100.464,
         orbitalPeriod: 4333,
@@ -172,6 +183,7 @@ export const PLANETS: PlanetData[] = [
         radius: 58232,
         distance: ASTRONOMICAL_UNIT * 9.58,
         obliquity: 26.73,
+        poleDirection: { longitude: 79.528, latitude: 61.948 },
         orbitalInclination: 2.485,
         longitudeOfAscendingNode: 113.665,
         orbitalPeriod: 10759,
@@ -221,6 +233,7 @@ export const PLANETS: PlanetData[] = [
         radius: 25362,
         distance: ASTRONOMICAL_UNIT * 19.20,
         obliquity: 97.77,
+        poleDirection: { longitude: 257.647, latitude: 7.722 },
         orbitalInclination: 0.773,
         longitudeOfAscendingNode: 74.006,
         orbitalPeriod: 30687,
@@ -275,6 +288,7 @@ export const PLANETS: PlanetData[] = [
         radius: 24622,
         distance: ASTRONOMICAL_UNIT * 30.05,
         obliquity: 28.32,
+        poleDirection: { longitude: 319.235, latitude: 61.974 },
         orbitalInclination: 1.77,
         longitudeOfAscendingNode: 131.784,
         orbitalPeriod: 60190,
@@ -297,6 +311,7 @@ export const PLANETS: PlanetData[] = [
         radius: 1188.3,
         distance: ASTRONOMICAL_UNIT * 39.48,
         obliquity: 122.53,
+        poleDirection: { longitude: 137.351, latitude: -22.816 },
         orbitalInclination: 17.16,
         longitudeOfAscendingNode: 110.299,
         orbitalPeriod: 90560,
