@@ -3,6 +3,19 @@ import { PlanetData, SatelliteData } from "./planet-data"
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
 
+type OrbitPhase = {
+    eccentricity: number
+    longitudeOfPeriapsis: number
+    meanLongitudeAtJ2000: number
+}
+
+type OrbitState = {
+    angle: number
+    radiusScale: number
+    x: number
+    z: number
+}
+
 export const SATELLITE_ORBITAL_PHASES: Record<string, Record<string, {
     eccentricity: number
     longitudeOfPeriapsis: number
@@ -122,54 +135,142 @@ export function getSatelliteOrbitAngle(
     satellite: SatelliteData,
     at = new Date()
 ): number {
-    const planetSatellites = SATELLITE_ORBITAL_PHASES[planetName]
-    const phase = planetSatellites?.[satellite.name]
-    if (!phase) {
-        const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
-        const meanMotion = (Math.PI * 2) / satellite.orbitalPeriod
-        return normalizeRadians(meanMotion * elapsedDays)
+    return getSatelliteOrbitPosition(planetName, satellite, at).angle
+}
+
+export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
+    return getPlanetOrbitPosition(planet, at).angle
+}
+
+export function getPlanetOrbitPosition(planet: PlanetData, at = new Date()): OrbitState {
+    const orbitalPhase = PLANET_ORBITAL_PHASES[planet.name]
+    if (!orbitalPhase) {
+        return getCircularOrbitState(planet.orbitalPeriod, at)
     }
 
+    return getOrbitState(
+        planet.orbitalPeriod,
+        {
+            eccentricity: orbitalPhase.eccentricity,
+            longitudeOfPeriapsis: orbitalPhase.longitudeOfPerihelion,
+            meanLongitudeAtJ2000: orbitalPhase.meanLongitudeAtJ2000,
+        },
+        at
+    )
+}
+
+export function getSatelliteOrbitPosition(
+    planetName: string,
+    satellite: SatelliteData,
+    at = new Date()
+): OrbitState {
+    const phase = SATELLITE_ORBITAL_PHASES[planetName]?.[satellite.name]
+    if (!phase) {
+        return getCircularOrbitState(satellite.orbitalPeriod, at)
+    }
+
+    return getOrbitState(satellite.orbitalPeriod, phase, at)
+}
+
+export function getPlanetOrbitPath(planet: PlanetData, segments = 256) {
+    const orbitalPhase = PLANET_ORBITAL_PHASES[planet.name]
+    if (!orbitalPhase) {
+        return getCircularOrbitPath(segments)
+    }
+
+    return getOrbitPathPoints(
+        orbitalPhase.eccentricity,
+        degToRad(orbitalPhase.longitudeOfPerihelion),
+        segments
+    )
+}
+
+export function getSatelliteOrbitPath(
+    planetName: string,
+    satellite: SatelliteData,
+    segments = 128
+) {
+    const phase = SATELLITE_ORBITAL_PHASES[planetName]?.[satellite.name]
+    if (!phase) {
+        return getCircularOrbitPath(segments)
+    }
+
+    return getOrbitPathPoints(
+        phase.eccentricity,
+        degToRad(phase.longitudeOfPeriapsis),
+        segments
+    )
+}
+
+export function degToRad(degrees: number) {
+    return (degrees * Math.PI) / 180
+}
+
+function getOrbitState(orbitalPeriod: number, phase: OrbitPhase, at: Date): OrbitState {
     const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
-    const meanMotion = (Math.PI * 2) / satellite.orbitalPeriod
+    const meanMotion = (Math.PI * 2) / orbitalPeriod
     const meanAnomalyAtJ2000 = degToRad(
         phase.meanLongitudeAtJ2000 - phase.longitudeOfPeriapsis
     )
-
     const meanAnomaly = normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays)
     const eccentricAnomaly = solveKeplerEquation(meanAnomaly, phase.eccentricity)
     const trueAnomaly = 2 * Math.atan2(
         Math.sqrt(1 + phase.eccentricity) * Math.sin(eccentricAnomaly / 2),
         Math.sqrt(1 - phase.eccentricity) * Math.cos(eccentricAnomaly / 2)
     )
-
     const longitude = trueAnomaly + degToRad(phase.longitudeOfPeriapsis)
-    return normalizeRadians(longitude)
+    const radiusScale = 1 - phase.eccentricity * Math.cos(eccentricAnomaly)
+
+    return {
+        angle: normalizeRadians(-longitude),
+        radiusScale,
+        x: radiusScale * Math.cos(longitude),
+        z: radiusScale * Math.sin(longitude),
+    }
 }
 
-export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
-    const orbitalPhase = PLANET_ORBITAL_PHASES[planet.name]
-    if (!orbitalPhase) return 0
-
+function getCircularOrbitState(orbitalPeriod: number, at: Date): OrbitState {
     const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
-    const meanMotion = (Math.PI * 2) / planet.orbitalPeriod
-    const meanAnomalyAtJ2000 = degToRad(
-        orbitalPhase.meanLongitudeAtJ2000 - orbitalPhase.longitudeOfPerihelion
-    )
+    const longitude = normalizeRadians(((Math.PI * 2) / orbitalPeriod) * elapsedDays)
 
-    const meanAnomaly = normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays)
-    const eccentricAnomaly = solveKeplerEquation(meanAnomaly, orbitalPhase.eccentricity)
-    const trueAnomaly = 2 * Math.atan2(
-        Math.sqrt(1 + orbitalPhase.eccentricity) * Math.sin(eccentricAnomaly / 2),
-        Math.sqrt(1 - orbitalPhase.eccentricity) * Math.cos(eccentricAnomaly / 2)
-    )
-
-    const heliocentricLongitude = trueAnomaly + degToRad(orbitalPhase.longitudeOfPerihelion)
-    return normalizeRadians(-heliocentricLongitude)
+    return {
+        angle: normalizeRadians(-longitude),
+        radiusScale: 1,
+        x: Math.cos(longitude),
+        z: Math.sin(longitude),
+    }
 }
 
-export function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
+function getOrbitPathPoints(eccentricity: number, longitudeOfPeriapsis: number, segments: number) {
+    const semiMinorAxis = Math.sqrt(1 - eccentricity * eccentricity)
+    const points: Array<{ x: number; z: number }> = []
+
+    for (let i = 0; i <= segments; i += 1) {
+        const eccentricAnomaly = (Math.PI * 2 * i) / segments
+        const localX = Math.cos(eccentricAnomaly) - eccentricity
+        const localZ = semiMinorAxis * Math.sin(eccentricAnomaly)
+
+        points.push({
+            x: localX * Math.cos(longitudeOfPeriapsis) - localZ * Math.sin(longitudeOfPeriapsis),
+            z: localX * Math.sin(longitudeOfPeriapsis) + localZ * Math.cos(longitudeOfPeriapsis),
+        })
+    }
+
+    return points
+}
+
+function getCircularOrbitPath(segments: number) {
+    const points: Array<{ x: number; z: number }> = []
+
+    for (let i = 0; i <= segments; i += 1) {
+        const angle = (Math.PI * 2 * i) / segments
+        points.push({
+            x: Math.cos(angle),
+            z: Math.sin(angle),
+        })
+    }
+
+    return points
 }
 
 function normalizeRadians(angle: number) {

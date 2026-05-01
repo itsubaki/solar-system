@@ -1,36 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
-
 export function Clock({
-    orbitSpeedScale,
+    simTime,
 }: {
-    orbitSpeedScale: number,
+    simTime: Date,
 }) {
-    const [simTime, setSimTime] = useState<Date>(() => new Date())
-
-    useEffect(() => {
-        let mounted = true
-        let lastReal = Date.now()
-        let frameId: number
-
-        const tick = () => {
-            const now = Date.now()
-            const elapsed = (now - lastReal) / 1000
-            lastReal = now
-            if (mounted) {
-                setSimTime((prev) => prev ? new Date(prev.getTime() + elapsed * 1000 * orbitSpeedScale) : new Date())
-                frameId = requestAnimationFrame(tick)
-            }
-        }
-
-        frameId = requestAnimationFrame(tick)
-        return () => {
-            mounted = false
-            cancelAnimationFrame(frameId)
-        }
-    }, [orbitSpeedScale])
-
     const y = simTime.getFullYear()
     const m = String(simTime.getMonth() + 1).padStart(2, '0')
     const d = String(simTime.getDate()).padStart(2, '0')
