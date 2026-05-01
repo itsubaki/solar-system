@@ -38,6 +38,33 @@ function OrbitLine({
     )
 }
 
+function AxialTiltIndicator({
+    radius,
+    tilt,
+    highlighted,
+}: {
+    radius: number
+    tilt: number
+    highlighted: boolean
+}) {
+    const axisLength = radius * 2.8
+    const axisRadius = Math.max(radius * 0.03, 0.0015)
+
+    return (
+        <group rotation={[tilt, 0, 0]}>
+            <mesh>
+                <cylinderGeometry args={[axisRadius, axisRadius, axisLength, 12]} />
+                <meshBasicMaterial
+                    color={highlighted ? "#ffffff" : "#cbd5e1"}
+                    transparent
+                    opacity={highlighted ? 0.95 : 0.8}
+                    depthWrite={false}
+                />
+            </mesh>
+        </group>
+    )
+}
+
 export function Planet({
     data,
     onSelect,
@@ -67,6 +94,7 @@ export function Planet({
     void cameraDistance
     const orbitalInclination = degToRad(data.orbitalInclination)
     const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
+    const axialTilt = -degToRad(data.obliquity)
     const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
     const orbitPoints = useMemo(
         () => getPlanetOrbitPath(data).map((point) => [
@@ -147,8 +175,14 @@ export function Planet({
                         />
                     </mesh>
 
+                    <AxialTiltIndicator
+                        radius={radius}
+                        tilt={axialTilt}
+                        highlighted={hovered || isSelected}
+                    />
+
                     {Array.isArray(data.rings) && data.rings.map((ring, i) => (
-                        <mesh key={i} rotation={[Math.PI / 2 + degToRad(data.obliquity), 0, 0]}>
+                        <mesh key={i} rotation={[Math.PI / 2 + axialTilt, 0, 0]}>
                             <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
                             <shaderMaterial
                                 attach="material"
