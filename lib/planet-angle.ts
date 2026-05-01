@@ -225,7 +225,7 @@ function getOrbitState(orbitalPeriod: number, phase: OrbitPhase, at: Date): Orbi
         angle: normalizeRadians(-longitude),
         radiusScale,
         x: radiusScale * Math.cos(longitude),
-        z: radiusScale * Math.sin(longitude),
+        z: -radiusScale * Math.sin(longitude),
     }
 }
 
@@ -237,7 +237,7 @@ function getCircularOrbitState(orbitalPeriod: number, at: Date): OrbitState {
         angle: normalizeRadians(-longitude),
         radiusScale: 1,
         x: Math.cos(longitude),
-        z: Math.sin(longitude),
+        z: -Math.sin(longitude),
     }
 }
 
@@ -252,7 +252,7 @@ function getOrbitPathPoints(eccentricity: number, longitudeOfPeriapsis: number, 
 
         points.push({
             x: localX * Math.cos(longitudeOfPeriapsis) - localZ * Math.sin(longitudeOfPeriapsis),
-            z: localX * Math.sin(longitudeOfPeriapsis) + localZ * Math.cos(longitudeOfPeriapsis),
+            z: -(localX * Math.sin(longitudeOfPeriapsis) + localZ * Math.cos(longitudeOfPeriapsis)),
         })
     }
 
@@ -266,7 +266,7 @@ function getCircularOrbitPath(segments: number) {
         const angle = (Math.PI * 2 * i) / segments
         points.push({
             x: Math.cos(angle),
-            z: Math.sin(angle),
+            z: -Math.sin(angle),
         })
     }
 
