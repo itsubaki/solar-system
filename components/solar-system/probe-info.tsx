@@ -52,25 +52,6 @@ export function ProbeInfo({
                             {Math.round(probe.distance).toLocaleString()} km / {(probe.distance / ASTRONOMICAL_UNIT).toFixed(2)} AU
                         </p>
                     </div>
-                    <div>
-                        <p className="text-[10px] text-muted-foreground">Trajectory</p>
-                        <p className="text-xs font-medium text-foreground">3D outbound vector</p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-muted-foreground">Mission</p>
-                        <p className="text-xs font-medium text-foreground">Interstellar probe</p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-muted-foreground">Ecliptic Direction</p>
-                        <p className="text-xs font-medium text-foreground">
-                            {probe.direction.eclipticLongitudeDegrees.toFixed(1)}°, {probe.direction.eclipticLatitudeDegrees >= 0 ? "+" : ""}
-                            {probe.direction.eclipticLatitudeDegrees.toFixed(1)}°
-                        </p>
-                    </div>
-                    <div>
-                        <p className="text-[10px] text-muted-foreground">Reference</p>
-                        <p className="text-xs font-medium text-foreground">{probe.direction.source}</p>
-                    </div>
                 </div>
             </CardContent>
         </Card>
