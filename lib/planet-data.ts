@@ -71,6 +71,73 @@ export const SUN_DATA = {
     description: "The Sun is a G-type main-sequence star at the center of our Solar System."
 }
 
+const CERES: PlanetData = {
+    name: "Ceres",
+    radius: 939.4 / 2,
+    distance: ASTRONOMICAL_UNIT * 2.765615651508659,
+    poleDirection: { longitude: 291.421, latitude: 66.758 },
+    orbitalInclination: 10.58788658206854,
+    longitudeOfAscendingNode: 80.24963090816965,
+    orbitalPeriod: 1679.910572771899,
+    rotationPeriod: 9.07417 / 24,
+    color: "#9A9A96",
+    description: "The largest object in the asteroid belt and the only dwarf planet in the inner solar system."
+}
+
+const PLUTO: PlanetData = {
+    name: "Pluto",
+    radius: 1188.3,
+    distance: ASTRONOMICAL_UNIT * 39.48,
+    poleDirection: { longitude: 137.351, latitude: -22.816 },
+    orbitalInclination: 17.16,
+    longitudeOfAscendingNode: 110.299,
+    orbitalPeriod: 90560,
+    rotationPeriod: 6.39,
+    color: "#B89C7A",
+    description: "A dwarf planet in the Kuiper Belt with a strongly inclined, eccentric orbit."
+}
+
+const HAUMEA: PlanetData = {
+    name: "Haumea",
+    radius: 1740 / 2,
+    distance: ASTRONOMICAL_UNIT * 43.00549889718357,
+    poleDirection: { longitude: 0, latitude: 90 },
+    orbitalInclination: 28.20840581678499,
+    longitudeOfAscendingNode: 121.7972905747552,
+    orbitalPeriod: 103011.1918775399,
+    rotationPeriod: 3.9154 / 24,
+    color: "#E6E6E6",
+    description: "An elongated dwarf planet in the Kuiper Belt that spins so quickly its shape is stretched like a football."
+}
+
+const MAKEMAKE: PlanetData = {
+    name: "Makemake",
+    radius: 715,
+    distance: ASTRONOMICAL_UNIT * 45.51068193198885,
+    poleDirection: { longitude: 0, latitude: 90 },
+    orbitalInclination: 29.03230611452533,
+    longitudeOfAscendingNode: 79.26892142638791,
+    orbitalPeriod: 112142.0372181563,
+    rotationPeriod: 22.8266 / 24,
+    color: "#C96F4A",
+    description: "A reddish dwarf planet in the Kuiper Belt and one of the brightest known objects beyond Neptune."
+}
+
+const ERIS: PlanetData = {
+    name: "Eris",
+    radius: 1200,
+    distance: ASTRONOMICAL_UNIT * 67.99638658496472,
+    poleDirection: { longitude: 0, latitude: 90 },
+    orbitalInclination: 43.86893125983033,
+    longitudeOfAscendingNode: 36.02717321924018,
+    orbitalPeriod: 204798.6919173598,
+    rotationPeriod: 25.9 / 24,
+    color: "#E7EDF3",
+    description: "A distant dwarf planet in the scattered disk, with a highly inclined and strongly eccentric orbit beyond Pluto."
+}
+
+export const DWARF_PLANETS: PlanetData[] = [CERES, PLUTO, HAUMEA, MAKEMAKE, ERIS]
+
 export const PLANETS: PlanetData[] = [
     {
         name: "Mercury",
@@ -148,18 +215,7 @@ export const PLANETS: PlanetData[] = [
         ],
         description: "The Red Planet, with the largest volcano in the Solar System."
     },
-    {
-        name: "Ceres",
-        radius: 939.4 / 2,
-        distance: ASTRONOMICAL_UNIT * 2.765615651508659,
-        poleDirection: { longitude: 291.421, latitude: 66.758 },
-        orbitalInclination: 10.58788658206854,
-        longitudeOfAscendingNode: 80.24963090816965,
-        orbitalPeriod: 1679.910572771899,
-        rotationPeriod: 9.07417 / 24,
-        color: "#9A9A96",
-        description: "The largest object in the asteroid belt and the only dwarf planet in the inner solar system."
-    },
+    CERES,
     {
         name: "Jupiter",
         radius: 69911,
@@ -331,52 +387,8 @@ export const PLANETS: PlanetData[] = [
         ],
         description: "The windiest planet with supersonic storms."
     },
-    {
-        name: "Pluto",
-        radius: 1188.3,
-        distance: ASTRONOMICAL_UNIT * 39.48,
-        poleDirection: { longitude: 137.351, latitude: -22.816 },
-        orbitalInclination: 17.16,
-        longitudeOfAscendingNode: 110.299,
-        orbitalPeriod: 90560,
-        rotationPeriod: 6.39,
-        color: "#B89C7A",
-        description: "A dwarf planet in the Kuiper Belt with a strongly inclined, eccentric orbit."
-    },
-    {
-        name: "Haumea",
-        radius: 1740 / 2,
-        distance: ASTRONOMICAL_UNIT * 43.00549889718357,
-        poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 28.20840581678499,
-        longitudeOfAscendingNode: 121.7972905747552,
-        orbitalPeriod: 103011.1918775399,
-        rotationPeriod: 3.9154 / 24,
-        color: "#E6E6E6",
-        description: "An elongated dwarf planet in the Kuiper Belt that spins so quickly its shape is stretched like a football."
-    },
-    {
-        name: "Makemake",
-        radius: 715,
-        distance: ASTRONOMICAL_UNIT * 45.51068193198885,
-        poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 29.03230611452533,
-        longitudeOfAscendingNode: 79.26892142638791,
-        orbitalPeriod: 112142.0372181563,
-        rotationPeriod: 22.8266 / 24,
-        color: "#C96F4A",
-        description: "A reddish dwarf planet in the Kuiper Belt and one of the brightest known objects beyond Neptune."
-    },
-    {
-        name: "Eris",
-        radius: 1200,
-        distance: ASTRONOMICAL_UNIT * 67.99638658496472,
-        poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 43.86893125983033,
-        longitudeOfAscendingNode: 36.02717321924018,
-        orbitalPeriod: 204798.6919173598,
-        rotationPeriod: 25.9 / 24,
-        color: "#E7EDF3",
-        description: "A distant dwarf planet in the scattered disk, with a highly inclined and strongly eccentric orbit beyond Pluto."
-    }
+    PLUTO,
+    HAUMEA,
+    MAKEMAKE,
+    ERIS
 ]

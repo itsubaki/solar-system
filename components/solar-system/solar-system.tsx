@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect, useMemo, useRef } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
-import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
+import { PLANETS, DWARF_PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
 import { COMETS, type CometData } from "@/lib/comet-data"
 import { PROBES, type ProbeData } from "@/lib/probe-data"
 import { Clock } from "./clock"
@@ -55,9 +55,10 @@ const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
 const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
 const MIN_CAMERA_DISTANCE = 0.15
-const MAX_CAMERA_DISTANCE = 200
+const MAX_CAMERA_DISTANCE = 400
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
+const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
 
 function PlanetOrbitControls({
     focusTarget,
@@ -239,6 +240,7 @@ function Scene({
     selectedComet,
     selectedPlanet,
     selectedProbe,
+    showDwarfPlanets,
     showComets,
     showProbes,
     onSelectComet,
@@ -250,6 +252,7 @@ function Scene({
     selectedComet: CometData | null
     selectedPlanet: PlanetData | null
     selectedProbe: ProbeData | null
+    showDwarfPlanets: boolean
     showComets: boolean
     showProbes: boolean
     onSelectComet: (comet: CometData | null) => void
@@ -258,6 +261,10 @@ function Scene({
     planetScaleOption: PlanetScaleOption
     simTimeRef: { current: Date }
 }) {
+    const visiblePlanets = useMemo(
+        () => PLANETS.filter((planet) => showDwarfPlanets || !DWARF_PLANET_NAMES.has(planet.name)),
+        [showDwarfPlanets]
+    )
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
     const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
     const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_OFFSET.length())
@@ -309,7 +316,7 @@ function Scene({
                 }}
             />
 
-            {PLANETS.map((planet) => (
+            {visiblePlanets.map((planet) => (
                 <Planet
                     key={planet.name}
                     data={planet}
@@ -363,16 +370,21 @@ function Scene({
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
-    const [showComets, setShowComets] = useState(false)
-    const [showProbes, setShowProbes] = useState(false)
+    const [showDwarfPlanets, setShowDwarfPlanets] = useState(true)
+    const [showComets, setShowComets] = useState(true)
+    const [showProbes, setShowProbes] = useState(true)
+    const [showPlanetInfo, setShowPlanetInfo] = useState(true)
     const [selectedComet, setSelectedComet] = useState<CometData | null>(null)
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
     const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
-    const [showPlanetInfo, setShowPlanetInfo] = useState(false)
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
+    const visiblePlanets = useMemo(
+        () => PLANETS.filter((planet) => showDwarfPlanets || !DWARF_PLANET_NAMES.has(planet.name)),
+        [showDwarfPlanets]
+    )
 
     useEffect(() => {
         let frameId: number
@@ -423,23 +435,23 @@ export function SolarSystem() {
                     break;
                 case ">":
                     event.preventDefault();
-                    if (PLANETS.length === 0) return;
+                    if (visiblePlanets.length === 0) return;
                     let nextIndex = 0;
                     if (selectedPlanet) {
-                        const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-                        nextIndex = (currentIndex + 1) % PLANETS.length;
+                        const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
+                        nextIndex = (currentIndex + 1) % visiblePlanets.length;
                     }
-                    setSelectedPlanet(PLANETS[nextIndex]);
+                    setSelectedPlanet(visiblePlanets[nextIndex]);
                     break;
                 case "<":
                     event.preventDefault();
-                    if (PLANETS.length === 0) return;
-                    let prevIndex = PLANETS.length - 1;
+                    if (visiblePlanets.length === 0) return;
+                    let prevIndex = visiblePlanets.length - 1;
                     if (selectedPlanet) {
-                        const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-                        prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
+                        const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
+                        prevIndex = (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length;
                     }
-                    setSelectedPlanet(PLANETS[prevIndex]);
+                    setSelectedPlanet(visiblePlanets[prevIndex]);
                     break;
                 case "a":
                     event.preventDefault();
@@ -471,8 +483,18 @@ export function SolarSystem() {
                         return next;
                     });
                     break;
+                case "d":
+                    event.preventDefault();
+                    setShowDwarfPlanets((prev) => {
+                        const next = !prev;
+                        if (!next && selectedPlanet && DWARF_PLANET_NAMES.has(selectedPlanet.name)) {
+                            setSelectedPlanet(null);
+                            setShowPlanetInfo(false);
+                        }
+                        return next;
+                    });
+                    break;
                 case "v":
-                case "V":
                     event.preventDefault();
                     setShowProbes((prev) => {
                         const next = !prev;
@@ -492,26 +514,26 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [selectedComet, selectedPlanet, selectedProbe]);
+    }, [selectedComet, selectedPlanet, selectedProbe, visiblePlanets]);
 
     const selectNextPlanet = () => {
-        if (PLANETS.length === 0) return;
+        if (visiblePlanets.length === 0) return;
         let nextIndex = 0;
         if (selectedPlanet) {
-            const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-            nextIndex = (currentIndex + 1) % PLANETS.length;
+            const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
+            nextIndex = (currentIndex + 1) % visiblePlanets.length;
         }
-        setSelectedPlanet(PLANETS[nextIndex]);
+        setSelectedPlanet(visiblePlanets[nextIndex]);
     };
 
     const selectPrevPlanet = () => {
-        if (PLANETS.length === 0) return;
-        let prevIndex = PLANETS.length - 1;
+        if (visiblePlanets.length === 0) return;
+        let prevIndex = visiblePlanets.length - 1;
         if (selectedPlanet) {
-            const currentIndex = PLANETS.findIndex(p => p.name === selectedPlanet.name);
-            prevIndex = (currentIndex - 1 + PLANETS.length) % PLANETS.length;
+            const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
+            prevIndex = (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length;
         }
-        setSelectedPlanet(PLANETS[prevIndex]);
+        setSelectedPlanet(visiblePlanets[prevIndex]);
     };
 
     return (
@@ -545,12 +567,13 @@ export function SolarSystem() {
                 <ul className="space-y-1">
                     <li><b>Arrow keys</b>: Rotate camera</li>
                     <li><b>r</b> / <b>R</b>: Reset camera</li>
-                    <li><b>+</b> / <b>-</b>: Zoom in / out</li>
-                    <li><b>&lt;</b> / <b>&gt;</b>: Previous / Next planet</li>
+                    <li><b>+</b> / <b>-</b>: Zoom camera</li>
+                    <li><b>&lt;</b> / <b>&gt;</b>: Move planet</li>
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                     <li><b>z</b> / <b>x</b>: Scale planet radius</li>
-                    <li><b>v</b>: Show / hide probes</li>
-                    <li><b>c</b>: Show / hide comets</li>
+                    <li><b>d</b>: Show dwarf planets</li>
+                    <li><b>v</b>: Show probes</li>
+                    <li><b>c</b>: Show comets</li>
                 </ul>
             </div>
 
@@ -590,6 +613,7 @@ export function SolarSystem() {
                             selectedComet={selectedComet}
                             selectedPlanet={selectedPlanet}
                             selectedProbe={selectedProbe}
+                            showDwarfPlanets={showDwarfPlanets}
                             showComets={showComets}
                             showProbes={showProbes}
                             onSelectComet={(comet) => {

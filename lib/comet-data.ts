@@ -25,7 +25,7 @@ export interface CometData {
 
 export const COMETS: CometData[] = [
     {
-        name: "1P/Halley",
+        name: "Halley",
         radius: 5.5,
         displayRadius: 4500,
         distance: ASTRONOMICAL_UNIT * 17.8,
@@ -45,7 +45,7 @@ export const COMETS: CometData[] = [
         description: "A short-period comet visible from Earth roughly every 75 years, famous for its bright tail and retrograde orbit."
     },
     {
-        name: "2P/Encke",
+        name: "Encke",
         radius: 2.4,
         displayRadius: 3200,
         distance: ASTRONOMICAL_UNIT * 2.22,
