@@ -5,8 +5,11 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
 import { PLANETS, ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
+import { COMETS, type CometData } from "@/lib/comet-data"
 import { PROBES, type ProbeData } from "@/lib/probe-data"
 import { Clock } from "./clock"
+import { Comet } from "./comet"
+import { CometInfo } from "./comet-info"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
 import { Probe } from "./probe"
@@ -233,17 +236,23 @@ function PlanetOrbitControls({
 }
 
 function Scene({
+    selectedComet,
     selectedPlanet,
     selectedProbe,
+    showComets,
     showProbes,
+    onSelectComet,
     onSelectPlanet,
     onSelectProbe,
     planetScaleOption,
     simTimeRef,
 }: {
+    selectedComet: CometData | null
     selectedPlanet: PlanetData | null
     selectedProbe: ProbeData | null
+    showComets: boolean
     showProbes: boolean
+    onSelectComet: (comet: CometData | null) => void
     onSelectPlanet: (planet: PlanetData | null) => void
     onSelectProbe: (probe: ProbeData | null) => void
     planetScaleOption: PlanetScaleOption
@@ -263,7 +272,7 @@ function Scene({
     })
 
     useEffect(() => {
-        if (selectedPlanet || selectedProbe) {
+        if (selectedPlanet || selectedProbe || selectedComet) {
             return
         }
 
@@ -273,7 +282,7 @@ function Scene({
         }
 
         focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
-    }, [selectedPlanet, selectedProbe])
+    }, [selectedComet, selectedPlanet, selectedProbe])
 
     return (
         <>
@@ -290,6 +299,7 @@ function Scene({
 
             <Sun
                 onSelect={() => {
+                    onSelectComet(null)
                     onSelectPlanet(null)
                     onSelectProbe(null)
                 }}
@@ -307,6 +317,21 @@ function Scene({
                     isSelected={selectedPlanet?.name === planet.name}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
                     cameraDistance={cameraDistance}
+                    simTimeRef={simTimeRef}
+                    scale={{
+                        distance: 1 / ASTRONOMICAL_UNIT,
+                        radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
+                    }}
+                />
+            ))}
+
+            {showComets && COMETS.map((comet) => (
+                <Comet
+                    key={comet.name}
+                    data={comet}
+                    onSelect={onSelectComet}
+                    isSelected={selectedComet?.name === comet.name}
+                    focusTargetRef={selectedComet?.name === comet.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
@@ -338,7 +363,9 @@ function Scene({
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
+    const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
+    const [selectedComet, setSelectedComet] = useState<CometData | null>(null)
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
     const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
     const [showPlanetInfo, setShowPlanetInfo] = useState(false)
@@ -389,6 +416,7 @@ export function SolarSystem() {
             switch (event.key) {
                 case "R":
                     event.preventDefault();
+                    setSelectedComet(null);
                     setSelectedPlanet(null);
                     setSelectedProbe(null);
                     setShowPlanetInfo(false);
@@ -429,6 +457,20 @@ export function SolarSystem() {
                     event.preventDefault();
                     setPlanetScaleIndex((prev) => Math.min(PLANET_SCALE_OPTIONS.length - 1, prev + 1));
                     break;
+                case "c":
+                case "C":
+                    event.preventDefault();
+                    setShowComets((prev) => {
+                        const next = !prev;
+                        if (!next) {
+                            setSelectedComet(null);
+                            if (selectedComet) {
+                                setShowPlanetInfo(false);
+                            }
+                        }
+                        return next;
+                    });
+                    break;
                 case "v":
                 case "V":
                     event.preventDefault();
@@ -436,7 +478,9 @@ export function SolarSystem() {
                         const next = !prev;
                         if (!next) {
                             setSelectedProbe(null);
-                            setShowPlanetInfo(false);
+                            if (selectedProbe) {
+                                setShowPlanetInfo(false);
+                            }
                         }
                         return next;
                     });
@@ -448,7 +492,7 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [selectedPlanet]);
+    }, [selectedComet, selectedPlanet, selectedProbe]);
 
     const selectNextPlanet = () => {
         if (PLANETS.length === 0) return;
@@ -505,7 +549,8 @@ export function SolarSystem() {
                     <li><b>&lt;</b> / <b>&gt;</b>: Previous / Next planet</li>
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                     <li><b>z</b> / <b>x</b>: Scale planet radius</li>
-                    <li><b>v</b>: Show / hide Voyager probes</li>
+                    <li><b>v</b>: Show / hide probes</li>
+                    <li><b>c</b>: Show / hide comets</li>
                 </ul>
             </div>
 
@@ -542,9 +587,21 @@ export function SolarSystem() {
                 <Canvas className="size-full touch-none">
                     <Suspense fallback={null}>
                         <Scene
+                            selectedComet={selectedComet}
                             selectedPlanet={selectedPlanet}
                             selectedProbe={selectedProbe}
+                            showComets={showComets}
                             showProbes={showProbes}
+                            onSelectComet={(comet) => {
+                                if (comet && selectedComet && comet.name === selectedComet.name) {
+                                    setShowPlanetInfo((prev) => !prev);
+                                } else {
+                                    setSelectedComet(comet);
+                                    setSelectedPlanet(null);
+                                    setSelectedProbe(null);
+                                    setShowPlanetInfo(!!comet);
+                                }
+                            }}
                             onSelectPlanet={(planet) => {
                                 if (planet && selectedPlanet && planet.name === selectedPlanet.name) {
                                     setShowPlanetInfo((prev) => {
@@ -555,6 +612,7 @@ export function SolarSystem() {
                                         }
                                     });
                                 } else {
+                                    setSelectedComet(null);
                                     setSelectedPlanet(planet);
                                     setSelectedProbe(null);
                                     setShowPlanetInfo(!!planet);
@@ -570,6 +628,7 @@ export function SolarSystem() {
                                         }
                                     });
                                 } else {
+                                    setSelectedComet(null);
                                     setSelectedProbe(probe);
                                     setSelectedPlanet(null);
                                     setShowPlanetInfo(!!probe);
@@ -586,6 +645,15 @@ export function SolarSystem() {
                 <div className="relative z-20">
                     <PlanetInfo
                         planet={selectedPlanet}
+                        onClose={() => setShowPlanetInfo(false)}
+                    />
+                </div>
+            )}
+
+            {selectedComet && showPlanetInfo && (
+                <div className="relative z-20">
+                    <CometInfo
+                        comet={selectedComet}
                         onClose={() => setShowPlanetInfo(false)}
                     />
                 </div>
