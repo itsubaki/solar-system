@@ -262,7 +262,7 @@ function Scene({
     simTimeRef: { current: Date }
 }) {
     const visiblePlanets = useMemo(
-        () => PLANETS.filter((planet) => showDwarfPlanets || !DWARF_PLANET_NAMES.has(planet.name)),
+        () => showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS,
         [showDwarfPlanets]
     )
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
@@ -382,7 +382,7 @@ export function SolarSystem() {
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
     const visiblePlanets = useMemo(
-        () => PLANETS.filter((planet) => showDwarfPlanets || !DWARF_PLANET_NAMES.has(planet.name)),
+        () => showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS,
         [showDwarfPlanets]
     )
 
@@ -572,8 +572,8 @@ export function SolarSystem() {
                     <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
                     <li><b>z</b> / <b>x</b>: Scale planet radius</li>
                     <li><b>d</b>: Show dwarf planets</li>
-                    <li><b>v</b>: Show probes</li>
                     <li><b>c</b>: Show comets</li>
+                    <li><b>v</b>: Show probes</li>
                 </ul>
             </div>
 
