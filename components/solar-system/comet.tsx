@@ -120,11 +120,6 @@ export function Comet({
                     />
                 </mesh>
 
-                <mesh position={[radius * 1.6, 0, 0]}>
-                    <coneGeometry args={[radius * 0.7, radius * 3.5, 12]} />
-                    <meshBasicMaterial color="#dffcff" transparent opacity={hovered || isSelected ? 0.45 : 0.22} />
-                </mesh>
-
                 <Html
                     position={[0, radius + 0.1, 0]}
                     center
