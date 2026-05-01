@@ -1,15 +1,30 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
+
+function formatDateTime(simTime: Date) {
+    const y = simTime.getFullYear()
+    const m = String(simTime.getMonth() + 1).padStart(2, '0')
+    const d = String(simTime.getDate()).padStart(2, '0')
+    const hours = String(simTime.getHours()).padStart(2, '0')
+    const minutes = String(simTime.getMinutes()).padStart(2, '0')
+    const seconds = String(simTime.getSeconds()).padStart(2, '0')
+
+    return `${y}/${m}/${d} ${hours}:${minutes}:${seconds}`
+}
+
 export function Clock({
     simTime,
 }: {
     simTime: Date,
 }) {
-    const y = simTime.getFullYear()
-    const m = String(simTime.getMonth() + 1).padStart(2, '0')
-    const d = String(simTime.getDate()).padStart(2, '0')
-    const date = `${y}/${m}/${d}`
-    const time = simTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    const isMounted = useSyncExternalStore(
+        () => () => { },
+        () => true,
+        () => false,
+    )
+
+    const text = isMounted ? formatDateTime(simTime) : "0000/00/00 00:00:00"
 
     return (
         <div style={{
@@ -25,6 +40,6 @@ export function Clock({
             userSelect: 'none',
             minWidth: 120,
             textAlign: 'center',
-        }}>{date} {time}</div>
+        }}>{text}</div>
     )
 }
