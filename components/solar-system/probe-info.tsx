@@ -39,7 +39,7 @@ export function ProbeInfo({
                     {probe.description}
                 </p>
 
-                <div className="grid grid-cols-[3fr_7fr] gap-3 pt-2 border-t border-border">
+                <div className="grid grid-cols-[2.5fr_7.5fr] gap-3 pt-2 border-t border-border">
                     <div>
                         <p className="text-[10px] text-muted-foreground">Body Size</p>
                         <p className="text-xs font-medium text-foreground">
