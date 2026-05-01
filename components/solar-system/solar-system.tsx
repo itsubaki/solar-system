@@ -240,12 +240,23 @@ function Scene({
     planetScaleOption: PlanetScaleOption
 }) {
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
+    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
+    const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_OFFSET.length())
     const initialOrbitAngles = useMemo(
         () => Object.fromEntries(
             PLANETS.map((planet) => [planet.name, getInitialOrbitAngle(planet, new Date())])
         ),
         []
     )
+
+    useFrame(({ camera }) => {
+        const currentTarget = focusedPlanetPositionRef.current ?? DEFAULT_CAMERA_TARGET
+        const nextCameraDistance = camera.position.distanceTo(currentTarget)
+        if (Math.abs(nextCameraDistance - lastCameraDistanceRef.current) < 0.005) return
+
+        lastCameraDistanceRef.current = nextCameraDistance
+        setCameraDistance(nextCameraDistance)
+    })
 
     useEffect(() => {
         if (selectedPlanet) {
@@ -289,6 +300,7 @@ function Scene({
                     onSelect={onSelectPlanet}
                     isSelected={selectedPlanet?.name === planet.name}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
+                    cameraDistance={cameraDistance}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
                         radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
