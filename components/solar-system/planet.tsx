@@ -14,7 +14,10 @@ type FocusTargetRef = {
 }
 
 const SECONDS_PER_DAY = 60 * 60 * 24 // 86400 seconds per day
-const ORBIT_LINE_WIDTH = 0.01
+const BASE_ORBIT_LINE_WIDTH = 0.01
+const BASE_CAMERA_DISTANCE = Math.sqrt(12)
+const MIN_ORBIT_LINE_WIDTH = 0.002
+const MAX_ORBIT_LINE_WIDTH = 0.08
 
 export function Planet({
     data,
@@ -22,6 +25,7 @@ export function Planet({
     onSelect,
     isSelected,
     focusTargetRef,
+    cameraDistance,
     scale,
 }: {
     data: PlanetData
@@ -29,6 +33,7 @@ export function Planet({
     onSelect: (planet: PlanetData | null) => void
     isSelected: boolean
     focusTargetRef?: FocusTargetRef | null
+    cameraDistance: number
     scale: {
         distance: number,
         radius: number,
@@ -71,14 +76,18 @@ export function Planet({
     const radius = data.radius * scale.radius
     const orbitalInclination = degToRad(data.orbitalInclination)
     const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
+    const orbitLineWidth = useMemo(() => {
+        const scaledWidth = BASE_ORBIT_LINE_WIDTH * (cameraDistance / BASE_CAMERA_DISTANCE)
+        return Math.min(MAX_ORBIT_LINE_WIDTH, Math.max(MIN_ORBIT_LINE_WIDTH, scaledWidth))
+    }, [cameraDistance])
 
     return (
         <group rotation={[0, longitudeOfAscendingNode, 0]}>
             <group ref={groupRef} rotation={[0, initialOrbitAngle, orbitalInclination]}>
                 <mesh rotation={[-Math.PI / 2, 0, 0]}>
                     <ringGeometry args={[
-                        distance - ORBIT_LINE_WIDTH,
-                        distance + ORBIT_LINE_WIDTH,
+                        distance - orbitLineWidth,
+                        distance + orbitLineWidth,
                         128,
                     ]} />
                     <meshBasicMaterial color="#4fc3f7" transparent opacity={0.4} side={DoubleSide} />
