@@ -229,7 +229,7 @@ function PlanetOrbitControls({
         enablePan={false}
         enableZoom
         enableRotate={false}
-        maxPolarAngle={Math.PI / 2 - Math.PI / 16}
+        maxPolarAngle={Math.PI}
         minDistance={MIN_CAMERA_DISTANCE}
         maxDistance={MAX_CAMERA_DISTANCE}
         autoRotate={false}
