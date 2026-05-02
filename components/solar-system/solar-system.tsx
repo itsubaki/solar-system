@@ -427,7 +427,7 @@ export function SolarSystem() {
     const [showDwarfPlanets, setShowDwarfPlanets] = useState(false)
     const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
-    const [showPlanetInfo, setShowPlanetInfo] = useState(true)
+    const [showPlanetInfo, setShowPlanetInfo] = useState(false)
     const [selectedComet, setSelectedComet] = useState<CometData | null>(null)
     const [selectedPlanet, setSelectedPlanet] = useState<PlanetData | null>(null)
     const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
