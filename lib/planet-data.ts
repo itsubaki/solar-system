@@ -319,8 +319,6 @@ export const PLANETS: PlanetData[] = [
         orbitalPeriod: 30687,
         rotationPeriod: 0.72,
         color: "#B5E3E3",
-        // Radii follow the NASA PDS Ring-Moon Systems Node table for Uranus's named rings.
-        // Ring order and broad color families follow NASA's Uranus facts page.
         rings: [
             {
                 innerRadius: 37850,
@@ -438,7 +436,49 @@ export const PLANETS: PlanetData[] = [
         longitudeOfAscendingNode: 131.784,
         orbitalPeriod: 60190,
         rotationPeriod: 0.67,
-        color: "#5B5DDF",
+        color: "#5f83b5",
+        rings: [
+            {
+                innerRadius: 41000,
+                outerRadius: 43000,
+                color: "#50484a",
+                outerColor: "#696062",
+                innerAlpha: 0.05,
+                outerAlpha: 0.008
+            },
+            {
+                innerRadius: 53143.5,
+                outerRadius: 53256.5,
+                color: "#62595a",
+                outerColor: "#84797a",
+                innerAlpha: 0.12,
+                outerAlpha: 0.03
+            },
+            {
+                innerRadius: 53200,
+                outerRadius: 57200,
+                color: "#434549",
+                outerColor: "#5b5d61",
+                innerAlpha: 0.025,
+                outerAlpha: 0.004
+            },
+            {
+                innerRadius: 57150,
+                outerRadius: 57250,
+                color: "#6f6666",
+                outerColor: "#928787",
+                innerAlpha: 0.08,
+                outerAlpha: 0.02
+            },
+            {
+                innerRadius: 62925.5,
+                outerRadius: 62940.5,
+                color: "#776d6c",
+                outerColor: "#9a8e8c",
+                innerAlpha: 0.14,
+                outerAlpha: 0.05
+            }
+        ],
         satellites: [
             {
                 name: "Triton",

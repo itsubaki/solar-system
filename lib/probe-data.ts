@@ -12,7 +12,6 @@ export interface EscapeTrajectoryData {
 export interface ProbeDirectionData {
     eclipticLongitudeDegrees: number
     eclipticLatitudeDegrees: number
-    source: string
 }
 
 export interface ProbeData {
@@ -39,7 +38,6 @@ export const PROBES: ProbeData[] = [
         direction: {
             eclipticLongitudeDegrees: 256.729,
             eclipticLatitudeDegrees: 35.157,
-            source: "NASA/JPL Horizons heliocentric ecliptic vector, 2026-05-01 TDB reference"
         },
         color: "#9FD8FF",
         emissive: "#E6F6FF",
@@ -63,7 +61,6 @@ export const PROBES: ProbeData[] = [
         direction: {
             eclipticLongitudeDegrees: 290.689,
             eclipticLatitudeDegrees: -38.418,
-            source: "NASA/JPL Horizons heliocentric ecliptic vector, 2026-05-01 TDB reference"
         },
         color: "#FFE3A1",
         emissive: "#FFF7DD",
