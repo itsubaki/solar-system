@@ -60,6 +60,11 @@ const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
 const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
 
+function getVisiblePlanets(showDwarfPlanets: boolean) {
+    return [...(showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS)]
+        .sort((leftPlanet, rightPlanet) => leftPlanet.distance - rightPlanet.distance)
+}
+
 function PlanetOrbitControls({
     focusTarget,
 }: {
@@ -262,7 +267,7 @@ function Scene({
     simTimeRef: { current: Date }
 }) {
     const visiblePlanets = useMemo(
-        () => showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS,
+        () => getVisiblePlanets(showDwarfPlanets),
         [showDwarfPlanets]
     )
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
@@ -382,7 +387,7 @@ export function SolarSystem() {
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
     const visiblePlanets = useMemo(
-        () => showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS,
+        () => getVisiblePlanets(showDwarfPlanets),
         [showDwarfPlanets]
     )
 
