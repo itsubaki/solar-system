@@ -83,7 +83,7 @@ export function Satellite({
 
     return (
         <>
-            <OrbitLine points={orbitPoints} color="#8fd3ff" />
+            <OrbitLine points={orbitPoints} color={satellite.color} />
 
             <group
                 ref={groupRef}

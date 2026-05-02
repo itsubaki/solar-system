@@ -68,6 +68,7 @@ const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
 const MIN_CAMERA_DISTANCE = 0.15
 const MAX_CAMERA_DISTANCE = 400
+const MAX_POLAR_ANGLE = Math.PI
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
 const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
@@ -284,7 +285,7 @@ function PlanetOrbitControls({
         enablePan={false}
         enableZoom
         enableRotate={false}
-        maxPolarAngle={Math.PI}
+        maxPolarAngle={MAX_POLAR_ANGLE}
         minDistance={MIN_CAMERA_DISTANCE}
         maxDistance={MAX_CAMERA_DISTANCE}
         autoRotate={false}
