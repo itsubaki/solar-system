@@ -6,7 +6,6 @@ export interface EscapeTrajectoryData {
     startDistanceAu: number
     referenceDistanceAu: number
     speedAuPerYear: number
-    maxDistanceAu: number
 }
 
 export interface ProbeDirectionData {
@@ -48,7 +47,6 @@ export const PROBES: ProbeData[] = [
             startDistanceAu: 1,
             referenceDistanceAu: 170.425289,
             speedAuPerYear: 3.569,
-            maxDistanceAu: 190,
         },
         description: "NASA's farthest spacecraft, launched in 1977 and now moving through interstellar space beyond the heliosphere."
     },
@@ -71,7 +69,6 @@ export const PROBES: ProbeData[] = [
             startDistanceAu: 1,
             referenceDistanceAu: 142.756110,
             speedAuPerYear: 3.219,
-            maxDistanceAu: 160,
         },
         description: "The only probe to visit Uranus and Neptune, continuing outward on an interstellar mission after its 1977 launch."
     }

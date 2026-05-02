@@ -2,6 +2,7 @@ import type { ProbeData } from "./probe-data"
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 const KM_PER_AU = 149_600_000
+const PROBE_GUIDE_LINE_MAX_DISTANCE_AU = 100_000
 
 type ProbeTrajectoryState = {
     angle: number
@@ -38,15 +39,15 @@ export function getProbeTrajectoryPosition(probe: ProbeData, at = new Date()): P
 export function getProbeTrajectoryPath(probe: ProbeData, segments = 256) {
     const {
         startDistanceAu,
-        maxDistanceAu,
     } = probe.escapeTrajectory
+    const pathDistanceAu = Math.max(startDistanceAu, PROBE_GUIDE_LINE_MAX_DISTANCE_AU)
     const baselineDistanceAu = probe.distance / KM_PER_AU
     const direction = getProbeDirection(probe)
     const points: Array<{ x: number; y: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
         const progress = i / segments
-        const distanceAu = startDistanceAu + (maxDistanceAu - startDistanceAu) * progress
+        const distanceAu = startDistanceAu + (pathDistanceAu - startDistanceAu) * progress
         const normalizedDistance = distanceAu / baselineDistanceAu
 
         points.push({
@@ -65,14 +66,10 @@ function getProbeDistanceFromSunAu(probe: ProbeData, at: Date) {
         startDistanceAu,
         referenceDistanceAu,
         speedAuPerYear,
-        maxDistanceAu,
     } = probe.escapeTrajectory
     const elapsedDays = (at.getTime() - Date.parse(referenceDate)) / MS_PER_DAY
 
-    return Math.min(
-        maxDistanceAu,
-        Math.max(startDistanceAu, referenceDistanceAu + (elapsedDays / 365.25) * speedAuPerYear)
-    )
+    return Math.max(startDistanceAu, referenceDistanceAu + (elapsedDays / 365.25) * speedAuPerYear)
 }
 
 function getProbeDirection(probe: ProbeData) {
