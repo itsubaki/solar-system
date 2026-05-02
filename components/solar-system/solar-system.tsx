@@ -424,7 +424,7 @@ function Scene({
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
     const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
-    const [showDwarfPlanets, setShowDwarfPlanets] = useState(true)
+    const [showDwarfPlanets, setShowDwarfPlanets] = useState(false)
     const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
     const [showPlanetInfo, setShowPlanetInfo] = useState(true)
