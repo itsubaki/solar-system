@@ -7,6 +7,9 @@ export interface PlanetData {
     name: string
     radius: number
     distance: number
+    eccentricity: number
+    longitudeOfPerihelion: number
+    meanLongitudeAtJ2000: number
     poleDirection: PoleDirection
     orbitalInclination: number
     longitudeOfAscendingNode: number
@@ -24,12 +27,11 @@ export interface SatelliteData {
     name: string
     radius: number
     distance: number
-    obliquity: number
     orbitalPeriod: number
     color: string
-    eccentricity?: number
-    longitudeOfPeriapsis?: number
-    meanLongitudeAtJ2000?: number
+    eccentricity: number
+    longitudeOfPeriapsis: number
+    meanLongitudeAtJ2000: number
 }
 
 export interface RingData {
@@ -79,6 +81,9 @@ export const DWARF_PLANETS: PlanetData[] = [
         name: "Ceres",
         radius: 939.4 / 2,
         distance: ASTRONOMICAL_UNIT * 2.765615651508659,
+        eccentricity: 0.07957631994408416,
+        longitudeOfPerihelion: 153.54938555433483,
+        meanLongitudeAtJ2000: 385.0891185587054,
         poleDirection: { longitude: 291.421, latitude: 66.758 },
         orbitalInclination: 10.58788658206854,
         longitudeOfAscendingNode: 80.24963090816965,
@@ -91,6 +96,9 @@ export const DWARF_PLANETS: PlanetData[] = [
         name: "Pluto",
         radius: 1188.3,
         distance: ASTRONOMICAL_UNIT * 39.48,
+        eccentricity: 0.24880766,
+        longitudeOfPerihelion: 224.06676,
+        meanLongitudeAtJ2000: 238.92881,
         poleDirection: { longitude: 137.351, latitude: -22.816 },
         orbitalInclination: 17.16,
         longitudeOfAscendingNode: 110.299,
@@ -103,6 +111,9 @@ export const DWARF_PLANETS: PlanetData[] = [
         name: "Haumea",
         radius: 1740 / 2,
         distance: ASTRONOMICAL_UNIT * 43.00549889718357,
+        eccentricity: 0.1957748236999078,
+        longitudeOfPerihelion: 362.685623066236,
+        meanLongitudeAtJ2000: 585.0132756143271,
         poleDirection: { longitude: 0, latitude: 90 },
         orbitalInclination: 28.20840581678499,
         longitudeOfAscendingNode: 121.7972905747552,
@@ -115,6 +126,9 @@ export const DWARF_PLANETS: PlanetData[] = [
         name: "Makemake",
         radius: 715,
         distance: ASTRONOMICAL_UNIT * 45.51068193198885,
+        eccentricity: 0.1604249925523523,
+        longitudeOfPerihelion: 376.3443476128863,
+        meanLongitudeAtJ2000: 545.664625586251,
         poleDirection: { longitude: 0, latitude: 90 },
         orbitalInclination: 29.03230611452533,
         longitudeOfAscendingNode: 79.26892142638791,
@@ -127,6 +141,9 @@ export const DWARF_PLANETS: PlanetData[] = [
         name: "Eris",
         radius: 1200,
         distance: ASTRONOMICAL_UNIT * 67.99638658496472,
+        eccentricity: 0.4369649682100509,
+        longitudeOfPerihelion: 186.7594587351884,
+        meanLongitudeAtJ2000: 397.2088478471641,
         poleDirection: { longitude: 0, latitude: 90 },
         orbitalInclination: 43.86893125983033,
         longitudeOfAscendingNode: 36.02717321924018,
@@ -142,6 +159,9 @@ export const PLANETS: PlanetData[] = [
         name: "Mercury",
         radius: 2439.7,
         distance: ASTRONOMICAL_UNIT * 0.39,
+        eccentricity: 0.20563069,
+        longitudeOfPerihelion: 77.45645,
+        meanLongitudeAtJ2000: 252.25084,
         poleDirection: { longitude: 318.41, latitude: 82.99 },
         orbitalInclination: 7.005,
         longitudeOfAscendingNode: 48.331,
@@ -154,6 +174,9 @@ export const PLANETS: PlanetData[] = [
         name: "Venus",
         radius: 6051.8,
         distance: ASTRONOMICAL_UNIT * 0.72,
+        eccentricity: 0.00677323,
+        longitudeOfPerihelion: 131.53298,
+        meanLongitudeAtJ2000: 181.97973,
         poleDirection: { longitude: 30.187, latitude: 88.761 },
         orbitalInclination: 3.395,
         longitudeOfAscendingNode: 76.68,
@@ -166,6 +189,9 @@ export const PLANETS: PlanetData[] = [
         name: "Earth",
         radius: 6371,
         distance: ASTRONOMICAL_UNIT * 1.00,
+        eccentricity: 0.01671022,
+        longitudeOfPerihelion: 102.94719,
+        meanLongitudeAtJ2000: 100.46435,
         poleDirection: { longitude: 90, latitude: 66.561 },
         orbitalInclination: 0,
         longitudeOfAscendingNode: 0,
@@ -176,10 +202,12 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Moon",
                 radius: 1737.4,
-                distance: 6371 * 60.3,
-                obliquity: 6.68,
+                distance: 384_399,
                 orbitalPeriod: 27,
-                color: "#C4C4C4"
+                color: "#C4C4C4",
+                eccentricity: 0.0549,
+                longitudeOfPeriapsis: 318.15,
+                meanLongitudeAtJ2000: 115.3654
             }
         ],
         description: "Our home planet, the only known planet with life."
@@ -188,6 +216,9 @@ export const PLANETS: PlanetData[] = [
         name: "Mars",
         radius: 3389.5,
         distance: ASTRONOMICAL_UNIT * 1.52,
+        eccentricity: 0.09341233,
+        longitudeOfPerihelion: -23.94363,
+        meanLongitudeAtJ2000: -4.55343,
         poleDirection: { longitude: 352.908, latitude: 63.282 },
         orbitalInclination: 1.85,
         longitudeOfAscendingNode: 49.558,
@@ -198,18 +229,22 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Phobos",
                 radius: 11.267,
-                distance: 3389.5 * 2.8,
-                obliquity: 0.0,
+                distance: 9_376,
                 orbitalPeriod: 0.3,
-                color: "#8B7355"
+                color: "#8B7355",
+                eccentricity: 0.0151,
+                longitudeOfPeriapsis: 150.057,
+                meanLongitudeAtJ2000: 177.617
             },
             {
                 name: "Deimos",
                 radius: 6.2,
-                distance: 3389.5 * 6.9,
-                obliquity: 0.0,
+                distance: 23_463.2,
                 orbitalPeriod: 1.3,
-                color: "#8B7355"
+                color: "#8B7355",
+                eccentricity: 0.0002,
+                longitudeOfPeriapsis: 260.729,
+                meanLongitudeAtJ2000: 53.316
             }
         ],
         description: "The Red Planet, with the largest volcano in the Solar System."
@@ -218,6 +253,9 @@ export const PLANETS: PlanetData[] = [
         name: "Jupiter",
         radius: 69911,
         distance: ASTRONOMICAL_UNIT * 5.20,
+        eccentricity: 0.04839266,
+        longitudeOfPerihelion: 14.72848,
+        meanLongitudeAtJ2000: 34.39644,
         poleDirection: { longitude: 247.818, latitude: 87.783 },
         orbitalInclination: 1.303,
         longitudeOfAscendingNode: 100.464,
@@ -228,34 +266,42 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Io",
                 radius: 1821.6,
-                distance: 69911 * 6.0,
-                obliquity: 0.0,
+                distance: 421_700,
                 orbitalPeriod: 1.8,
-                color: "#E6C87A"
+                color: "#E6C87A",
+                eccentricity: 0.0041,
+                longitudeOfPeriapsis: 84.129,
+                meanLongitudeAtJ2000: 171.0169
             },
             {
                 name: "Europa",
                 radius: 1560.8,
-                distance: 69911 * 9.6,
-                obliquity: 0.0,
+                distance: 671_100,
                 orbitalPeriod: 3.5,
-                color: "#C4B896"
+                color: "#C4B896",
+                eccentricity: 0.0094,
+                longitudeOfPeriapsis: 88.97,
+                meanLongitudeAtJ2000: 41.923
             },
             {
                 name: "Ganymede",
                 radius: 2634.1,
-                distance: 69911 * 15.3,
-                obliquity: 0.0,
+                distance: 1_070_400,
                 orbitalPeriod: 7.2,
-                color: "#8B7355"
+                color: "#8B7355",
+                eccentricity: 0.0013,
+                longitudeOfPeriapsis: 192.417,
+                meanLongitudeAtJ2000: 63.552
             },
             {
                 name: "Callisto",
                 radius: 2410.3,
-                distance: 69911 * 26.9,
-                obliquity: 0.0,
+                distance: 1_882_700,
                 orbitalPeriod: 16.7,
-                color: "#5C4033"
+                color: "#5C4033",
+                eccentricity: 0.0074,
+                longitudeOfPeriapsis: 52.643,
+                meanLongitudeAtJ2000: 24.833
             }
         ],
         description: "The largest planet, a gas giant with a Great Red Spot storm."
@@ -264,6 +310,9 @@ export const PLANETS: PlanetData[] = [
         name: "Saturn",
         radius: 58232,
         distance: ASTRONOMICAL_UNIT * 9.58,
+        eccentricity: 0.0541506,
+        longitudeOfPerihelion: 92.59888,
+        meanLongitudeAtJ2000: 49.95424,
         poleDirection: { longitude: 79.528, latitude: 61.948 },
         orbitalInclination: 2.485,
         longitudeOfAscendingNode: 113.665,
@@ -301,10 +350,12 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Titan",
                 radius: 2574.7,
-                distance: 58232 * 21,
-                obliquity: 0.0,
+                distance: 1_221_870,
                 orbitalPeriod: 16,
-                color: "#E6A243"
+                color: "#E6A243",
+                eccentricity: 0.0288,
+                longitudeOfPeriapsis: 186.585,
+                meanLongitudeAtJ2000: 28.051
             }
         ],
         description: "Known for its stunning ring system made of ice and rock."
@@ -313,6 +364,9 @@ export const PLANETS: PlanetData[] = [
         name: "Uranus",
         radius: 25362,
         distance: ASTRONOMICAL_UNIT * 19.20,
+        eccentricity: 0.04716771,
+        longitudeOfPerihelion: 170.95428,
+        meanLongitudeAtJ2000: 313.2381,
         poleDirection: { longitude: 257.647, latitude: 7.722 },
         orbitalInclination: 0.773,
         longitudeOfAscendingNode: 74.006,
@@ -431,6 +485,9 @@ export const PLANETS: PlanetData[] = [
         name: "Neptune",
         radius: 24622,
         distance: ASTRONOMICAL_UNIT * 30.05,
+        eccentricity: 0.00858587,
+        longitudeOfPerihelion: 44.96476,
+        meanLongitudeAtJ2000: -55.12003,
         poleDirection: { longitude: 319.235, latitude: 61.974 },
         orbitalInclination: 1.77,
         longitudeOfAscendingNode: 131.784,
@@ -483,10 +540,12 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Triton",
                 radius: 1353.4,
-                distance: 24622 * 14.4,
-                obliquity: 0.0,
+                distance: 354_759,
                 orbitalPeriod: 5.9,
-                color: "#C4C4C4"
+                color: "#C4C4C4",
+                eccentricity: 0.000016,
+                longitudeOfPeriapsis: 0,
+                meanLongitudeAtJ2000: 0
             }
         ],
         description: "The windiest planet with supersonic storms."
