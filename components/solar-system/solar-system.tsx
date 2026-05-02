@@ -29,6 +29,9 @@ type FocusTargetRef = {
 }
 
 type SelectedSatellite = SatelliteData & { parentPlanetName: string }
+type SelectableTarget =
+    | { type: "planet"; planet: PlanetData }
+    | { type: "satellite"; satellite: SelectedSatellite }
 
 const ORBIT_SPEED_OPTIONS = [
     { label: "Real-time", multiplier: 1 },
@@ -67,6 +70,30 @@ const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
 function getVisiblePlanets(showDwarfPlanets: boolean) {
     return [...(showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS)]
         .sort((leftPlanet, rightPlanet) => leftPlanet.distance - rightPlanet.distance)
+}
+
+function getSelectableTargets(
+    planets: PlanetData[],
+    showSatellites: boolean
+): SelectableTarget[] {
+    return planets.flatMap((planet) => {
+        const targets: SelectableTarget[] = [{ type: "planet", planet }]
+
+        if (!showSatellites || !Array.isArray(planet.satellites)) {
+            return targets
+        }
+
+        return [
+            ...targets,
+            ...planet.satellites.map((satellite) => ({
+                type: "satellite" as const,
+                satellite: {
+                    ...satellite,
+                    parentPlanetName: planet.name,
+                },
+            })),
+        ]
+    })
 }
 
 function PlanetOrbitControls({
@@ -399,10 +426,48 @@ export function SolarSystem() {
     const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
+    const showSatellites = planetScaleOption.scale === 1
     const visiblePlanets = useMemo(
         () => getVisiblePlanets(showDwarfPlanets),
         [showDwarfPlanets]
     )
+    const selectableTargets = useMemo(
+        () => getSelectableTargets(visiblePlanets, showSatellites),
+        [showSatellites, visiblePlanets]
+    )
+
+    const selectTarget = useCallback((target: SelectableTarget) => {
+        setSelectedSun(false)
+        setSelectedComet(null)
+        setSelectedProbe(null)
+
+        if (target.type === "satellite") {
+            setSelectedPlanet(null)
+            setSelectedSatellite(target.satellite)
+        } else {
+            setSelectedSatellite(null)
+            setSelectedPlanet(target.planet)
+        }
+    }, [])
+
+    const getSelectedTargetIndex = useCallback(() => {
+        if (selectedSatellite) {
+            return selectableTargets.findIndex(
+                (target) =>
+                    target.type === "satellite" &&
+                    target.satellite.name === selectedSatellite.name &&
+                    target.satellite.parentPlanetName === selectedSatellite.parentPlanetName
+            )
+        }
+
+        if (selectedPlanet) {
+            return selectableTargets.findIndex(
+                (target) => target.type === "planet" && target.planet.name === selectedPlanet.name
+            )
+        }
+
+        return -1
+    }, [selectableTargets, selectedPlanet, selectedSatellite])
 
     const toggleComets = useCallback(() => {
         setShowComets((prev) => {
@@ -506,29 +571,23 @@ export function SolarSystem() {
                     break;
                 case ">":
                     event.preventDefault();
-                    if (visiblePlanets.length === 0) return;
+                    if (selectableTargets.length === 0) return;
                     let nextIndex = 0;
-                    if (selectedPlanet) {
-                        const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
-                        nextIndex = (currentIndex + 1) % visiblePlanets.length;
+                    const currentIndex = getSelectedTargetIndex();
+                    if (currentIndex >= 0) {
+                        nextIndex = (currentIndex + 1) % selectableTargets.length;
                     }
-                    setSelectedSun(false);
-                    setSelectedSatellite(null);
-                    setSelectedPlanet(visiblePlanets[nextIndex]);
-                    setShowPlanetInfo(true);
+                    selectTarget(selectableTargets[nextIndex]);
                     break;
                 case "<":
                     event.preventDefault();
-                    if (visiblePlanets.length === 0) return;
-                    let prevIndex = visiblePlanets.length - 1;
-                    if (selectedPlanet) {
-                        const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
-                        prevIndex = (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length;
+                    if (selectableTargets.length === 0) return;
+                    let prevIndex = selectableTargets.length - 1;
+                    const previousIndex = getSelectedTargetIndex();
+                    if (previousIndex >= 0) {
+                        prevIndex = (previousIndex - 1 + selectableTargets.length) % selectableTargets.length;
                     }
-                    setSelectedSun(false);
-                    setSelectedSatellite(null);
-                    setSelectedPlanet(visiblePlanets[prevIndex]);
-                    setShowPlanetInfo(true);
+                    selectTarget(selectableTargets[prevIndex]);
                     break;
                 case "a":
                     event.preventDefault();
@@ -565,32 +624,26 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [selectedComet, selectedPlanet, selectedProbe, toggleComets, toggleDwarfPlanets, toggleProbes, updatePlanetScaleIndex, visiblePlanets]);
+    }, [getSelectedTargetIndex, selectTarget, selectableTargets, selectedComet, selectedPlanet, selectedProbe, toggleComets, toggleDwarfPlanets, toggleProbes, updatePlanetScaleIndex]);
 
     const selectNextPlanet = () => {
-        if (visiblePlanets.length === 0) return;
+        if (selectableTargets.length === 0) return;
         let nextIndex = 0;
-        if (selectedPlanet) {
-            const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
-            nextIndex = (currentIndex + 1) % visiblePlanets.length;
+        const currentIndex = getSelectedTargetIndex();
+        if (currentIndex >= 0) {
+            nextIndex = (currentIndex + 1) % selectableTargets.length;
         }
-        setSelectedSun(false);
-        setSelectedSatellite(null);
-        setSelectedPlanet(visiblePlanets[nextIndex]);
-        setShowPlanetInfo(true);
+        selectTarget(selectableTargets[nextIndex]);
     };
 
     const selectPrevPlanet = () => {
-        if (visiblePlanets.length === 0) return;
-        let prevIndex = visiblePlanets.length - 1;
-        if (selectedPlanet) {
-            const currentIndex = visiblePlanets.findIndex(p => p.name === selectedPlanet.name);
-            prevIndex = (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length;
+        if (selectableTargets.length === 0) return;
+        let prevIndex = selectableTargets.length - 1;
+        const currentIndex = getSelectedTargetIndex();
+        if (currentIndex >= 0) {
+            prevIndex = (currentIndex - 1 + selectableTargets.length) % selectableTargets.length;
         }
-        setSelectedSun(false);
-        setSelectedSatellite(null);
-        setSelectedPlanet(visiblePlanets[prevIndex]);
-        setShowPlanetInfo(true);
+        selectTarget(selectableTargets[prevIndex]);
     };
 
     return (
@@ -623,12 +676,12 @@ export function SolarSystem() {
                 <div className="font-semibold mb-2">Shortcuts</div>
                 <ul className="space-y-1">
                     <li><b>Arrow keys</b>: Rotate camera</li>
-                    <li><b>r</b> / <b>R</b>: Reset camera</li>
+                    <li><b>r</b> / <b>R</b>: Reset</li>
                     <li><b>+</b> / <b>-</b>: Zoom</li>
-                    <li><b>&lt;</b> / <b>&gt;</b>: Move planet</li>
+                    <li><b>&lt;</b> / <b>&gt;</b>: Move</li>
                     <li><b>a</b> / <b>s</b>: Orbit speed</li>
                     <li><b>z</b> / <b>x</b>: Planet radius</li>
-                    <li><b>d</b>: Dwarf planets</li>
+                    <li><b>d</b>: Dwarfs</li>
                     <li><b>c</b>: Comets</li>
                     <li><b>v</b>: Probes</li>
                 </ul>
