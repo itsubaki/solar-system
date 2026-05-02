@@ -58,7 +58,7 @@ export function SatelliteInfo({
                     <div>
                         <p className="text-[10px] text-muted-foreground">Orbital Period</p>
                         <p className="text-xs font-medium text-foreground">
-                            {satellite.orbitalPeriod.toLocaleString()} days
+                            {Math.abs(satellite.orbitalPeriod).toLocaleString()} days
                         </p>
                     </div>
 

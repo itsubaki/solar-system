@@ -53,6 +53,12 @@ const circularSatellite: SatelliteData = {
     color: "#fff",
 }
 
+const retrogradeSatellite: SatelliteData = {
+    ...circularSatellite,
+    name: "Retrograde Satellite",
+    orbitalPeriod: -10,
+}
+
 describe("planet-angle", () => {
     it("converts degrees to radians", () => {
         expect(degToRad(180)).toBeCloseTo(Math.PI)
@@ -108,5 +114,16 @@ describe("planet-angle", () => {
         expect(path).toHaveLength(13)
         expect(path[0]?.x).toBeCloseTo(path[path.length - 1]?.x ?? 0)
         expect(path[0]?.z).toBeCloseTo(path[path.length - 1]?.z ?? 0)
+    })
+
+    it("moves retrograde satellites in the opposite direction", () => {
+        const quarterOrbitDate = new Date(
+            Date.UTC(2000, 0, 1, 12, 0, 0) + 2.5 * 24 * 60 * 60 * 1000
+        )
+        const position = getSatelliteOrbitPosition(retrogradeSatellite, quarterOrbitDate)
+
+        expect(position.angle).toBeCloseTo(Math.PI / 2)
+        expect(position.x).toBeCloseTo(0, 8)
+        expect(position.z).toBeCloseTo(1)
     })
 })

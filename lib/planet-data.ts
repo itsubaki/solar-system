@@ -635,7 +635,7 @@ export const PLANETS: PlanetData[] = [
                 name: "Triton",
                 radius: 1353.4,
                 distance: 354_759,
-                orbitalPeriod: 5.9,
+                orbitalPeriod: -5.9,
                 poleDirection: { longitude: 0, latitude: 90 },
                 orbitPlane: {
                     inclination: 129.812,
