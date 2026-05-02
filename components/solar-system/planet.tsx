@@ -112,23 +112,25 @@ export function Planet({
                     distance * initialOrbitPosition.z,
                 ]}
             >
-                <mesh
-                    ref={planetRef}
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                    onClick={() => {
-                        onSelect(data)
-                    }}
-                >
-                    <sphereGeometry args={[radius, 32, 32]} />
-                    <meshStandardMaterial
-                        color={data.color}
-                        emissive={data.emissive || data.color}
-                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
-                        roughness={0.8}
-                        metalness={0.1}
-                    />
-                </mesh>
+                <group quaternion={axisQuaternion}>
+                    <mesh
+                        ref={planetRef}
+                        onPointerOver={() => setHovered(true)}
+                        onPointerOut={() => setHovered(false)}
+                        onClick={() => {
+                            onSelect(data)
+                        }}
+                    >
+                        <sphereGeometry args={[radius, 32, 32]} />
+                        <meshStandardMaterial
+                            color={data.color}
+                            emissive={data.emissive || data.color}
+                            emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
+                            roughness={0.8}
+                            metalness={0.1}
+                        />
+                    </mesh>
+                </group>
 
                 <AxialTiltIndicator
                     radius={radius}

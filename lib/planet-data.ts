@@ -7,7 +7,9 @@ export interface PoleDirection {
 
 export interface OrbitPhase {
     eccentricity: number
+    /** Reference-plane longitude of periapsis (varpi). */
     longitudeOfPeriapsis: number
+    /** Reference-plane mean longitude at J2000. */
     meanLongitudeAtJ2000: number
 }
 
@@ -221,19 +223,19 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Moon",
                 radius: 1737.4,
-                distance: 384_399,
-                orbitalPeriod: 27,
+                distance: 384_400,
+                orbitalPeriod: 27.322,
                 poleDirection: { longitude: 214.453, latitude: 88.43 },
                 orbitPlane: {
-                    inclination: 5.145,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 5.16,
+                    longitudeOfAscendingNode: 125.08,
                     referenceFrame: "scene",
                 },
                 color: "#C4C4C4",
                 orbitPhase: {
-                    eccentricity: 0.0549,
-                    longitudeOfPeriapsis: 318.15,
-                    meanLongitudeAtJ2000: 115.3654,
+                    eccentricity: 0.0554,
+                    longitudeOfPeriapsis: 443.23,
+                    meanLongitudeAtJ2000: 578.5,
                 }
             }
         ],
@@ -260,37 +262,37 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Phobos",
                 radius: 11.267,
-                distance: 9_376,
-                orbitalPeriod: 0.3,
+                distance: 9_375,
+                orbitalPeriod: 0.3187,
                 poleDirection: { longitude: 352.908, latitude: 63.282 },
                 orbitPlane: {
-                    inclination: 1.093,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 1.1,
+                    longitudeOfAscendingNode: 169.2,
                     referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
-                    eccentricity: 0.0151,
-                    longitudeOfPeriapsis: 150.057,
-                    meanLongitudeAtJ2000: 177.617,
+                    eccentricity: 0.015,
+                    longitudeOfPeriapsis: 385.5,
+                    meanLongitudeAtJ2000: 575.2,
                 }
             },
             {
                 name: "Deimos",
                 radius: 6.2,
-                distance: 23_463.2,
-                orbitalPeriod: 1.3,
+                distance: 23_457,
+                orbitalPeriod: 1.2625,
                 poleDirection: { longitude: 352.908, latitude: 63.282 },
                 orbitPlane: {
-                    inclination: 0.93,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 1.8,
+                    longitudeOfAscendingNode: 54.3,
                     referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
-                    eccentricity: 0.0002,
-                    longitudeOfPeriapsis: 260.729,
-                    meanLongitudeAtJ2000: 53.316,
+                    eccentricity: 0,
+                    longitudeOfPeriapsis: 54.3,
+                    meanLongitudeAtJ2000: 259.3,
                 }
             }
         ],
@@ -317,73 +319,73 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Io",
                 radius: 1821.6,
-                distance: 421_700,
-                orbitalPeriod: 1.8,
+                distance: 421_800,
+                orbitalPeriod: 1.762732,
                 poleDirection: { longitude: 247.706, latitude: 87.787 },
                 orbitPlane: {
-                    inclination: 0.05,
+                    inclination: 0,
                     longitudeOfAscendingNode: 0,
                     referenceFrame: "parentEquator",
                 },
                 color: "#E6C87A",
                 orbitPhase: {
-                    eccentricity: 0.0041,
-                    longitudeOfPeriapsis: 84.129,
-                    meanLongitudeAtJ2000: 171.0169,
+                    eccentricity: 0.004,
+                    longitudeOfPeriapsis: 49.1,
+                    meanLongitudeAtJ2000: 380,
                 }
             },
             {
                 name: "Europa",
                 radius: 1560.8,
                 distance: 671_100,
-                orbitalPeriod: 3.5,
+                orbitalPeriod: 3.525463,
                 poleDirection: { longitude: 247.93, latitude: 87.801 },
                 orbitPlane: {
-                    inclination: 0.47,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 0.5,
+                    longitudeOfAscendingNode: 184,
                     referenceFrame: "parentEquator",
                 },
                 color: "#C4B896",
                 orbitPhase: {
-                    eccentricity: 0.0094,
-                    longitudeOfPeriapsis: 88.97,
-                    meanLongitudeAtJ2000: 41.923,
+                    eccentricity: 0.009,
+                    longitudeOfPeriapsis: 229,
+                    meanLongitudeAtJ2000: 574.4,
                 }
             },
             {
                 name: "Ganymede",
                 radius: 2634.1,
                 distance: 1_070_400,
-                orbitalPeriod: 7.2,
+                orbitalPeriod: 7.155588,
                 poleDirection: { longitude: 248.671, latitude: 87.875 },
                 orbitPlane: {
                     inclination: 0.2,
-                    longitudeOfAscendingNode: 0,
+                    longitudeOfAscendingNode: 58.5,
                     referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
-                    eccentricity: 0.0013,
-                    longitudeOfPeriapsis: 192.417,
-                    meanLongitudeAtJ2000: 63.552,
+                    eccentricity: 0.001,
+                    longitudeOfPeriapsis: 256.8,
+                    meanLongitudeAtJ2000: 581.6,
                 }
             },
             {
                 name: "Callisto",
                 radius: 2410.3,
                 distance: 1_882_700,
-                orbitalPeriod: 16.7,
+                orbitalPeriod: 16.69044,
                 poleDirection: { longitude: 252.485, latitude: 88.191 },
                 orbitPlane: {
-                    inclination: 0.192,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 0.3,
+                    longitudeOfAscendingNode: 309.1,
                     referenceFrame: "parentEquator",
                 },
                 color: "#5C4033",
                 orbitPhase: {
-                    eccentricity: 0.0074,
-                    longitudeOfPeriapsis: 52.643,
-                    meanLongitudeAtJ2000: 24.833,
+                    eccentricity: 0.007,
+                    longitudeOfPeriapsis: 352.9,
+                    meanLongitudeAtJ2000: 440.3,
                 }
             }
         ],
@@ -437,19 +439,19 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Titan",
                 radius: 2574.7,
-                distance: 1_221_870,
-                orbitalPeriod: 16,
+                distance: 1_221_900,
+                orbitalPeriod: 15.945448,
                 poleDirection: { longitude: 79.528, latitude: 61.948 },
                 orbitPlane: {
-                    inclination: 0.34854,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 0.3,
+                    longitudeOfAscendingNode: 78.6,
                     referenceFrame: "parentEquator",
                 },
                 color: "#E6A243",
                 orbitPhase: {
-                    eccentricity: 0.0288,
-                    longitudeOfPeriapsis: 186.585,
-                    meanLongitudeAtJ2000: 28.051,
+                    eccentricity: 0.029,
+                    longitudeOfPeriapsis: 156.9,
+                    meanLongitudeAtJ2000: 168.6,
                 }
             }
         ],
@@ -470,7 +472,7 @@ export const PLANETS: PlanetData[] = [
             longitudeOfAscendingNode: 74.006,
         },
         orbitalPeriod: 30687,
-        rotationPeriod: 0.72,
+        rotationPeriod: -0.72,
         color: "#B5E3E3",
         rings: [
             {
@@ -643,19 +645,19 @@ export const PLANETS: PlanetData[] = [
             {
                 name: "Triton",
                 radius: 1353.4,
-                distance: 354_759,
-                orbitalPeriod: -5.9,
+                distance: 354_800,
+                orbitalPeriod: 5.876994,
                 poleDirection: { longitude: 0, latitude: 90 },
                 orbitPlane: {
-                    inclination: 23.115,
-                    longitudeOfAscendingNode: 0,
+                    inclination: 157.3,
+                    longitudeOfAscendingNode: 178.1,
                     referenceFrame: "parentEquator",
                 },
                 color: "#C4C4C4",
                 orbitPhase: {
-                    eccentricity: 0.000016,
-                    longitudeOfPeriapsis: 0,
-                    meanLongitudeAtJ2000: 0,
+                    eccentricity: 0,
+                    longitudeOfPeriapsis: 178.1,
+                    meanLongitudeAtJ2000: 241.1,
                 }
             }
         ],
