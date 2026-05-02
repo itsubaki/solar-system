@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { getCometOrbitPath, getCometOrbitPosition } from "./comet-angle"
+import { COMETS } from "./comet-data"
 import type { CometData } from "./comet-data"
 import { ASTRONOMICAL_UNIT } from "./orbit"
 
@@ -37,6 +38,13 @@ const retrogradeComet: CometData = {
 }
 
 describe("comet-angle", () => {
+    it("keeps standard retrograde comet elements on a positive period", () => {
+        const halley = COMETS.find((comet) => comet.name === "Halley")
+
+        expect(halley?.orbitPlane.inclination).toBeGreaterThan(90)
+        expect(halley?.orbitalPeriod).toBeGreaterThan(0)
+    })
+
     it("returns the expected perihelion position at the reference date", () => {
         const position = getCometOrbitPosition(circularComet, REFERENCE_DATE)
 

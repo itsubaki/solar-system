@@ -34,7 +34,7 @@ export const COMETS: CometData[] = [
             inclination: 162.26,
             longitudeOfAscendingNode: 58.42,
         },
-        orbitalPeriod: -75.32 * 365.25,
+        orbitalPeriod: 75.32 * 365.25,
         color: "#AEE7E8",
         emissive: "#E6FBFF",
         emissiveIntensity: 0.35,

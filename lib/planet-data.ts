@@ -16,7 +16,17 @@ export interface OrbitPhase {
 export interface OrbitPlane {
     inclination: number
     longitudeOfAscendingNode: number
-    referenceFrame?: "scene" | "parentEquator"
+    referenceFrame?: "scene" | "parentEquator" | "laplace"
+    referencePoleDirection?: PoleDirection
+}
+
+export interface PlanetOrbitRates {
+    semiMajorAxisAuPerCentury: number
+    eccentricityPerCentury: number
+    inclinationPerCentury: number
+    meanLongitudePerCentury: number
+    longitudeOfPeriapsisPerCentury: number
+    longitudeOfAscendingNodePerCentury: number
 }
 
 export interface PlanetData {
@@ -28,6 +38,7 @@ export interface PlanetData {
     poleDirection: PoleDirection
     orbitPlane: OrbitPlane
     orbitPhase: OrbitPhase
+    orbitRates?: PlanetOrbitRates
     color: string
     emissive?: string
     emissiveIntensity?: number
@@ -167,18 +178,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Mercury",
         radius: 2439.7,
-        distance: ASTRONOMICAL_UNIT * 0.39,
+        distance: ASTRONOMICAL_UNIT * 0.38709927,
         orbitPhase: {
-            eccentricity: 0.20563069,
-            longitudeOfPeriapsis: 77.45645,
-            meanLongitudeAtJ2000: 252.25084,
+            eccentricity: 0.20563593,
+            longitudeOfPeriapsis: 77.45779628,
+            meanLongitudeAtJ2000: 252.2503235,
         },
         poleDirection: { longitude: 318.41, latitude: 82.99 },
         orbitPlane: {
-            inclination: 7.005,
-            longitudeOfAscendingNode: 48.331,
+            inclination: 7.00497902,
+            longitudeOfAscendingNode: 48.33076593,
         },
-        orbitalPeriod: 88,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: 0.00000037,
+            eccentricityPerCentury: 0.00001906,
+            inclinationPerCentury: -0.00594749,
+            meanLongitudePerCentury: 149472.67411175,
+            longitudeOfPeriapsisPerCentury: 0.16047689,
+            longitudeOfAscendingNodePerCentury: -0.12534081,
+        },
+        orbitalPeriod: 87.969256442,
         rotationPeriod: 58.6,
         color: "#B5A7A7",
         description: "The smallest planet and closest to the Sun."
@@ -186,18 +205,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Venus",
         radius: 6051.8,
-        distance: ASTRONOMICAL_UNIT * 0.72,
+        distance: ASTRONOMICAL_UNIT * 0.72333566,
         orbitPhase: {
-            eccentricity: 0.00677323,
-            longitudeOfPeriapsis: 131.53298,
-            meanLongitudeAtJ2000: 181.97973,
+            eccentricity: 0.00677672,
+            longitudeOfPeriapsis: 131.60246718,
+            meanLongitudeAtJ2000: 181.9790995,
         },
         poleDirection: { longitude: 30.187, latitude: 88.761 },
         orbitPlane: {
-            inclination: 3.395,
-            longitudeOfAscendingNode: 76.68,
+            inclination: 3.39467605,
+            longitudeOfAscendingNode: 76.67984255,
         },
-        orbitalPeriod: 225,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: 0.0000039,
+            eccentricityPerCentury: -0.00004107,
+            inclinationPerCentury: -0.0007889,
+            meanLongitudePerCentury: 58517.81538729,
+            longitudeOfPeriapsisPerCentury: 0.00268329,
+            longitudeOfAscendingNodePerCentury: -0.27769418,
+        },
+        orbitalPeriod: 224.700801166,
         rotationPeriod: -243,
         color: "#E6C87A",
         description: "Similar in size to Earth, with a thick toxic atmosphere."
@@ -205,18 +232,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Earth",
         radius: 6371,
-        distance: ASTRONOMICAL_UNIT * 1.00,
+        distance: ASTRONOMICAL_UNIT * 1.00000261,
         orbitPhase: {
-            eccentricity: 0.01671022,
-            longitudeOfPeriapsis: 102.94719,
-            meanLongitudeAtJ2000: 100.46435,
+            eccentricity: 0.01671123,
+            longitudeOfPeriapsis: 102.93768193,
+            meanLongitudeAtJ2000: 100.46457166,
         },
         poleDirection: { longitude: 90, latitude: 66.561 },
         orbitPlane: {
-            inclination: 0,
+            inclination: -0.00001531,
             longitudeOfAscendingNode: 0,
         },
-        orbitalPeriod: 365,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: 0.00000562,
+            eccentricityPerCentury: -0.00004392,
+            inclinationPerCentury: -0.01294668,
+            meanLongitudePerCentury: 35999.37244981,
+            longitudeOfPeriapsisPerCentury: 0.32327364,
+            longitudeOfAscendingNodePerCentury: 0,
+        },
+        orbitalPeriod: 365.256367131,
         rotationPeriod: 1,
         color: "#6B93D6",
         satellites: [
@@ -244,18 +279,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Mars",
         radius: 3389.5,
-        distance: ASTRONOMICAL_UNIT * 1.52,
+        distance: ASTRONOMICAL_UNIT * 1.52371034,
         orbitPhase: {
-            eccentricity: 0.09341233,
-            longitudeOfPeriapsis: -23.94363,
-            meanLongitudeAtJ2000: -4.55343,
+            eccentricity: 0.0933941,
+            longitudeOfPeriapsis: -23.94362959,
+            meanLongitudeAtJ2000: -4.55343205,
         },
         poleDirection: { longitude: 352.908, latitude: 63.282 },
         orbitPlane: {
-            inclination: 1.85,
-            longitudeOfAscendingNode: 49.558,
+            inclination: 1.84969142,
+            longitudeOfAscendingNode: 49.55953891,
         },
-        orbitalPeriod: 687,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: 0.00001847,
+            eccentricityPerCentury: 0.00007882,
+            inclinationPerCentury: -0.00813131,
+            meanLongitudePerCentury: 19140.30268499,
+            longitudeOfPeriapsisPerCentury: 0.44441088,
+            longitudeOfAscendingNodePerCentury: -0.29257343,
+        },
+        orbitalPeriod: 686.979731533,
         rotationPeriod: 1.03,
         color: "#C1440E",
         satellites: [
@@ -268,7 +311,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 1.1,
                     longitudeOfAscendingNode: 169.2,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 352.946, latitude: 63.285 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -286,7 +330,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 1.8,
                     longitudeOfAscendingNode: 54.3,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 352.719, latitude: 64.17 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -301,18 +346,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Jupiter",
         radius: 69911,
-        distance: ASTRONOMICAL_UNIT * 5.20,
+        distance: ASTRONOMICAL_UNIT * 5.202887,
         orbitPhase: {
-            eccentricity: 0.04839266,
-            longitudeOfPeriapsis: 14.72848,
-            meanLongitudeAtJ2000: 34.39644,
+            eccentricity: 0.04838624,
+            longitudeOfPeriapsis: 14.72847983,
+            meanLongitudeAtJ2000: 34.39644051,
         },
         poleDirection: { longitude: 247.818, latitude: 87.783 },
         orbitPlane: {
-            inclination: 1.303,
-            longitudeOfAscendingNode: 100.464,
+            inclination: 1.30439695,
+            longitudeOfAscendingNode: 100.47390909,
         },
-        orbitalPeriod: 4333,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: -0.00011607,
+            eccentricityPerCentury: -0.00013253,
+            inclinationPerCentury: -0.00183714,
+            meanLongitudePerCentury: 3034.74612775,
+            longitudeOfPeriapsisPerCentury: 0.21252668,
+            longitudeOfAscendingNodePerCentury: 0.20469106,
+        },
+        orbitalPeriod: 4332.817127523,
         rotationPeriod: 0.41,
         color: "#D8CA9D",
         satellites: [
@@ -325,7 +378,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0,
                     longitudeOfAscendingNode: 0,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 248.23, latitude: 87.794 },
                 },
                 color: "#E6C87A",
                 orbitPhase: {
@@ -343,7 +397,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0.5,
                     longitudeOfAscendingNode: 184,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 248.23, latitude: 87.794 },
                 },
                 color: "#C4B896",
                 orbitPhase: {
@@ -361,7 +416,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0.2,
                     longitudeOfAscendingNode: 58.5,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 248.395, latitude: 87.903 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -379,7 +435,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0.3,
                     longitudeOfAscendingNode: 309.1,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 252.494, latitude: 88.16 },
                 },
                 color: "#5C4033",
                 orbitPhase: {
@@ -394,18 +451,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Saturn",
         radius: 58232,
-        distance: ASTRONOMICAL_UNIT * 9.58,
+        distance: ASTRONOMICAL_UNIT * 9.53667594,
         orbitPhase: {
-            eccentricity: 0.0541506,
-            longitudeOfPeriapsis: 92.59888,
-            meanLongitudeAtJ2000: 49.95424,
+            eccentricity: 0.05386179,
+            longitudeOfPeriapsis: 92.59887831,
+            meanLongitudeAtJ2000: 49.95424423,
         },
         poleDirection: { longitude: 79.528, latitude: 61.948 },
         orbitPlane: {
-            inclination: 2.485,
-            longitudeOfAscendingNode: 113.665,
+            inclination: 2.48599187,
+            longitudeOfAscendingNode: 113.66242448,
         },
-        orbitalPeriod: 10759,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: -0.0012506,
+            eccentricityPerCentury: -0.00050991,
+            inclinationPerCentury: 0.00193609,
+            meanLongitudePerCentury: 1222.49362201,
+            longitudeOfPeriapsisPerCentury: -0.41897216,
+            longitudeOfAscendingNodePerCentury: -0.28867794,
+        },
+        orbitalPeriod: 10755.884336133,
         rotationPeriod: 0.45,
         color: "#F4D59E",
         rings: [
@@ -445,7 +510,8 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0.3,
                     longitudeOfAscendingNode: 78.6,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 79.467, latitude: 62.596 },
                 },
                 color: "#E6A243",
                 orbitPhase: {
@@ -460,18 +526,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Uranus",
         radius: 25362,
-        distance: ASTRONOMICAL_UNIT * 19.20,
+        distance: ASTRONOMICAL_UNIT * 19.18916464,
         orbitPhase: {
-            eccentricity: 0.04716771,
-            longitudeOfPeriapsis: 170.95428,
-            meanLongitudeAtJ2000: 313.2381,
+            eccentricity: 0.04725744,
+            longitudeOfPeriapsis: 170.9542763,
+            meanLongitudeAtJ2000: 313.23810451,
         },
         poleDirection: { longitude: 257.647, latitude: 7.722 },
         orbitPlane: {
-            inclination: 0.773,
-            longitudeOfAscendingNode: 74.006,
+            inclination: 0.77263783,
+            longitudeOfAscendingNode: 74.01692503,
         },
-        orbitalPeriod: 30687,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: -0.00196176,
+            eccentricityPerCentury: -0.00004397,
+            inclinationPerCentury: -0.00242939,
+            meanLongitudePerCentury: 428.48202785,
+            longitudeOfPeriapsisPerCentury: 0.40805281,
+            longitudeOfAscendingNodePerCentury: 0.04240589,
+        },
+        orbitalPeriod: 30687.401443598,
         rotationPeriod: -0.72,
         color: "#B5E3E3",
         rings: [
@@ -585,18 +659,26 @@ export const PLANETS: PlanetData[] = [
     {
         name: "Neptune",
         radius: 24622,
-        distance: ASTRONOMICAL_UNIT * 30.05,
+        distance: ASTRONOMICAL_UNIT * 30.06992276,
         orbitPhase: {
-            eccentricity: 0.00858587,
-            longitudeOfPeriapsis: 44.96476,
-            meanLongitudeAtJ2000: -55.12003,
+            eccentricity: 0.00859048,
+            longitudeOfPeriapsis: 44.96476227,
+            meanLongitudeAtJ2000: -55.12002969,
         },
         poleDirection: { longitude: 319.235, latitude: 61.974 },
         orbitPlane: {
-            inclination: 1.77,
-            longitudeOfAscendingNode: 131.784,
+            inclination: 1.77004347,
+            longitudeOfAscendingNode: 131.78422574,
         },
-        orbitalPeriod: 60190,
+        orbitRates: {
+            semiMajorAxisAuPerCentury: 0.00026291,
+            eccentricityPerCentury: 0.00005105,
+            inclinationPerCentury: 0.00035372,
+            meanLongitudePerCentury: 218.45945325,
+            longitudeOfPeriapsisPerCentury: -0.32241464,
+            longitudeOfAscendingNodePerCentury: -0.00508664,
+        },
+        orbitalPeriod: 60189.659016278,
         rotationPeriod: 0.67,
         color: "#5f83b5",
         rings: [
@@ -647,11 +729,12 @@ export const PLANETS: PlanetData[] = [
                 radius: 1353.4,
                 distance: 354_800,
                 orbitalPeriod: 5.876994,
-                poleDirection: { longitude: 0, latitude: 90 },
+                poleDirection: { longitude: 114.683, latitude: -44.115 },
                 orbitPlane: {
                     inclination: 157.3,
                     longitudeOfAscendingNode: 178.1,
-                    referenceFrame: "parentEquator",
+                    referenceFrame: "laplace",
+                    referencePoleDirection: { longitude: 319.535, latitude: 61.513 },
                 },
                 color: "#C4C4C4",
                 orbitPhase: {

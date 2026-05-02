@@ -6,7 +6,7 @@ import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
-import { getPlanetOrbitPath, getPlanetOrbitPosition } from "@/lib/planet-angle"
+import { getPlanetOrbitPath, getPlanetOrbitPlane, getPlanetOrbitPosition } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitPlaneQuaternion, getRingQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
 import { Satellite } from "./satellite"
@@ -44,7 +44,10 @@ export function Planet({
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
     void cameraDistance
-    const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
+    const initialOrbitPosition = useMemo(
+        () => getPlanetOrbitPosition(data),
+        [data]
+    )
     const orbitPoints = useMemo(
         () => getPlanetOrbitPath(data).map((point) => [
             distance * point.x,
@@ -63,8 +66,8 @@ export function Planet({
         [data.rings]
     )
     const orbitPlaneQuaternion = useMemo(() => {
-        return getOrbitPlaneQuaternion(data.orbitPlane)
-    }, [data.orbitPlane])
+        return getOrbitPlaneQuaternion(getPlanetOrbitPlane(data))
+    }, [data])
     const localPoleVector = useMemo(() => {
         return getLocalPoleVector(data.poleDirection, orbitPlaneQuaternion)
     }, [data.poleDirection, orbitPlaneQuaternion])

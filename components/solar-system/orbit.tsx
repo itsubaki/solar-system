@@ -103,19 +103,39 @@ export function getOrbitFrameQuaternion(
     const orbitPlaneQuaternion = getOrbitPlaneQuaternion(orbitPlane)
 
     if (orbitPlane.referenceFrame !== "parentEquator" || !parentPoleDirection) {
+        if (orbitPlane.referenceFrame === "laplace" && orbitPlane.referencePoleDirection) {
+            return getReferencePlaneQuaternion(
+                orbitPlane.referencePoleDirection,
+                orbitPlaneQuaternion,
+                parentOrbitPlaneQuaternion
+            )
+        }
+
         return orbitPlaneQuaternion
     }
 
+    return getReferencePlaneQuaternion(
+        parentPoleDirection,
+        orbitPlaneQuaternion,
+        parentOrbitPlaneQuaternion
+    )
+}
+
+function getReferencePlaneQuaternion(
+    poleDirection: PoleDirection,
+    orbitPlaneQuaternion: Quaternion,
+    parentOrbitPlaneQuaternion?: Quaternion
+) {
     if (!parentOrbitPlaneQuaternion) {
-        return getEquatorPlaneQuaternion(parentPoleDirection).multiply(orbitPlaneQuaternion)
+        return getEquatorPlaneQuaternion(poleDirection).multiply(orbitPlaneQuaternion)
     }
 
-    const parentLocalPoleVector = getLocalPoleVector(
-        parentPoleDirection,
+    const localPoleVector = getLocalPoleVector(
+        poleDirection,
         parentOrbitPlaneQuaternion
     )
 
-    return getAxisQuaternion(parentLocalPoleVector).multiply(orbitPlaneQuaternion)
+    return getAxisQuaternion(localPoleVector).multiply(orbitPlaneQuaternion)
 }
 
 export function getLocalPoleVector(

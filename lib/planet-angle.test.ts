@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import {
+    getPlanetOrbitPlane,
     getPlanetOrbitPath,
     getPlanetOrbitPosition,
     getSatelliteOrbitPath,
@@ -73,6 +74,29 @@ const nodeOffsetPlanet: PlanetData = {
     },
 }
 
+const ratedPlanet: PlanetData = {
+    ...circularPlanet,
+    name: "Rated Planet",
+    orbitalPeriod: 1000,
+    orbitPhase: {
+        eccentricity: 0,
+        longitudeOfPeriapsis: 30,
+        meanLongitudeAtJ2000: 30,
+    },
+    orbitPlane: {
+        inclination: 10,
+        longitudeOfAscendingNode: 30,
+    },
+    orbitRates: {
+        semiMajorAxisAuPerCentury: 0,
+        eccentricityPerCentury: 0,
+        inclinationPerCentury: 2,
+        meanLongitudePerCentury: 360 * 365.25,
+        longitudeOfPeriapsisPerCentury: 0,
+        longitudeOfAscendingNodePerCentury: 10,
+    },
+}
+
 describe("planet-angle", () => {
     it("converts degrees to radians", () => {
         expect(degToRad(180)).toBeCloseTo(Math.PI)
@@ -130,6 +154,24 @@ describe("planet-angle", () => {
 
         expect(path[0]?.x).toBeCloseTo(periapsisRadiusScale * Math.cos(argumentOfPeriapsis))
         expect(path[0]?.z).toBeCloseTo(-periapsisRadiusScale * Math.sin(argumentOfPeriapsis))
+    })
+
+    it("uses planetary element rates when available", () => {
+        const quarterOrbitDate = new Date(
+            Date.UTC(2000, 0, 1, 12, 0, 0) + 25 * 24 * 60 * 60 * 1000
+        )
+        const position = getPlanetOrbitPosition(ratedPlanet, quarterOrbitDate)
+
+        expect(position.x).toBeCloseTo(0, 3)
+        expect(position.z).toBeCloseTo(-1)
+    })
+
+    it("applies planetary plane rates when available", () => {
+        const centuryLater = new Date(Date.UTC(2100, 0, 1, 12, 0, 0))
+        const orbitPlane = getPlanetOrbitPlane(ratedPlanet, centuryLater)
+
+        expect(orbitPlane.inclination).toBeCloseTo(12)
+        expect(orbitPlane.longitudeOfAscendingNode).toBeCloseTo(40)
     })
 
     it("returns the expected circular satellite orbit position at J2000", () => {

@@ -32,9 +32,21 @@ describe("planet-data", () => {
         expect(getSatellite("Neptune", "Triton").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(178.1)
     })
 
+    it("keeps JPL Laplace-frame satellites in the Laplace reference frame", () => {
+        expect(getSatellite("Mars", "Phobos").orbitPlane.referenceFrame).toBe("laplace")
+        expect(getSatellite("Jupiter", "Europa").orbitPlane.referenceFrame).toBe("laplace")
+        expect(getSatellite("Saturn", "Titan").orbitPlane.referenceFrame).toBe("laplace")
+        expect(getSatellite("Neptune", "Triton").orbitPlane.referenceFrame).toBe("laplace")
+    })
+
     it("represents retrograde planetary and satellite rotation/orbits consistently", () => {
         expect(getPlanet("Uranus").rotationPeriod).toBeLessThan(0)
         expect(getSatellite("Neptune", "Triton").orbitPlane.inclination).toBeGreaterThan(90)
         expect(getSatellite("Neptune", "Triton").orbitalPeriod).toBeGreaterThan(0)
+    })
+
+    it("aligns Triton's spin pole with its retrograde orbit instead of the ecliptic north pole", () => {
+        expect(getSatellite("Neptune", "Triton").poleDirection.longitude).toBeCloseTo(114.683)
+        expect(getSatellite("Neptune", "Triton").poleDirection.latitude).toBeCloseTo(-44.115)
     })
 })

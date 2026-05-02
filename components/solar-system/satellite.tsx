@@ -43,9 +43,12 @@ export function Satellite({
             parentOrbitPlaneQuaternion
         )
     }, [parentOrbitPlaneQuaternion, parentPoleDirection, satellite.orbitPlane])
+    const worldOrbitFrameQuaternion = useMemo(() => {
+        return parentOrbitPlaneQuaternion.clone().multiply(orbitPlaneQuaternion)
+    }, [orbitPlaneQuaternion, parentOrbitPlaneQuaternion])
     const localPoleVector = useMemo(() => {
-        return getLocalPoleVector(satellite.poleDirection, orbitPlaneQuaternion)
-    }, [orbitPlaneQuaternion, satellite.poleDirection])
+        return getLocalPoleVector(satellite.poleDirection, worldOrbitFrameQuaternion)
+    }, [satellite.poleDirection, worldOrbitFrameQuaternion])
     const axisQuaternion = useMemo(() => {
         return getAxisQuaternion(localPoleVector)
     }, [localPoleVector])
