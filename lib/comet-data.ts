@@ -1,4 +1,5 @@
-import { ASTRONOMICAL_UNIT, type OrbitPlane, type PoleDirection } from "./planet-data"
+import { ASTRONOMICAL_UNIT } from "./orbit"
+import type { OrbitPlane, PoleDirection } from "./planet-data"
 
 export interface CometOrbitalElements {
     eccentricity: number

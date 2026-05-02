@@ -1,4 +1,5 @@
-import { ASTRONOMICAL_UNIT, type PoleDirection } from "./planet-data"
+import { ASTRONOMICAL_UNIT } from "./orbit"
+import type { PoleDirection } from "./planet-data"
 
 export interface EscapeTrajectoryData {
     startDate: string

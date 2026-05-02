@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest"
 
 import {
-    degToRad,
     getPlanetOrbitPath,
     getPlanetOrbitPosition,
+    getSatelliteOrbitPath,
+    getSatelliteOrbitPosition,
 } from "./planet-angle"
-import type { PlanetData } from "./planet-data"
+import { degToRad } from "./orbit"
+import type { PlanetData, SatelliteData } from "./planet-data"
 
 const circularPlanet: PlanetData = {
     name: "Test Planet",
@@ -28,6 +30,27 @@ const circularPlanet: PlanetData = {
     },
     color: "#fff",
     description: "Test fixture",
+}
+
+const circularSatellite: SatelliteData = {
+    name: "Test Satellite",
+    radius: 1,
+    distance: 1,
+    orbitalPeriod: 10,
+    poleDirection: {
+        longitude: 0,
+        latitude: 90,
+    },
+    orbitPlane: {
+        inclination: 0,
+        longitudeOfAscendingNode: 0,
+    },
+    orbitPhase: {
+        eccentricity: 0,
+        longitudeOfPeriapsis: 0,
+        meanLongitudeAtJ2000: 0,
+    },
+    color: "#fff",
 }
 
 describe("planet-angle", () => {
@@ -63,6 +86,26 @@ describe("planet-angle", () => {
         const path = getPlanetOrbitPath(circularPlanet, 16)
 
         expect(path).toHaveLength(17)
+        expect(path[0]?.x).toBeCloseTo(path[path.length - 1]?.x ?? 0)
+        expect(path[0]?.z).toBeCloseTo(path[path.length - 1]?.z ?? 0)
+    })
+
+    it("returns the expected circular satellite orbit position at J2000", () => {
+        const position = getSatelliteOrbitPosition(
+            circularSatellite,
+            new Date(Date.UTC(2000, 0, 1, 12, 0, 0))
+        )
+
+        expect(position.angle).toBeCloseTo(0)
+        expect(position.radiusScale).toBeCloseTo(1)
+        expect(position.x).toBeCloseTo(1)
+        expect(position.z).toBeCloseTo(0)
+    })
+
+    it("builds a closed satellite orbit path with the requested segment count", () => {
+        const path = getSatelliteOrbitPath(circularSatellite, 12)
+
+        expect(path).toHaveLength(13)
         expect(path[0]?.x).toBeCloseTo(path[path.length - 1]?.x ?? 0)
         expect(path[0]?.z).toBeCloseTo(path[path.length - 1]?.z ?? 0)
     })

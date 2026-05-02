@@ -1,7 +1,11 @@
 import type { ProbeData } from "./probe-data"
+import {
+    ASTRONOMICAL_UNIT,
+    MS_PER_DAY,
+    degToRad,
+    normalizeRadians,
+} from "./orbit"
 
-const ASTRONOMICAL_UNIT = 149_600_000
-const MS_PER_DAY = 1000 * 60 * 60 * 24
 const PROBE_GUIDE_LINE_MAX_DISTANCE_AU = 100_000
 
 type ProbeTrajectoryState = {
@@ -82,13 +86,4 @@ function getProbeDirection(probe: ProbeData) {
         y: Math.sin(latitude),
         z: -projectedRadius * Math.sin(longitude),
     }
-}
-
-function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
-}
-
-function normalizeRadians(angle: number) {
-    const fullTurn = Math.PI * 2
-    return ((angle % fullTurn) + fullTurn) % fullTurn
 }

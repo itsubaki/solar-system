@@ -1,4 +1,4 @@
-export const ASTRONOMICAL_UNIT = 149_600_000 // km
+import { ASTRONOMICAL_UNIT } from "./orbit"
 
 export interface PoleDirection {
     longitude: number

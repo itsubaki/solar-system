@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ASTRONOMICAL_UNIT, type SatelliteData } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT } from "@/lib/orbit"
+import type { SatelliteData } from "@/lib/planet-data"
 import { X } from "lucide-react"
 
 type SelectedSatellite = SatelliteData & { parentPlanetName: string }

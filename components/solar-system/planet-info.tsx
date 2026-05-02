@@ -3,7 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
-import { ASTRONOMICAL_UNIT, type PlanetData } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT } from "@/lib/orbit"
+import type { PlanetData } from "@/lib/planet-data"
 
 export function PlanetInfo({
     planet,

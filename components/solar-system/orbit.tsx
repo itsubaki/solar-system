@@ -1,8 +1,8 @@
 "use client"
 
 import { Quaternion, Vector3 } from "three"
+import { degToRad } from "@/lib/orbit"
 import type { OrbitPlane, PoleDirection } from "@/lib/planet-data"
-import { degToRad } from "@/lib/planet-angle"
 
 export type FocusTargetRef = {
     current: Vector3 | null

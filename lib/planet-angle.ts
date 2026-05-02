@@ -1,7 +1,12 @@
 import { OrbitPhase, PlanetData, SatelliteData } from "./planet-data"
+import {
+    FULL_TURN,
+    MS_PER_DAY,
+    degToRad,
+    normalizeRadians,
+    solveKeplerEquation,
+} from "./orbit"
 
-const MS_PER_DAY = 1000 * 60 * 60 * 24
-const FULL_TURN = Math.PI * 2
 const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
 
 type OrbitState = {
@@ -41,13 +46,9 @@ export function getSatelliteOrbitPath(
     )
 }
 
-export function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
-}
-
 function getOrbitState(orbitalPeriod: number, phase: OrbitPhase, at: Date): OrbitState {
     const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
-    const meanMotion = (Math.PI * 2) / orbitalPeriod
+    const meanMotion = FULL_TURN / orbitalPeriod
     const meanAnomalyAtJ2000 = degToRad(
         phase.meanLongitudeAtJ2000 - phase.longitudeOfPeriapsis
     )
@@ -73,7 +74,7 @@ function getOrbitPathPoints(eccentricity: number, longitudeOfPeriapsis: number, 
     const points: Array<{ x: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
-        const eccentricAnomaly = (Math.PI * 2 * i) / segments
+        const eccentricAnomaly = (FULL_TURN * i) / segments
         const localX = Math.cos(eccentricAnomaly) - eccentricity
         const localZ = semiMinorAxis * Math.sin(eccentricAnomaly)
 
@@ -84,18 +85,4 @@ function getOrbitPathPoints(eccentricity: number, longitudeOfPeriapsis: number, 
     }
 
     return points
-}
-
-function normalizeRadians(angle: number) {
-    return ((angle % FULL_TURN) + FULL_TURN) % FULL_TURN
-}
-
-function solveKeplerEquation(meanAnomaly: number, eccentricity: number) {
-    let eccentricAnomaly = meanAnomaly
-
-    for (let i = 0; i < 6; i += 1) {
-        eccentricAnomaly -= (eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly) / (1 - eccentricity * Math.cos(eccentricAnomaly))
-    }
-
-    return eccentricAnomaly
 }

@@ -1,8 +1,12 @@
 import type { CometData } from "./comet-data"
-
-const ASTRONOMICAL_UNIT = 149_600_000 // km
-const MS_PER_DAY = 1000 * 60 * 60 * 24
-const FULL_TURN = Math.PI * 2
+import {
+    ASTRONOMICAL_UNIT,
+    FULL_TURN,
+    MS_PER_DAY,
+    degToRad,
+    normalizeRadians,
+    solveKeplerEquation,
+} from "./orbit"
 
 type CometOrbitState = {
     angle: number
@@ -98,22 +102,4 @@ function getWorldOrbitPoint(
         y: standardZ,
         z: -standardY,
     }
-}
-
-function degToRad(degrees: number) {
-    return (degrees * Math.PI) / 180
-}
-
-function normalizeRadians(angle: number) {
-    return ((angle % FULL_TURN) + FULL_TURN) % FULL_TURN
-}
-
-function solveKeplerEquation(meanAnomaly: number, eccentricity: number) {
-    let eccentricAnomaly = meanAnomaly
-
-    for (let i = 0; i < 8; i += 1) {
-        eccentricAnomaly -= (eccentricAnomaly - eccentricity * Math.sin(eccentricAnomaly) - meanAnomaly) / (1 - eccentricity * Math.cos(eccentricAnomaly))
-    }
-
-    return eccentricAnomaly
 }

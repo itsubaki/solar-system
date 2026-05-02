@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ASTRONOMICAL_UNIT } from "@/lib/planet-data"
+import { ASTRONOMICAL_UNIT } from "@/lib/orbit"
 import type { CometData } from "@/lib/comet-data"
 import { X } from "lucide-react"
 
