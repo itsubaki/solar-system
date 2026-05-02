@@ -52,6 +52,7 @@ type PlanetScaleOption = {
     label: string
     sup: string
 }
+
 const PLANET_SCALE_OPTIONS: readonly PlanetScaleOption[] = [
     { scale: 1, label: "x1", sup: "0" },
     { scale: 10, label: "x10", sup: "3" },
