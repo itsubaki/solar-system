@@ -51,7 +51,7 @@ function AxialTiltIndicator({
     highlighted: boolean
 }) {
     const axisLength = radius * 2.8
-    const axisRadius = Math.max(radius * 0.03, 0.0015)
+    const axisRadius = radius * 0.03
 
     return (
         <group quaternion={quaternion}>
