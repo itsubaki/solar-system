@@ -327,6 +327,7 @@ function Scene({
                     data={planet}
                     onSelect={onSelectPlanet}
                     isSelected={selectedPlanet?.name === planet.name}
+                    showSatellites={planetScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name ? focusedPlanetPositionRef : null}
                     cameraDistance={cameraDistance}
                     simTimeRef={simTimeRef}

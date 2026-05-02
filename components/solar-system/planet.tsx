@@ -109,6 +109,7 @@ export function Planet({
     data,
     onSelect,
     isSelected,
+    showSatellites,
     focusTargetRef,
     cameraDistance,
     simTimeRef,
@@ -117,6 +118,7 @@ export function Planet({
     data: PlanetData
     onSelect: (planet: PlanetData | null) => void
     isSelected: boolean
+    showSatellites: boolean
     focusTargetRef?: FocusTargetRef | null
     cameraDistance: number
     simTimeRef: { current: Date }
@@ -244,6 +246,18 @@ export function Planet({
                             ))}
                         </group>
                     )}
+
+                    {showSatellites && Array.isArray(data.satellites) && data.satellites.map((satellite) => (
+                        <Satellite
+                            key={`${data.name}-${satellite.name}`}
+                            satellite={{
+                                ...satellite,
+                                parentPlanetName: data.name,
+                            }}
+                            simTimeRef={simTimeRef}
+                            scale={scale}
+                        />
+                    ))}
 
                     <Html
                         position={[0, radius + 0.1, 0]}
