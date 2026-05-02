@@ -49,7 +49,7 @@ export function SatelliteInfo({
                         </p>
                     </div>
                     <div>
-                        <p className="text-[10px] text-muted-foreground">Distance from Parent</p>
+                        <p className="text-[10px] text-muted-foreground">Distance from {satellite.parentPlanetName}</p>
                         <p className="text-xs font-medium text-foreground">
                             {Math.round(satellite.distance).toLocaleString()} km / {(satellite.distance / ASTRONOMICAL_UNIT).toFixed(4)} AU
                         </p>
