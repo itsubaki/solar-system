@@ -687,6 +687,7 @@ export function SolarSystem() {
                 <div className="relative z-20">
                     <ProbeInfo
                         probe={selectedProbe}
+                        simTime={displaySimTime}
                         onClose={() => setShowPlanetInfo(false)}
                     />
                 </div>

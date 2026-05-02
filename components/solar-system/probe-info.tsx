@@ -2,17 +2,21 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ASTRONOMICAL_UNIT } from "@/lib/planet-data"
+import { getProbeDistanceFromSun } from "@/lib/probe-angle"
 import type { ProbeData } from "@/lib/probe-data"
 import { X } from "lucide-react"
 
 export function ProbeInfo({
     probe,
+    simTime,
     onClose,
 }: {
     probe: ProbeData
+    simTime: Date
     onClose: () => void
 }) {
+    const distanceFromSun = getProbeDistanceFromSun(probe, simTime)
+
     return (
         <Card className="absolute top-6 right-6 w-84 bg-card/90 backdrop-blur-md border-border">
             <CardHeader className="flex flex-row items-start justify-between">
@@ -49,7 +53,7 @@ export function ProbeInfo({
                     <div>
                         <p className="text-[10px] text-muted-foreground">Distance from the Sun</p>
                         <p className="text-xs font-medium text-foreground">
-                            {Math.round(probe.distance).toLocaleString()} km / {(probe.distance / ASTRONOMICAL_UNIT).toFixed(2)} AU
+                            {Math.round(distanceFromSun.km).toLocaleString()} km / {distanceFromSun.au.toFixed(2)} AU
                         </p>
                     </div>
                 </div>
