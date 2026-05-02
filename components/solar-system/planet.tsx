@@ -108,6 +108,8 @@ function getLocalPoleVector(
 export function Planet({
     data,
     onSelect,
+    onSelectSatellite,
+    selectedSatellite,
     isSelected,
     showSatellites,
     focusTargetRef,
@@ -117,6 +119,8 @@ export function Planet({
 }: {
     data: PlanetData
     onSelect: (planet: PlanetData | null) => void
+    onSelectSatellite: (satellite: SatelliteData & { parentPlanetName: string }) => void
+    selectedSatellite: (SatelliteData & { parentPlanetName: string }) | null
     isSelected: boolean
     showSatellites: boolean
     focusTargetRef?: FocusTargetRef | null
@@ -254,6 +258,9 @@ export function Planet({
                                 ...satellite,
                                 parentPlanetName: data.name,
                             }}
+                            onSelect={onSelectSatellite}
+                            isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
+                            focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}
                             simTimeRef={simTimeRef}
                             scale={scale}
                         />
@@ -290,16 +297,23 @@ export function Planet({
 function Satellite({
     simTimeRef,
     satellite,
+    onSelect,
+    isSelected,
+    focusTargetRef,
     scale,
 }: {
     simTimeRef: { current: Date }
     satellite: SatelliteData & { parentPlanetName: string }
+    onSelect: (satellite: SatelliteData & { parentPlanetName: string }) => void
+    isSelected: boolean
+    focusTargetRef?: FocusTargetRef | null
     scale: {
         distance: number,
         radius: number,
     }
 }) {
     const groupRef = useRef<Group>(null)
+    const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
     const distance = satellite.distance * scale.distance
     const radius = satellite.radius * scale.radius
@@ -340,6 +354,16 @@ function Satellite({
             0,
             distance * orbitPosition.z
         )
+
+        if (focusTargetRef) {
+            groupRef.current.getWorldPosition(worldPositionRef.current)
+            if (focusTargetRef.current) {
+                focusTargetRef.current.copy(worldPositionRef.current)
+                return
+            }
+
+            focusTargetRef.current = worldPositionRef.current.clone()
+        }
     })
 
     return (
@@ -357,30 +381,36 @@ function Satellite({
                 <mesh
                     onPointerOver={() => setHovered(true)}
                     onPointerOut={() => setHovered(false)}
+                    onClick={() => onSelect(satellite)}
                 >
                     <sphereGeometry args={[radius, 16, 16]} />
                     <meshStandardMaterial
                         color={satellite.color}
                         roughness={0.9}
                         emissive={satellite.color}
-                        emissiveIntensity={hovered ? 0.3 : 0.1}
+                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
                     />
                 </mesh>
 
                 <AxialTiltIndicator
                     radius={radius}
                     quaternion={axisQuaternion}
-                    highlighted={hovered}
+                    highlighted={hovered || isSelected}
                 />
 
 
                 <Html
                     position={[0, radius + 0.02, 0]}
                     center
-                    style={{ pointerEvents: "none", userSelect: "none" }}
+                    style={{ pointerEvents: "auto", userSelect: "none" }}
                 >
                     <div
-                        className="px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap bg-card/70 text-muted-foreground backdrop-blur-sm border border-border/40"
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap backdrop-blur-sm border border-border/40 ${isSelected ? "bg-primary text-primary-foreground" : "bg-card/70 text-muted-foreground"}`}
+                        style={{ cursor: "pointer" }}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            onSelect(satellite)
+                        }}
                     >
                         {satellite.name}
                     </div>
