@@ -3,107 +3,13 @@
 import { useRef, useState, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
-import { DoubleSide, Vector3, Color, Quaternion } from "three"
+import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
-import type { OrbitPlane, PlanetData, PoleDirection, SatelliteData } from "@/lib/planet-data"
-import { getPlanetOrbitPath, getPlanetOrbitPosition, getSatelliteOrbitPath, getSatelliteOrbitPosition, degToRad } from "@/lib/planet-angle"
+import type { PlanetData, SatelliteData } from "@/lib/planet-data"
+import { getPlanetOrbitPath, getPlanetOrbitPosition, degToRad } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
-
-type FocusTargetRef = {
-    current: Vector3 | null
-}
-
-type OrbitPoint = [number, number, number]
-
-const SCENE_UP = new Vector3(0, 1, 0)
-const SCENE_FORWARD = new Vector3(0, 0, 1)
-
-function OrbitLine({
-    points,
-    color,
-}: {
-    points: OrbitPoint[]
-    color: string
-}) {
-    const positions = useMemo(() => new Float32Array(points.flat()), [points])
-
-    return (
-        <line>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    args={[positions, 3]}
-                    count={positions.length / 3}
-                />
-            </bufferGeometry>
-            <lineBasicMaterial color={color} />
-        </line>
-    )
-}
-
-function AxialTiltIndicator({
-    radius,
-    quaternion,
-    highlighted,
-}: {
-    radius: number
-    quaternion: Quaternion
-    highlighted: boolean
-}) {
-    const axisLength = radius * 2.8
-    const axisRadius = radius * 0.03
-
-    return (
-        <group quaternion={quaternion}>
-            <mesh>
-                <cylinderGeometry args={[axisRadius, axisRadius, axisLength, 12]} />
-                <meshBasicMaterial
-                    color={highlighted ? "#dbeafe" : "#94a3b8"}
-                    transparent
-                    opacity={highlighted ? 0.45 : 0.22}
-                    depthWrite={false}
-                />
-            </mesh>
-        </group>
-    )
-}
-
-function getPoleVector(longitude: number, latitude: number) {
-    const lambda = degToRad(longitude)
-    const beta = degToRad(latitude)
-    const cosBeta = Math.cos(beta)
-
-    return new Vector3(
-        cosBeta * Math.cos(lambda),
-        Math.sin(beta),
-        -cosBeta * Math.sin(lambda)
-    )
-}
-
-function getOrbitPlaneQuaternion(orbitPlane: OrbitPlane) {
-    const nodeRotation = new Quaternion().setFromAxisAngle(
-        SCENE_UP,
-        degToRad(orbitPlane.longitudeOfAscendingNode)
-    )
-    const inclinationRotation = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 0, 1),
-        degToRad(orbitPlane.inclination)
-    )
-
-    return nodeRotation.multiply(inclinationRotation)
-}
-
-function getLocalPoleVector(
-    poleDirection: PoleDirection,
-    orbitPlaneQuaternion: Quaternion
-) {
-    return getPoleVector(
-        poleDirection.longitude,
-        poleDirection.latitude
-    )
-        .applyQuaternion(orbitPlaneQuaternion.clone().invert())
-        .normalize()
-}
+import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitPlaneQuaternion, getRingQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+import { Satellite } from "./satellite"
 
 export function Planet({
     data,
@@ -165,10 +71,10 @@ export function Planet({
         return getLocalPoleVector(data.poleDirection, orbitPlaneQuaternion)
     }, [data.poleDirection, orbitPlaneQuaternion])
     const axisQuaternion = useMemo(() => {
-        return new Quaternion().setFromUnitVectors(SCENE_UP, localPoleVector)
+        return getAxisQuaternion(localPoleVector)
     }, [localPoleVector])
     const ringQuaternion = useMemo(() => {
-        return new Quaternion().setFromUnitVectors(SCENE_FORWARD, localPoleVector)
+        return getRingQuaternion(localPoleVector)
     }, [localPoleVector])
 
     let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
@@ -291,131 +197,5 @@ export function Planet({
                 </group>
             </group>
         </group>
-    )
-}
-
-function Satellite({
-    simTimeRef,
-    satellite,
-    onSelect,
-    isSelected,
-    focusTargetRef,
-    scale,
-}: {
-    simTimeRef: { current: Date }
-    satellite: SatelliteData & { parentPlanetName: string }
-    onSelect: (satellite: SatelliteData & { parentPlanetName: string }) => void
-    isSelected: boolean
-    focusTargetRef?: FocusTargetRef | null
-    scale: {
-        distance: number,
-        radius: number,
-    }
-}) {
-    const groupRef = useRef<Group>(null)
-    const worldPositionRef = useRef(new Vector3())
-    const [hovered, setHovered] = useState(false)
-    const distance = satellite.distance * scale.distance
-    const radius = satellite.radius * scale.radius
-    const orbitPlaneQuaternion = useMemo(() => {
-        return getOrbitPlaneQuaternion(satellite.orbitPlane)
-    }, [satellite.orbitPlane])
-    const localPoleVector = useMemo(() => {
-        return getLocalPoleVector(satellite.poleDirection, orbitPlaneQuaternion)
-    }, [orbitPlaneQuaternion, satellite.poleDirection])
-    const axisQuaternion = useMemo(() => {
-        return new Quaternion().setFromUnitVectors(SCENE_UP, localPoleVector)
-    }, [localPoleVector])
-    const initialOrbitPosition = useMemo(
-        () => getSatelliteOrbitPosition(satellite),
-        [satellite]
-    )
-    const orbitPoints = useMemo(
-        () => getSatelliteOrbitPath(satellite).map((point) => [
-            distance * point.x,
-            0,
-            distance * point.z,
-        ] as [number, number, number]),
-        [distance, satellite]
-    )
-
-    useFrame(() => {
-        if (!groupRef.current) {
-            return
-        }
-
-        const orbitPosition = getSatelliteOrbitPosition(
-            satellite,
-            simTimeRef.current
-        )
-
-        groupRef.current.position.set(
-            distance * orbitPosition.x,
-            0,
-            distance * orbitPosition.z
-        )
-
-        if (focusTargetRef) {
-            groupRef.current.getWorldPosition(worldPositionRef.current)
-            if (focusTargetRef.current) {
-                focusTargetRef.current.copy(worldPositionRef.current)
-                return
-            }
-
-            focusTargetRef.current = worldPositionRef.current.clone()
-        }
-    })
-
-    return (
-        <>
-            <OrbitLine points={orbitPoints} color="#8fd3ff" />
-
-            <group
-                ref={groupRef}
-                position={[
-                    distance * initialOrbitPosition.x,
-                    0,
-                    distance * initialOrbitPosition.z,
-                ]}
-            >
-                <mesh
-                    onPointerOver={() => setHovered(true)}
-                    onPointerOut={() => setHovered(false)}
-                    onClick={() => onSelect(satellite)}
-                >
-                    <sphereGeometry args={[radius, 16, 16]} />
-                    <meshStandardMaterial
-                        color={satellite.color}
-                        roughness={0.9}
-                        emissive={satellite.color}
-                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.1}
-                    />
-                </mesh>
-
-                <AxialTiltIndicator
-                    radius={radius}
-                    quaternion={axisQuaternion}
-                    highlighted={hovered || isSelected}
-                />
-
-
-                <Html
-                    position={[0, radius + 0.02, 0]}
-                    center
-                    style={{ pointerEvents: "auto", userSelect: "none" }}
-                >
-                    <div
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap backdrop-blur-sm border border-border/40 ${isSelected ? "bg-primary text-primary-foreground" : "bg-card/70 text-muted-foreground"}`}
-                        style={{ cursor: "pointer" }}
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            onSelect(satellite)
-                        }}
-                    >
-                        {satellite.name}
-                    </div>
-                </Html>
-            </group>
-        </>
     )
 }
