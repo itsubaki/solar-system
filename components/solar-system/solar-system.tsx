@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect, useMemo, useRef } from "react"
+import { Suspense, useState, useEffect, useMemo, useRef, useCallback } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
 import { Spherical, Vector3 } from "three"
@@ -392,6 +392,43 @@ export function SolarSystem() {
         [showDwarfPlanets]
     )
 
+    const toggleComets = useCallback(() => {
+        setShowComets((prev) => {
+            const next = !prev
+            if (!next) {
+                setSelectedComet(null)
+                if (selectedComet) {
+                    setShowPlanetInfo(false)
+                }
+            }
+            return next
+        })
+    }, [selectedComet])
+
+    const toggleDwarfPlanets = useCallback(() => {
+        setShowDwarfPlanets((prev) => {
+            const next = !prev
+            if (!next && selectedPlanet && DWARF_PLANET_NAMES.has(selectedPlanet.name)) {
+                setSelectedPlanet(null)
+                setShowPlanetInfo(false)
+            }
+            return next
+        })
+    }, [selectedPlanet])
+
+    const toggleProbes = useCallback(() => {
+        setShowProbes((prev) => {
+            const next = !prev
+            if (!next) {
+                setSelectedProbe(null)
+                if (selectedProbe) {
+                    setShowPlanetInfo(false)
+                }
+            }
+            return next
+        })
+    }, [selectedProbe])
+
     useEffect(() => {
         let frameId: number
         let lastReal = Date.now()
@@ -477,40 +514,15 @@ export function SolarSystem() {
                     break;
                 case "c":
                     event.preventDefault();
-                    setShowComets((prev) => {
-                        const next = !prev;
-                        if (!next) {
-                            setSelectedComet(null);
-                            if (selectedComet) {
-                                setShowPlanetInfo(false);
-                            }
-                        }
-                        return next;
-                    });
+                    toggleComets();
                     break;
                 case "d":
                     event.preventDefault();
-                    setShowDwarfPlanets((prev) => {
-                        const next = !prev;
-                        if (!next && selectedPlanet && DWARF_PLANET_NAMES.has(selectedPlanet.name)) {
-                            setSelectedPlanet(null);
-                            setShowPlanetInfo(false);
-                        }
-                        return next;
-                    });
+                    toggleDwarfPlanets();
                     break;
                 case "v":
                     event.preventDefault();
-                    setShowProbes((prev) => {
-                        const next = !prev;
-                        if (!next) {
-                            setSelectedProbe(null);
-                            if (selectedProbe) {
-                                setShowPlanetInfo(false);
-                            }
-                        }
-                        return next;
-                    });
+                    toggleProbes();
                     break;
                 default:
                     break;
@@ -519,7 +531,7 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [selectedComet, selectedPlanet, selectedProbe, visiblePlanets]);
+    }, [selectedComet, selectedPlanet, selectedProbe, toggleComets, toggleDwarfPlanets, toggleProbes, visiblePlanets]);
 
     const selectNextPlanet = () => {
         if (visiblePlanets.length === 0) return;
@@ -601,6 +613,41 @@ export function SolarSystem() {
             >
                 &gt;
             </button>
+
+            <div
+                className="absolute bottom-0 left-0 z-40 flex flex-col gap-2 sm:hidden"
+                style={{
+                    left: "calc(env(safe-area-inset-left) + 1rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+                }}
+            >
+                <button
+                    type="button"
+                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showDwarfPlanets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                    aria-pressed={showDwarfPlanets}
+                    onClick={toggleDwarfPlanets}
+                >
+                    Dwarfs
+                </button>
+
+                <button
+                    type="button"
+                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showComets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                    aria-pressed={showComets}
+                    onClick={toggleComets}
+                >
+                    Comets
+                </button>
+
+                <button
+                    type="button"
+                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showProbes ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                    aria-pressed={showProbes}
+                    onClick={toggleProbes}
+                >
+                    Probes
+                </button>
+            </div>
 
             <div
                 className="absolute inset-0 z-0"
