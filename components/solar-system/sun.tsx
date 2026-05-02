@@ -2,7 +2,8 @@
 
 import { useRef } from "react"
 import { useFrame } from "@react-three/fiber"
-import type { Mesh, Vector3 } from "three"
+import { Html } from "@react-three/drei"
+import { Vector3, type Mesh } from "three"
 import { SUN_DATA } from "@/lib/planet-data"
 
 type FocusTargetRef = {
@@ -12,10 +13,12 @@ type FocusTargetRef = {
 export function Sun({
     onSelect,
     focusTargetRef,
+    isSelected,
     scale,
 }: {
     onSelect?: () => void
     focusTargetRef?: FocusTargetRef | null
+    isSelected?: boolean
     scale: { radius: number }
 }) {
     const meshRef = useRef<Mesh>(null)
@@ -30,7 +33,7 @@ export function Sun({
         if (focusTargetRef && focusTargetRef.current) {
             focusTargetRef.current.set(0, 0, 0)
         } else if (focusTargetRef) {
-            focusTargetRef.current = new (require("three").Vector3)(0, 0, 0)
+            focusTargetRef.current = new Vector3(0, 0, 0)
         }
 
         if (onSelect) onSelect()
@@ -56,6 +59,29 @@ export function Sun({
                     opacity={0.3}
                 />
             </mesh>
+
+            <Html
+                position={[0, radius + 0.1, 0]}
+                center
+                style={{
+                    pointerEvents: "auto",
+                    userSelect: "none",
+                }}
+            >
+                <div
+                    className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                        }`}
+                    style={{ cursor: "pointer" }}
+                    onClick={(event) => {
+                        event.stopPropagation()
+                        handleClick()
+                    }}
+                >
+                    {SUN_DATA.name}
+                </div>
+            </Html>
 
             <pointLight
                 color="#FFF5E0"

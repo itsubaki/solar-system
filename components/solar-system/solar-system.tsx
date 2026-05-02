@@ -30,6 +30,7 @@ type FocusTargetRef = {
 
 type SelectedSatellite = SatelliteData & { parentPlanetName: string }
 type SelectableTarget =
+    | { type: "sun" }
     | { type: "planet"; planet: PlanetData }
     | { type: "satellite"; satellite: SelectedSatellite }
 
@@ -76,7 +77,7 @@ function getSelectableTargets(
     planets: PlanetData[],
     showSatellites: boolean
 ): SelectableTarget[] {
-    return planets.flatMap((planet) => {
+    return [{ type: "sun" as const }, ...planets.flatMap((planet) => {
         const targets: SelectableTarget[] = [{ type: "planet", planet }]
 
         if (!showSatellites || !Array.isArray(planet.satellites)) {
@@ -93,7 +94,7 @@ function getSelectableTargets(
                 },
             })),
         ]
-    })
+    })]
 }
 
 function PlanetOrbitControls({
@@ -323,6 +324,15 @@ function Scene({
     })
 
     useEffect(() => {
+        if (selectedSun) {
+            if (focusedPlanetPositionRef.current) {
+                focusedPlanetPositionRef.current.set(0, 0, 0)
+            } else {
+                focusedPlanetPositionRef.current = new Vector3(0, 0, 0)
+            }
+            return
+        }
+
         if (selectedSun || selectedPlanet || selectedProbe || selectedComet || selectedSatellite) {
             return
         }
@@ -351,6 +361,7 @@ function Scene({
             <Sun
                 onSelect={onSelectSun}
                 focusTargetRef={focusedPlanetPositionRef}
+                isSelected={selectedSun}
                 scale={{
                     radius: 1 / ASTRONOMICAL_UNIT,
                 }}
@@ -437,9 +448,17 @@ export function SolarSystem() {
     )
 
     const selectTarget = useCallback((target: SelectableTarget) => {
-        setSelectedSun(false)
         setSelectedComet(null)
         setSelectedProbe(null)
+
+        if (target.type === "sun") {
+            setSelectedSun(true)
+            setSelectedPlanet(null)
+            setSelectedSatellite(null)
+            return
+        }
+
+        setSelectedSun(false)
 
         if (target.type === "satellite") {
             setSelectedPlanet(null)
@@ -451,6 +470,10 @@ export function SolarSystem() {
     }, [])
 
     const getSelectedTargetIndex = useCallback(() => {
+        if (selectedSun) {
+            return selectableTargets.findIndex((target) => target.type === "sun")
+        }
+
         if (selectedSatellite) {
             return selectableTargets.findIndex(
                 (target) =>
@@ -467,7 +490,7 @@ export function SolarSystem() {
         }
 
         return -1
-    }, [selectableTargets, selectedPlanet, selectedSatellite])
+    }, [selectableTargets, selectedPlanet, selectedSatellite, selectedSun])
 
     const toggleComets = useCallback(() => {
         setShowComets((prev) => {
