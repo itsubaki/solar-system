@@ -71,5 +71,27 @@ export const PROBES: ProbeData[] = [
             speedAuPerYear: 3.219,
         },
         description: "The only probe to visit Uranus and Neptune, continuing outward on an interstellar mission after its 1977 launch."
+    },
+    {
+        name: "New Horizons",
+        radius: 0.00135,
+        displayRadius: 5000,
+        distance: ASTRONOMICAL_UNIT * 64.51563312195802,
+        poleDirection: { longitude: 0, latitude: 90 },
+        direction: {
+            eclipticLongitudeDegrees: 288.4243549488826,
+            eclipticLatitudeDegrees: 1.9959965324198068,
+        },
+        color: "#C7D4E8",
+        emissive: "#F3F7FF",
+        emissiveIntensity: 0.8,
+        escapeTrajectory: {
+            startDate: "2006-01-19T19:00:00Z",
+            referenceDate: "2026-05-01T00:00:00Z",
+            startDistanceAu: 1,
+            referenceDistanceAu: 64.51563312195802,
+            speedAuPerYear: 2.867961989977944,
+        },
+        description: "NASA's Pluto and Arrokoth explorer, launched in 2006 and now continuing deeper into the Kuiper Belt."
     }
 ]
