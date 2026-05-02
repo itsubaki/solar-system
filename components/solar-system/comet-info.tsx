@@ -55,7 +55,7 @@ export function CometInfo({
                     <div>
                         <p className="text-[10px] text-muted-foreground">Orbital Period</p>
                         <p className="text-xs font-medium text-foreground">
-                            {(comet.orbitalPeriod / 365.25).toFixed(1)} years
+                            {(Math.abs(comet.orbitalPeriod) / 365.25).toFixed(1)} years
                         </p>
                     </div>
                     <div>

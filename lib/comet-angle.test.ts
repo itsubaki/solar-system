@@ -30,6 +30,12 @@ const circularComet: CometData = {
     description: "Test fixture",
 }
 
+const retrogradeComet: CometData = {
+    ...circularComet,
+    name: "Retrograde Comet",
+    orbitalPeriod: -100,
+}
+
 describe("comet-angle", () => {
     it("returns the expected perihelion position at the reference date", () => {
         const position = getCometOrbitPosition(circularComet, REFERENCE_DATE)
@@ -81,5 +87,18 @@ describe("comet-angle", () => {
         expect(path[0]?.x).toBeCloseTo(path[path.length - 1]?.x ?? 0)
         expect(path[0]?.y).toBeCloseTo(path[path.length - 1]?.y ?? 0)
         expect(path[0]?.z).toBeCloseTo(path[path.length - 1]?.z ?? 0)
+    })
+
+    it("moves retrograde comets in the opposite direction", () => {
+        const quarterOrbitDate = new Date(
+            REFERENCE_DATE.getTime() + 25 * 24 * 60 * 60 * 1000
+        )
+        const position = getCometOrbitPosition(retrogradeComet, quarterOrbitDate)
+
+        expect(position.angle).toBeCloseTo((Math.PI * 3) / 2)
+        expect(position.radiusScale).toBeCloseTo(1)
+        expect(position.x).toBeCloseTo(0, 8)
+        expect(position.y).toBeCloseTo(0)
+        expect(position.z).toBeCloseTo(1)
     })
 })
