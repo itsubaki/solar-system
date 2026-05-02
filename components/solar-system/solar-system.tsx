@@ -33,6 +33,8 @@ type SelectableTarget =
     | { type: "sun" }
     | { type: "planet"; planet: PlanetData }
     | { type: "satellite"; satellite: SelectedSatellite }
+    | { type: "comet"; comet: CometData }
+    | { type: "probe"; probe: ProbeData }
 
 const ORBIT_SPEED_OPTIONS = [
     { label: "Real-time", multiplier: 1 },
@@ -75,9 +77,13 @@ function getVisiblePlanets(showDwarfPlanets: boolean) {
 
 function getSelectableTargets(
     planets: PlanetData[],
-    showSatellites: boolean
+    showSatellites: boolean,
+    showComets: boolean,
+    showProbes: boolean
 ): SelectableTarget[] {
-    return [{ type: "sun" as const }, ...planets.flatMap((planet) => {
+    const targets: SelectableTarget[] = [{ type: "sun" as const }]
+
+    targets.push(...planets.flatMap((planet) => {
         const targets: SelectableTarget[] = [{ type: "planet", planet }]
 
         if (!showSatellites || !Array.isArray(planet.satellites)) {
@@ -94,7 +100,17 @@ function getSelectableTargets(
                 },
             })),
         ]
-    })]
+    }))
+
+    if (showComets) {
+        targets.push(...COMETS.map((comet) => ({ type: "comet" as const, comet })))
+    }
+
+    if (showProbes) {
+        targets.push(...PROBES.map((probe) => ({ type: "probe" as const, probe })))
+    }
+
+    return targets
 }
 
 function PlanetOrbitControls({
@@ -443,15 +459,14 @@ export function SolarSystem() {
         [showDwarfPlanets]
     )
     const selectableTargets = useMemo(
-        () => getSelectableTargets(visiblePlanets, showSatellites),
-        [showSatellites, visiblePlanets]
+        () => getSelectableTargets(visiblePlanets, showSatellites, showComets, showProbes),
+        [showComets, showProbes, showSatellites, visiblePlanets]
     )
 
     const selectTarget = useCallback((target: SelectableTarget) => {
-        setSelectedComet(null)
-        setSelectedProbe(null)
-
         if (target.type === "sun") {
+            setSelectedComet(null)
+            setSelectedProbe(null)
             setSelectedSun(true)
             setSelectedPlanet(null)
             setSelectedSatellite(null)
@@ -461,17 +476,49 @@ export function SolarSystem() {
         setSelectedSun(false)
 
         if (target.type === "satellite") {
+            setSelectedComet(null)
+            setSelectedProbe(null)
             setSelectedPlanet(null)
             setSelectedSatellite(target.satellite)
-        } else {
+            return
+        }
+
+        if (target.type === "planet") {
+            setSelectedComet(null)
+            setSelectedProbe(null)
             setSelectedSatellite(null)
             setSelectedPlanet(target.planet)
+            return
         }
+
+        setSelectedSatellite(null)
+        setSelectedPlanet(null)
+
+        if (target.type === "comet") {
+            setSelectedProbe(null)
+            setSelectedComet(target.comet)
+            return
+        }
+
+        setSelectedComet(null)
+        setSelectedProbe(target.probe)
     }, [])
 
     const getSelectedTargetIndex = useCallback(() => {
         if (selectedSun) {
             return selectableTargets.findIndex((target) => target.type === "sun")
+        }
+
+        if (selectedComet) {
+            return selectableTargets.findIndex(
+                (target) => target.type === "comet" && target.comet.name === selectedComet.name
+            )
+        }
+
+        if (selectedProbe) {
+            return selectableTargets.findIndex(
+                (target) => target.type === "probe" && target.probe.name === selectedProbe.name
+            )
         }
 
         if (selectedSatellite) {
@@ -490,7 +537,7 @@ export function SolarSystem() {
         }
 
         return -1
-    }, [selectableTargets, selectedPlanet, selectedSatellite, selectedSun])
+    }, [selectableTargets, selectedComet, selectedPlanet, selectedProbe, selectedSatellite, selectedSun])
 
     const toggleComets = useCallback(() => {
         setShowComets((prev) => {
@@ -636,7 +683,7 @@ export function SolarSystem() {
                     event.preventDefault();
                     toggleDwarfPlanets();
                     break;
-                case "v":
+                case "p":
                     event.preventDefault();
                     toggleProbes();
                     break;
@@ -706,7 +753,7 @@ export function SolarSystem() {
                     <li><b>z</b> / <b>x</b>: Planet radius</li>
                     <li><b>d</b>: Dwarfs</li>
                     <li><b>c</b>: Comets</li>
-                    <li><b>v</b>: Probes</li>
+                    <li><b>p</b>: Probes</li>
                 </ul>
             </div>
 
