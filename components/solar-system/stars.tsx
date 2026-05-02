@@ -286,14 +286,15 @@ function createMilkyWayGlow(random: () => number) {
         const wrappedLongitude = ((longitude % 360) + 360) % 360
         const centerBoost = Math.exp(-(wrapDegrees(wrappedLongitude) ** 2) / (2 * 30 ** 2))
         const anticenterBoost = Math.exp(-(wrapDegrees(wrappedLongitude - 180) ** 2) / (2 * 54 ** 2))
-        const latitudeSigma = 8.5 + centerBoost * 5.5 + anticenterBoost * 2.4
-        const latitude = sampleGaussian(random, latitudeSigma)
+        const latitudeSigma = 10.5 + centerBoost * 6.5 + anticenterBoost * 3.2
+        const laneOffset = (1.8 + centerBoost * 2.8 + anticenterBoost * 0.9) * (random() < 0.5 ? -1 : 1)
+        const latitude = sampleGaussian(random, latitudeSigma) + laneOffset
         const radius = BACKGROUND_RADIUS + random() * (STAR_SHELL_THICKNESS * 0.3)
-        const intensity = 0.26 + centerBoost * 0.22 + anticenterBoost * 0.08 + random() * 0.05
+        const intensity = 0.34 + centerBoost * 0.28 + anticenterBoost * 0.1 + random() * 0.06
         const color: Vec3 = [
-            0.38 * intensity,
-            (0.36 + centerBoost * 0.05) * intensity,
-            (0.44 + anticenterBoost * 0.05) * intensity,
+            (0.24 + anticenterBoost * 0.03) * intensity,
+            (0.44 + centerBoost * 0.05) * intensity,
+            (0.66 + centerBoost * 0.08 + anticenterBoost * 0.04) * intensity,
         ]
 
         pushPoint(positions, colors, galacticToEcliptic(wrappedLongitude, latitude), radius, color)
@@ -502,10 +503,10 @@ function createDarkLanes(random: () => number) {
                 : clusterMix < 0.8
                     ? 78 + sampleGaussian(random, 16)
                     : 180 + sampleGaussian(random, 26)
-        const latitude = sampleGaussian(random, 1.4 + random() * 1.4)
+        const latitude = sampleGaussian(random, 2.4 + random() * 2.1)
         const radius = BACKGROUND_RADIUS + random() * (STAR_SHELL_THICKNESS * 0.08)
-        const darkness = 0.35 + random() * 0.3
-        const color: Vec3 = [0.03 * darkness, 0.04 * darkness, 0.06 * darkness]
+        const darkness = 0.24 + random() * 0.18
+        const color: Vec3 = [0.012 * darkness, 0.016 * darkness, 0.028 * darkness]
 
         pushPoint(positions, colors, galacticToEcliptic(longitude, latitude), radius, color)
     }
@@ -523,10 +524,10 @@ function createFineDarkLanes(random: () => number) {
                 ? sampleGaussian(random, 14)
                 : 62 + sampleGaussian(random, 12)
         const longitude = longitudeAnchor + sampleGaussian(random, 3.2)
-        const latitude = sampleGaussian(random, 0.55 + random() * 0.5)
+        const latitude = sampleGaussian(random, 0.95 + random() * 0.85)
         const radius = BACKGROUND_RADIUS + random() * (STAR_SHELL_THICKNESS * 0.04)
-        const darkness = 0.42 + random() * 0.28
-        const color: Vec3 = [0.02 * darkness, 0.025 * darkness, 0.04 * darkness]
+        const darkness = 0.28 + random() * 0.18
+        const color: Vec3 = [0.01 * darkness, 0.014 * darkness, 0.024 * darkness]
 
         pushPoint(positions, colors, galacticToEcliptic(longitude, latitude), radius, color)
     }
@@ -709,10 +710,13 @@ export function Stars() {
     return (
         <>
             <PointLayer data={layers.zodiacalLight} size={0.34} opacity={0.02} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.milkyWayGlow} size={0.4} opacity={0.06} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.milkyWay} size={0.22} opacity={0.13} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.milkyWayBulge} size={0.46} opacity={0.08} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.galacticCore} size={0.28} opacity={0.16} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.milkyWayGlow} size={1.35} opacity={0.05} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.milkyWayGlow} size={0.84} opacity={0.13} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.milkyWay} size={0.38} opacity={0.28} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.milkyWayBulge} size={1.0} opacity={0.1} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.milkyWayBulge} size={0.62} opacity={0.16} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.galacticCore} size={0.7} opacity={0.16} blending={THREE.AdditiveBlending} />
+            <PointLayer data={layers.galacticCore} size={0.38} opacity={0.32} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.andromeda} size={0.2} opacity={0.05} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.orionNebula} size={0.18} opacity={0.06} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.largeMagellanicCloud} size={0.22} opacity={0.06} blending={THREE.AdditiveBlending} />
@@ -720,9 +724,9 @@ export function Stars() {
             <PointLayer data={layers.pleiades} size={0.12} opacity={0.48} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.hyades} size={0.12} opacity={0.44} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.omegaCentauri} size={0.11} opacity={0.38} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.stars} size={0.15} opacity={0.85} />
-            <PointLayer data={layers.darkLanes} size={0.34} opacity={0.12} />
-            <PointLayer data={layers.darkLanesFine} size={0.18} opacity={0.16} />
+            <PointLayer data={layers.stars} size={0.13} opacity={0.58} />
+            <PointLayer data={layers.darkLanes} size={0.72} opacity={0.28} />
+            <PointLayer data={layers.darkLanesFine} size={0.3} opacity={0.24} />
             <PointLayer data={layers.brightStars} size={0.17} opacity={0.7} blending={THREE.AdditiveBlending} />
         </>
     )
