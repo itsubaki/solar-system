@@ -778,10 +778,10 @@ export function SolarSystem() {
             </button>
 
             <div
-                className="absolute bottom-0 left-0 z-40 flex flex-col gap-2 sm:hidden"
+                className="absolute bottom-0 left-0 z-40 flex flex-col gap-4 sm:hidden"
                 style={{
                     left: "calc(env(safe-area-inset-left) + 1rem)",
-                    bottom: "calc(env(safe-area-inset-bottom) + 1rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
                 }}
             >
                 <button
