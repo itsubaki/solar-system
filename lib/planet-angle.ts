@@ -1,13 +1,7 @@
-import { PlanetData, SatelliteData } from "./planet-data"
+import { OrbitPhase, PlanetData, SatelliteData } from "./planet-data"
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
-
-type OrbitPhase = {
-    eccentricity: number
-    longitudeOfPeriapsis: number
-    meanLongitudeAtJ2000: number
-}
 
 type OrbitState = {
     angle: number
@@ -17,11 +11,10 @@ type OrbitState = {
 }
 
 export function getSatelliteOrbitAngle(
-    planetName: string,
     satellite: SatelliteData,
     at = new Date()
 ): number {
-    return getSatelliteOrbitPosition(planetName, satellite, at).angle
+    return getSatelliteOrbitPosition(satellite, at).angle
 }
 
 export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
@@ -29,55 +22,31 @@ export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
 }
 
 export function getPlanetOrbitPosition(planet: PlanetData, at = new Date()): OrbitState {
-    return getOrbitState(
-        planet.orbitalPeriod,
-        {
-            eccentricity: planet.eccentricity,
-            longitudeOfPeriapsis: planet.longitudeOfPerihelion,
-            meanLongitudeAtJ2000: planet.meanLongitudeAtJ2000,
-        },
-        at
-    )
+    return getOrbitState(planet.orbitalPeriod, planet.orbitPhase, at)
 }
 
 export function getSatelliteOrbitPosition(
-    planetName: string,
     satellite: SatelliteData,
     at = new Date()
 ): OrbitState {
-    void planetName
-    const phase = {
-        eccentricity: satellite.eccentricity,
-        longitudeOfPeriapsis: satellite.longitudeOfPeriapsis,
-        meanLongitudeAtJ2000: satellite.meanLongitudeAtJ2000,
-    }
-
-    return getOrbitState(satellite.orbitalPeriod, phase, at)
+    return getOrbitState(satellite.orbitalPeriod, satellite.orbitPhase, at)
 }
 
 export function getPlanetOrbitPath(planet: PlanetData, segments = 256) {
     return getOrbitPathPoints(
-        planet.eccentricity,
-        degToRad(planet.longitudeOfPerihelion),
+        planet.orbitPhase.eccentricity,
+        degToRad(planet.orbitPhase.longitudeOfPeriapsis),
         segments
     )
 }
 
 export function getSatelliteOrbitPath(
-    planetName: string,
     satellite: SatelliteData,
     segments = 128
 ) {
-    void planetName
-    const phase = {
-        eccentricity: satellite.eccentricity,
-        longitudeOfPeriapsis: satellite.longitudeOfPeriapsis,
-        meanLongitudeAtJ2000: satellite.meanLongitudeAtJ2000,
-    }
-
     return getOrbitPathPoints(
-        phase.eccentricity,
-        degToRad(phase.longitudeOfPeriapsis),
+        satellite.orbitPhase.eccentricity,
+        degToRad(satellite.orbitPhase.longitudeOfPeriapsis),
         segments
     )
 }

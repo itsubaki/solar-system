@@ -231,18 +231,6 @@ export function Planet({
                         </group>
                     )}
 
-                    {/* {data.satellites?.map((satellite) => (
-                        <Satellite
-                            key={satellite.name}
-                            satellite={{ ...satellite, parentPlanetName: data.name }}
-                            simTimeRef={simTimeRef}
-                            scale={{
-                                distance: scale.distance,
-                                radius: scale.radius,
-                            }}
-                        />
-                    ))} */}
-
                     <Html
                         position={[0, radius + 0.1, 0]}
                         center
@@ -288,11 +276,11 @@ function Satellite({
     const distance = satellite.distance * scale.distance
     const radius = satellite.radius * scale.radius
     const initialOrbitPosition = useMemo(
-        () => getSatelliteOrbitPosition(satellite.parentPlanetName, satellite),
+        () => getSatelliteOrbitPosition(satellite),
         [satellite]
     )
     const orbitPoints = useMemo(
-        () => getSatelliteOrbitPath(satellite.parentPlanetName, satellite).map((point) => [
+        () => getSatelliteOrbitPath(satellite).map((point) => [
             distance * point.x,
             0,
             distance * point.z,
@@ -306,10 +294,10 @@ function Satellite({
         }
 
         const orbitPosition = getSatelliteOrbitPosition(
-            satellite.parentPlanetName,
             satellite,
             simTimeRef.current
         )
+
         groupRef.current.position.set(
             distance * orbitPosition.x,
             0,
