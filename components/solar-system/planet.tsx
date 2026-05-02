@@ -5,7 +5,6 @@ import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
-import { degToRad } from "@/lib/orbit"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getPlanetOrbitPath, getPlanetOrbitPosition } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
@@ -45,8 +44,6 @@ export function Planet({
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
     void cameraDistance
-    const orbitalInclination = degToRad(data.orbitPlane.inclination)
-    const longitudeOfAscendingNode = degToRad(data.orbitPlane.longitudeOfAscendingNode)
     const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
     const orbitPoints = useMemo(
         () => getPlanetOrbitPath(data).map((point) => [
@@ -104,98 +101,96 @@ export function Planet({
         }
     })
     return (
-        <group rotation={[0, longitudeOfAscendingNode, 0]}>
-            <group rotation={[0, 0, orbitalInclination]}>
-                <OrbitLine points={orbitPoints} color={data.color} />
+        <group quaternion={orbitPlaneQuaternion}>
+            <OrbitLine points={orbitPoints} color={data.color} />
 
-                <group
-                    ref={groupRef}
-                    position={[
-                        distance * initialOrbitPosition.x,
-                        0,
-                        distance * initialOrbitPosition.z,
-                    ]}
+            <group
+                ref={groupRef}
+                position={[
+                    distance * initialOrbitPosition.x,
+                    0,
+                    distance * initialOrbitPosition.z,
+                ]}
+            >
+                <mesh
+                    ref={planetRef}
+                    onPointerOver={() => setHovered(true)}
+                    onPointerOut={() => setHovered(false)}
+                    onClick={() => {
+                        onSelect(data)
+                    }}
                 >
-                    <mesh
-                        ref={planetRef}
-                        onPointerOver={() => setHovered(true)}
-                        onPointerOut={() => setHovered(false)}
-                        onClick={() => {
-                            onSelect(data)
-                        }}
-                    >
-                        <sphereGeometry args={[radius, 32, 32]} />
-                        <meshStandardMaterial
-                            color={data.color}
-                            emissive={data.emissive || data.color}
-                            emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
-                            roughness={0.8}
-                            metalness={0.1}
-                        />
-                    </mesh>
-
-                    <AxialTiltIndicator
-                        radius={radius}
-                        quaternion={axisQuaternion}
-                        highlighted={hovered || isSelected}
+                    <sphereGeometry args={[radius, 32, 32]} />
+                    <meshStandardMaterial
+                        color={data.color}
+                        emissive={data.emissive || data.color}
+                        emissiveIntensity={hovered || isSelected ? 0.3 : 0.05}
+                        roughness={0.8}
+                        metalness={0.1}
                     />
+                </mesh>
 
-                    {Array.isArray(data.rings) && (
-                        <group quaternion={ringQuaternion}>
-                            {data.rings.map((ring, i) => (
-                                <mesh key={i}>
-                                    <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
-                                    <shaderMaterial
-                                        attach="material"
-                                        vertexShader={ringVertexShader}
-                                        fragmentShader={ringFragmentShader}
-                                        transparent
-                                        side={DoubleSide}
-                                        uniforms={ringUniforms[i]}
-                                    />
-                                </mesh>
-                            ))}
-                        </group>
-                    )}
+                <AxialTiltIndicator
+                    radius={radius}
+                    quaternion={axisQuaternion}
+                    highlighted={hovered || isSelected}
+                />
 
-                    {showSatellites && Array.isArray(data.satellites) && data.satellites.map((satellite) => (
-                        <Satellite
-                            key={`${data.name}-${satellite.name}`}
-                            satellite={{
-                                ...satellite,
-                                parentPlanetName: data.name,
-                            }}
-                            onSelect={onSelectSatellite}
-                            isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
-                            focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}
-                            simTimeRef={simTimeRef}
-                            scale={scale}
-                        />
-                    ))}
+                {Array.isArray(data.rings) && (
+                    <group quaternion={ringQuaternion}>
+                        {data.rings.map((ring, i) => (
+                            <mesh key={i}>
+                                <ringGeometry args={[ring.innerRadius * scale.radius, ring.outerRadius * scale.radius, 64]} />
+                                <shaderMaterial
+                                    attach="material"
+                                    vertexShader={ringVertexShader}
+                                    fragmentShader={ringFragmentShader}
+                                    transparent
+                                    side={DoubleSide}
+                                    uniforms={ringUniforms[i]}
+                                />
+                            </mesh>
+                        ))}
+                    </group>
+                )}
 
-                    <Html
-                        position={[0, radius + 0.1, 0]}
-                        center
-                        style={{
-                            pointerEvents: "auto",
-                            userSelect: "none",
+                {showSatellites && Array.isArray(data.satellites) && data.satellites.map((satellite) => (
+                    <Satellite
+                        key={`${data.name}-${satellite.name}`}
+                        satellite={{
+                            ...satellite,
+                            parentPlanetName: data.name,
+                        }}
+                        onSelect={onSelectSatellite}
+                        isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
+                        focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}
+                        simTimeRef={simTimeRef}
+                        scale={scale}
+                    />
+                ))}
+
+                <Html
+                    position={[0, radius + 0.1, 0]}
+                    center
+                    style={{
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                    }}
+                >
+                    <div
+                        className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-card/80 text-card-foreground backdrop-blur-sm"
+                            }`}
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onSelect(data);
                         }}
                     >
-                        <div
-                            className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-all ${isSelected
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-card/80 text-card-foreground backdrop-blur-sm"
-                                }`}
-                            style={{ cursor: "pointer" }}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onSelect(data);
-                            }}
-                        >
-                            {data.name}
-                        </div>
-                    </Html>
-                </group>
+                        {data.name}
+                    </div>
+                </Html>
             </group>
         </group>
     )

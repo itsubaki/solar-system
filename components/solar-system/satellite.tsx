@@ -82,7 +82,7 @@ export function Satellite({
     })
 
     return (
-        <>
+        <group quaternion={orbitPlaneQuaternion}>
             <OrbitLine points={orbitPoints} color={satellite.color} />
 
             <group
@@ -130,6 +130,6 @@ export function Satellite({
                     </div>
                 </Html>
             </group>
-        </>
+        </group>
     )
 }

@@ -3,6 +3,7 @@ import {
     ASTRONOMICAL_UNIT,
     MS_PER_DAY,
     degToRad,
+    getSceneDirection,
     normalizeRadians,
 } from "./orbit"
 
@@ -79,11 +80,6 @@ function getProbeDistanceFromSunAu(probe: ProbeData, at: Date) {
 function getProbeDirection(probe: ProbeData) {
     const longitude = degToRad(probe.direction.eclipticLongitudeDegrees)
     const latitude = degToRad(probe.direction.eclipticLatitudeDegrees)
-    const projectedRadius = Math.cos(latitude)
 
-    return {
-        x: projectedRadius * Math.cos(longitude),
-        y: Math.sin(latitude),
-        z: -projectedRadius * Math.sin(longitude),
-    }
+    return getSceneDirection(longitude, latitude)
 }

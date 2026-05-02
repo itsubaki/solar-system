@@ -81,7 +81,7 @@ export function getOrbitPlaneQuaternion(orbitPlane: OrbitPlane) {
         degToRad(orbitPlane.longitudeOfAscendingNode)
     )
     const inclinationRotation = new Quaternion().setFromAxisAngle(
-        new Vector3(0, 0, 1),
+        new Vector3(1, 0, 0),
         degToRad(orbitPlane.inclination)
     )
 

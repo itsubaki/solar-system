@@ -4,6 +4,7 @@ import {
     FULL_TURN,
     MS_PER_DAY,
     degToRad,
+    rotateOrbitPointToScene,
     normalizeRadians,
     solveKeplerEquation,
 } from "./orbit"
@@ -87,19 +88,13 @@ function getWorldOrbitPoint(
     orbitalInclination: number
 ) {
     const argumentOfLatitude = trueAnomaly + argumentOfPerihelion
-    const standardX = radiusScale * (
-        Math.cos(longitudeOfAscendingNode) * Math.cos(argumentOfLatitude) -
-        Math.sin(longitudeOfAscendingNode) * Math.sin(argumentOfLatitude) * Math.cos(orbitalInclination)
-    )
-    const standardY = radiusScale * (
-        Math.sin(longitudeOfAscendingNode) * Math.cos(argumentOfLatitude) +
-        Math.cos(longitudeOfAscendingNode) * Math.sin(argumentOfLatitude) * Math.cos(orbitalInclination)
-    )
-    const standardZ = radiusScale * Math.sin(argumentOfLatitude) * Math.sin(orbitalInclination)
+    const localX = radiusScale * Math.cos(argumentOfLatitude)
+    const localZ = -radiusScale * Math.sin(argumentOfLatitude)
 
-    return {
-        x: standardX,
-        y: standardZ,
-        z: -standardY,
-    }
+    return rotateOrbitPointToScene(
+        localX,
+        localZ,
+        longitudeOfAscendingNode,
+        orbitalInclination
+    )
 }
