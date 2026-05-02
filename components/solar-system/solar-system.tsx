@@ -567,13 +567,13 @@ export function SolarSystem() {
                 <ul className="space-y-1">
                     <li><b>Arrow keys</b>: Rotate camera</li>
                     <li><b>r</b> / <b>R</b>: Reset camera</li>
-                    <li><b>+</b> / <b>-</b>: Zoom camera</li>
+                    <li><b>+</b> / <b>-</b>: Zoom</li>
                     <li><b>&lt;</b> / <b>&gt;</b>: Move planet</li>
-                    <li><b>a</b> / <b>s</b>: Adjust orbit speed</li>
-                    <li><b>z</b> / <b>x</b>: Scale planet radius</li>
-                    <li><b>d</b>: Show dwarf planets</li>
-                    <li><b>c</b>: Show comets</li>
-                    <li><b>v</b>: Show probes</li>
+                    <li><b>a</b> / <b>s</b>: Orbit speed</li>
+                    <li><b>z</b> / <b>x</b>: Planet radius</li>
+                    <li><b>d</b>: Dwarf planets</li>
+                    <li><b>c</b>: Comets</li>
+                    <li><b>v</b>: Probes</li>
                 </ul>
             </div>
 
