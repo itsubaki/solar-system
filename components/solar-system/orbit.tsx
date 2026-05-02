@@ -88,6 +88,36 @@ export function getOrbitPlaneQuaternion(orbitPlane: OrbitPlane) {
     return nodeRotation.multiply(inclinationRotation)
 }
 
+export function getEquatorPlaneQuaternion(poleDirection: PoleDirection) {
+    return new Quaternion().setFromUnitVectors(
+        SCENE_UP,
+        getPoleVector(poleDirection.longitude, poleDirection.latitude).normalize()
+    )
+}
+
+export function getOrbitFrameQuaternion(
+    orbitPlane: OrbitPlane,
+    parentPoleDirection?: PoleDirection,
+    parentOrbitPlaneQuaternion?: Quaternion
+) {
+    const orbitPlaneQuaternion = getOrbitPlaneQuaternion(orbitPlane)
+
+    if (orbitPlane.referenceFrame !== "parentEquator" || !parentPoleDirection) {
+        return orbitPlaneQuaternion
+    }
+
+    if (!parentOrbitPlaneQuaternion) {
+        return getEquatorPlaneQuaternion(parentPoleDirection).multiply(orbitPlaneQuaternion)
+    }
+
+    const parentLocalPoleVector = getLocalPoleVector(
+        parentPoleDirection,
+        parentOrbitPlaneQuaternion
+    )
+
+    return getAxisQuaternion(parentLocalPoleVector).multiply(orbitPlaneQuaternion)
+}
+
 export function getLocalPoleVector(
     poleDirection: PoleDirection,
     orbitPlaneQuaternion: Quaternion

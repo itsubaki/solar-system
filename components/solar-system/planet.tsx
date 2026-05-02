@@ -161,6 +161,8 @@ export function Planet({
                             ...satellite,
                             parentPlanetName: data.name,
                         }}
+                        parentPoleDirection={data.poleDirection}
+                        parentOrbitPlaneQuaternion={orbitPlaneQuaternion}
                         onSelect={onSelectSatellite}
                         isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
                         focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}

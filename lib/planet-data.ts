@@ -14,6 +14,7 @@ export interface OrbitPhase {
 export interface OrbitPlane {
     inclination: number
     longitudeOfAscendingNode: number
+    referenceFrame?: "scene" | "parentEquator"
 }
 
 export interface PlanetData {
@@ -226,6 +227,7 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 5.145,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "scene",
                 },
                 color: "#C4C4C4",
                 orbitPhase: {
@@ -262,8 +264,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 0.3,
                 poleDirection: { longitude: 352.908, latitude: 63.282 },
                 orbitPlane: {
-                    inclination: 26.04,
+                    inclination: 1.093,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -279,8 +282,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 1.3,
                 poleDirection: { longitude: 352.908, latitude: 63.282 },
                 orbitPlane: {
-                    inclination: 27.58,
+                    inclination: 0.93,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -317,8 +321,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 1.8,
                 poleDirection: { longitude: 247.706, latitude: 87.787 },
                 orbitPlane: {
-                    inclination: 2.213,
+                    inclination: 0.05,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#E6C87A",
                 orbitPhase: {
@@ -334,8 +339,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 3.5,
                 poleDirection: { longitude: 247.93, latitude: 87.801 },
                 orbitPlane: {
-                    inclination: 1.791,
+                    inclination: 0.47,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#C4B896",
                 orbitPhase: {
@@ -351,8 +357,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 7.2,
                 poleDirection: { longitude: 248.671, latitude: 87.875 },
                 orbitPlane: {
-                    inclination: 2.214,
+                    inclination: 0.2,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -368,8 +375,9 @@ export const PLANETS: PlanetData[] = [
                 orbitalPeriod: 16.7,
                 poleDirection: { longitude: 252.485, latitude: 88.191 },
                 orbitPlane: {
-                    inclination: 2.017,
+                    inclination: 0.192,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#5C4033",
                 orbitPhase: {
@@ -435,6 +443,7 @@ export const PLANETS: PlanetData[] = [
                 orbitPlane: {
                     inclination: 0.34854,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#E6A243",
                 orbitPhase: {
@@ -635,11 +644,12 @@ export const PLANETS: PlanetData[] = [
                 name: "Triton",
                 radius: 1353.4,
                 distance: 354_759,
-                orbitalPeriod: 5.9,
+                orbitalPeriod: -5.9,
                 poleDirection: { longitude: 0, latitude: 90 },
                 orbitPlane: {
-                    inclination: 129.812,
+                    inclination: 23.115,
                     longitudeOfAscendingNode: 0,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#C4C4C4",
                 orbitPhase: {

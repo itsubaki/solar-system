@@ -5,9 +5,9 @@ import { Html } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { Vector3 } from "three"
 import type { Group } from "three"
-import type { SatelliteData } from "@/lib/planet-data"
+import type { PoleDirection, SatelliteData } from "@/lib/planet-data"
 import { getSatelliteOrbitPath, getSatelliteOrbitPosition } from "@/lib/planet-angle"
-import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitPlaneQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitFrameQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Satellite({
     simTimeRef,
@@ -15,6 +15,8 @@ export function Satellite({
     onSelect,
     isSelected,
     focusTargetRef,
+    parentPoleDirection,
+    parentOrbitPlaneQuaternion,
     scale,
 }: {
     simTimeRef: { current: Date }
@@ -22,6 +24,8 @@ export function Satellite({
     onSelect: (satellite: SatelliteData & { parentPlanetName: string }) => void
     isSelected: boolean
     focusTargetRef?: FocusTargetRef | null
+    parentPoleDirection: PoleDirection
+    parentOrbitPlaneQuaternion: Group["quaternion"]
     scale: {
         distance: number,
         radius: number,
@@ -33,8 +37,12 @@ export function Satellite({
     const distance = satellite.distance * scale.distance
     const radius = satellite.radius * scale.radius
     const orbitPlaneQuaternion = useMemo(() => {
-        return getOrbitPlaneQuaternion(satellite.orbitPlane)
-    }, [satellite.orbitPlane])
+        return getOrbitFrameQuaternion(
+            satellite.orbitPlane,
+            parentPoleDirection,
+            parentOrbitPlaneQuaternion
+        )
+    }, [parentOrbitPlaneQuaternion, parentPoleDirection, satellite.orbitPlane])
     const localPoleVector = useMemo(() => {
         return getLocalPoleVector(satellite.poleDirection, orbitPlaneQuaternion)
     }, [orbitPlaneQuaternion, satellite.poleDirection])
