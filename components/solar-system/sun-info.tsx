@@ -43,12 +43,6 @@ export function SunInfo({
                             {SUN_DATA.radius.toLocaleString()} km
                         </p>
                     </div>
-                    <div>
-                        <p className="text-[10px] text-muted-foreground">Type</p>
-                        <p className="text-xs font-medium text-foreground">
-                            G-type main-sequence star
-                        </p>
-                    </div>
                 </div>
             </CardContent>
         </Card>
