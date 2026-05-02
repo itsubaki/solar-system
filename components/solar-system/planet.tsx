@@ -107,8 +107,8 @@ export function Planet({
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
     void cameraDistance
-    const orbitalInclination = degToRad(data.orbitalInclination)
-    const longitudeOfAscendingNode = degToRad(data.longitudeOfAscendingNode)
+    const orbitalInclination = degToRad(data.orbitPlane.inclination)
+    const longitudeOfAscendingNode = degToRad(data.orbitPlane.longitudeOfAscendingNode)
     const initialOrbitPosition = useMemo(() => getPlanetOrbitPosition(data), [data])
     const orbitPoints = useMemo(
         () => getPlanetOrbitPath(data).map((point) => [

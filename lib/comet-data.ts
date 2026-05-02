@@ -1,4 +1,4 @@
-import { ASTRONOMICAL_UNIT, type PoleDirection } from "./planet-data"
+import { ASTRONOMICAL_UNIT, type OrbitPlane, type PoleDirection } from "./planet-data"
 
 export interface CometOrbitalElements {
     eccentricity: number
@@ -13,8 +13,7 @@ export interface CometData {
     displayRadius: number
     distance: number
     poleDirection: PoleDirection
-    orbitalInclination: number
-    longitudeOfAscendingNode: number
+    orbitPlane: OrbitPlane
     orbitalPeriod: number
     color: string
     emissive?: string
@@ -30,8 +29,10 @@ export const COMETS: CometData[] = [
         displayRadius: 4500,
         distance: ASTRONOMICAL_UNIT * 17.8,
         poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 162.26,
-        longitudeOfAscendingNode: 58.42,
+        orbitPlane: {
+            inclination: 162.26,
+            longitudeOfAscendingNode: 58.42,
+        },
         orbitalPeriod: 75.32 * 365.25,
         color: "#AEE7E8",
         emissive: "#E6FBFF",
@@ -50,8 +51,10 @@ export const COMETS: CometData[] = [
         displayRadius: 3200,
         distance: ASTRONOMICAL_UNIT * 2.22,
         poleDirection: { longitude: 0, latitude: 90 },
-        orbitalInclination: 11.78,
-        longitudeOfAscendingNode: 334.57,
+        orbitPlane: {
+            inclination: 11.78,
+            longitudeOfAscendingNode: 334.57,
+        },
         orbitalPeriod: 3.30 * 365.25,
         color: "#F6E6AF",
         emissive: "#FFF7D9",

@@ -30,8 +30,8 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
         radiusScale,
         trueAnomaly,
         degToRad(orbitalElements.argumentOfPerihelion),
-        degToRad(comet.longitudeOfAscendingNode),
-        degToRad(comet.orbitalInclination)
+        degToRad(comet.orbitPlane.longitudeOfAscendingNode),
+        degToRad(comet.orbitPlane.inclination)
     )
 
     return {
@@ -48,8 +48,8 @@ export function getCometOrbitPath(comet: CometData, segments = 512) {
     const semiMajorAxisAu = orbitalElements.perihelionDistanceAu / (1 - orbitalElements.eccentricity)
     const baselineDistanceAu = comet.distance / KM_PER_AU
     const argumentOfPerihelion = degToRad(orbitalElements.argumentOfPerihelion)
-    const longitudeOfAscendingNode = degToRad(comet.longitudeOfAscendingNode)
-    const orbitalInclination = degToRad(comet.orbitalInclination)
+    const longitudeOfAscendingNode = degToRad(comet.orbitPlane.longitudeOfAscendingNode)
+    const orbitalInclination = degToRad(comet.orbitPlane.inclination)
     const points: Array<{ x: number; y: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
