@@ -1,6 +1,7 @@
 import { OrbitPhase, PlanetData, SatelliteData } from "./planet-data"
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
+const FULL_TURN = Math.PI * 2
 const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
 
 type OrbitState = {
@@ -8,17 +9,6 @@ type OrbitState = {
     radiusScale: number
     x: number
     z: number
-}
-
-export function getSatelliteOrbitAngle(
-    satellite: SatelliteData,
-    at = new Date()
-): number {
-    return getSatelliteOrbitPosition(satellite, at).angle
-}
-
-export function getInitialOrbitAngle(planet: PlanetData, at = new Date()) {
-    return getPlanetOrbitPosition(planet, at).angle
 }
 
 export function getPlanetOrbitPosition(planet: PlanetData, at = new Date()): OrbitState {
@@ -96,23 +86,8 @@ function getOrbitPathPoints(eccentricity: number, longitudeOfPeriapsis: number, 
     return points
 }
 
-function getCircularOrbitPath(segments: number) {
-    const points: Array<{ x: number; z: number }> = []
-
-    for (let i = 0; i <= segments; i += 1) {
-        const angle = (Math.PI * 2 * i) / segments
-        points.push({
-            x: Math.cos(angle),
-            z: -Math.sin(angle),
-        })
-    }
-
-    return points
-}
-
 function normalizeRadians(angle: number) {
-    const fullTurn = Math.PI * 2
-    return ((angle % fullTurn) + fullTurn) % fullTurn
+    return ((angle % FULL_TURN) + FULL_TURN) % FULL_TURN
 }
 
 function solveKeplerEquation(meanAnomaly: number, eccentricity: number) {

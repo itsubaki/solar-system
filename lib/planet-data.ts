@@ -1,3 +1,5 @@
+export const ASTRONOMICAL_UNIT = 149_600_000 // km
+
 export interface PoleDirection {
     longitude: number
     latitude: number
@@ -36,6 +38,8 @@ export interface SatelliteData {
     radius: number
     distance: number
     orbitalPeriod: number
+    poleDirection: PoleDirection
+    orbitPlane: OrbitPlane
     color: string
     orbitPhase: OrbitPhase
 }
@@ -47,30 +51,6 @@ export interface RingData {
     outerColor?: string
     innerAlpha?: number
     outerAlpha?: number
-}
-
-export const ASTRONOMICAL_UNIT = 149_600_000 // km
-
-export function getPlanetObliquity(planet: PlanetData) {
-    const poleLongitude = (planet.poleDirection.longitude * Math.PI) / 180
-    const poleLatitude = (planet.poleDirection.latitude * Math.PI) / 180
-    const orbitalInclination = (planet.orbitPlane.inclination * Math.PI) / 180
-    const ascendingNodeLongitude = (planet.orbitPlane.longitudeOfAscendingNode * Math.PI) / 180
-
-    const cosPoleLatitude = Math.cos(poleLatitude)
-    const poleX = cosPoleLatitude * Math.cos(poleLongitude)
-    const poleY = Math.sin(poleLatitude)
-    const poleZ = -cosPoleLatitude * Math.sin(poleLongitude)
-
-    const orbitNormalX = -Math.sin(ascendingNodeLongitude) * Math.sin(orbitalInclination)
-    const orbitNormalY = Math.cos(orbitalInclination)
-    const orbitNormalZ = -Math.cos(ascendingNodeLongitude) * Math.sin(orbitalInclination)
-
-    const dot = poleX * orbitNormalX + poleY * orbitNormalY + poleZ * orbitNormalZ
-    const clampedDot = Math.max(-1, Math.min(1, dot))
-    const angle = Math.acos(clampedDot)
-
-    return (Math.min(angle, Math.PI - angle) * 180) / Math.PI
 }
 
 export const SUN_DATA = {
@@ -242,6 +222,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 1737.4,
                 distance: 384_399,
                 orbitalPeriod: 27,
+                poleDirection: { longitude: 214.453, latitude: 88.43 },
+                orbitPlane: {
+                    inclination: 5.145,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#C4C4C4",
                 orbitPhase: {
                     eccentricity: 0.0549,
@@ -275,6 +260,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 11.267,
                 distance: 9_376,
                 orbitalPeriod: 0.3,
+                poleDirection: { longitude: 352.908, latitude: 63.282 },
+                orbitPlane: {
+                    inclination: 26.04,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#8B7355",
                 orbitPhase: {
                     eccentricity: 0.0151,
@@ -287,6 +277,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 6.2,
                 distance: 23_463.2,
                 orbitalPeriod: 1.3,
+                poleDirection: { longitude: 352.908, latitude: 63.282 },
+                orbitPlane: {
+                    inclination: 27.58,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#8B7355",
                 orbitPhase: {
                     eccentricity: 0.0002,
@@ -320,6 +315,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 1821.6,
                 distance: 421_700,
                 orbitalPeriod: 1.8,
+                poleDirection: { longitude: 247.706, latitude: 87.787 },
+                orbitPlane: {
+                    inclination: 2.213,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#E6C87A",
                 orbitPhase: {
                     eccentricity: 0.0041,
@@ -332,6 +332,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 1560.8,
                 distance: 671_100,
                 orbitalPeriod: 3.5,
+                poleDirection: { longitude: 247.93, latitude: 87.801 },
+                orbitPlane: {
+                    inclination: 1.791,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#C4B896",
                 orbitPhase: {
                     eccentricity: 0.0094,
@@ -344,6 +349,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 2634.1,
                 distance: 1_070_400,
                 orbitalPeriod: 7.2,
+                poleDirection: { longitude: 248.671, latitude: 87.875 },
+                orbitPlane: {
+                    inclination: 2.214,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#8B7355",
                 orbitPhase: {
                     eccentricity: 0.0013,
@@ -356,6 +366,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 2410.3,
                 distance: 1_882_700,
                 orbitalPeriod: 16.7,
+                poleDirection: { longitude: 252.485, latitude: 88.191 },
+                orbitPlane: {
+                    inclination: 2.017,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#5C4033",
                 orbitPhase: {
                     eccentricity: 0.0074,
@@ -416,6 +431,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 2574.7,
                 distance: 1_221_870,
                 orbitalPeriod: 16,
+                poleDirection: { longitude: 79.528, latitude: 61.948 },
+                orbitPlane: {
+                    inclination: 0.34854,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#E6A243",
                 orbitPhase: {
                     eccentricity: 0.0288,
@@ -616,6 +636,11 @@ export const PLANETS: PlanetData[] = [
                 radius: 1353.4,
                 distance: 354_759,
                 orbitalPeriod: 5.9,
+                poleDirection: { longitude: 0, latitude: 90 },
+                orbitPlane: {
+                    inclination: 129.812,
+                    longitudeOfAscendingNode: 0,
+                },
                 color: "#C4C4C4",
                 orbitPhase: {
                     eccentricity: 0.000016,

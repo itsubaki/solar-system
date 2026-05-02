@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
 import { DoubleSide, Vector3, Color, Quaternion } from "three"
 import type { Group, Mesh } from "three"
-import type { PlanetData, SatelliteData } from "@/lib/planet-data"
+import type { OrbitPlane, PlanetData, PoleDirection, SatelliteData } from "@/lib/planet-data"
 import { getPlanetOrbitPath, getPlanetOrbitPosition, getSatelliteOrbitPath, getSatelliteOrbitPosition, degToRad } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 
@@ -80,6 +80,31 @@ function getPoleVector(longitude: number, latitude: number) {
     )
 }
 
+function getOrbitPlaneQuaternion(orbitPlane: OrbitPlane) {
+    const nodeRotation = new Quaternion().setFromAxisAngle(
+        SCENE_UP,
+        degToRad(orbitPlane.longitudeOfAscendingNode)
+    )
+    const inclinationRotation = new Quaternion().setFromAxisAngle(
+        new Vector3(0, 0, 1),
+        degToRad(orbitPlane.inclination)
+    )
+
+    return nodeRotation.multiply(inclinationRotation)
+}
+
+function getLocalPoleVector(
+    poleDirection: PoleDirection,
+    orbitPlaneQuaternion: Quaternion
+) {
+    return getPoleVector(
+        poleDirection.longitude,
+        poleDirection.latitude
+    )
+        .applyQuaternion(orbitPlaneQuaternion.clone().invert())
+        .normalize()
+}
+
 export function Planet({
     data,
     onSelect,
@@ -128,22 +153,11 @@ export function Planet({
         [data.rings]
     )
     const orbitPlaneQuaternion = useMemo(() => {
-        const nodeRotation = new Quaternion().setFromAxisAngle(SCENE_UP, longitudeOfAscendingNode)
-        const inclinationRotation = new Quaternion().setFromAxisAngle(
-            new Vector3(0, 0, 1),
-            orbitalInclination
-        )
-
-        return nodeRotation.multiply(inclinationRotation)
-    }, [longitudeOfAscendingNode, orbitalInclination])
+        return getOrbitPlaneQuaternion(data.orbitPlane)
+    }, [data.orbitPlane])
     const localPoleVector = useMemo(() => {
-        return getPoleVector(
-            data.poleDirection.longitude,
-            data.poleDirection.latitude
-        )
-            .applyQuaternion(orbitPlaneQuaternion.clone().invert())
-            .normalize()
-    }, [data.poleDirection.latitude, data.poleDirection.longitude, orbitPlaneQuaternion])
+        return getLocalPoleVector(data.poleDirection, orbitPlaneQuaternion)
+    }, [data.poleDirection, orbitPlaneQuaternion])
     const axisQuaternion = useMemo(() => {
         return new Quaternion().setFromUnitVectors(SCENE_UP, localPoleVector)
     }, [localPoleVector])
@@ -275,6 +289,15 @@ function Satellite({
     const [hovered, setHovered] = useState(false)
     const distance = satellite.distance * scale.distance
     const radius = satellite.radius * scale.radius
+    const orbitPlaneQuaternion = useMemo(() => {
+        return getOrbitPlaneQuaternion(satellite.orbitPlane)
+    }, [satellite.orbitPlane])
+    const localPoleVector = useMemo(() => {
+        return getLocalPoleVector(satellite.poleDirection, orbitPlaneQuaternion)
+    }, [orbitPlaneQuaternion, satellite.poleDirection])
+    const axisQuaternion = useMemo(() => {
+        return new Quaternion().setFromUnitVectors(SCENE_UP, localPoleVector)
+    }, [localPoleVector])
     const initialOrbitPosition = useMemo(
         () => getSatelliteOrbitPosition(satellite),
         [satellite]
@@ -329,6 +352,12 @@ function Satellite({
                         emissiveIntensity={hovered ? 0.3 : 0.1}
                     />
                 </mesh>
+
+                <AxialTiltIndicator
+                    radius={radius}
+                    quaternion={axisQuaternion}
+                    highlighted={hovered}
+                />
 
 
                 <Html

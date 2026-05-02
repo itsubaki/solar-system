@@ -1,8 +1,8 @@
 import type { CometData } from "./comet-data"
 
+const ASTRONOMICAL_UNIT = 149_600_000 // km
 const MS_PER_DAY = 1000 * 60 * 60 * 24
 const FULL_TURN = Math.PI * 2
-const KM_PER_AU = 149_600_000
 
 type CometOrbitState = {
     angle: number
@@ -24,7 +24,7 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
         Math.sqrt(1 - orbitalElements.eccentricity) * Math.cos(eccentricAnomaly / 2)
     )
     const radiusAu = semiMajorAxisAu * (1 - orbitalElements.eccentricity * Math.cos(eccentricAnomaly))
-    const baselineDistanceAu = comet.distance / KM_PER_AU
+    const baselineDistanceAu = comet.distance / ASTRONOMICAL_UNIT
     const radiusScale = radiusAu / baselineDistanceAu
     const worldPosition = getWorldOrbitPoint(
         radiusScale,
@@ -46,7 +46,7 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
 export function getCometOrbitPath(comet: CometData, segments = 512) {
     const { orbitalElements } = comet
     const semiMajorAxisAu = orbitalElements.perihelionDistanceAu / (1 - orbitalElements.eccentricity)
-    const baselineDistanceAu = comet.distance / KM_PER_AU
+    const baselineDistanceAu = comet.distance / ASTRONOMICAL_UNIT
     const argumentOfPerihelion = degToRad(orbitalElements.argumentOfPerihelion)
     const longitudeOfAscendingNode = degToRad(comet.orbitPlane.longitudeOfAscendingNode)
     const orbitalInclination = degToRad(comet.orbitPlane.inclination)

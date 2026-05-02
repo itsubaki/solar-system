@@ -475,7 +475,6 @@ export function SolarSystem() {
                     setPlanetScaleIndex((prev) => Math.min(PLANET_SCALE_OPTIONS.length - 1, prev + 1));
                     break;
                 case "c":
-                case "C":
                     event.preventDefault();
                     setShowComets((prev) => {
                         const next = !prev;
