@@ -7,40 +7,13 @@ import { Vector3 } from "three"
 import type { Group, Mesh } from "three"
 import type { ProbeData } from "@/lib/probe-data"
 import { getProbeTrajectoryPath, getProbeTrajectoryPosition } from "@/lib/probe-angle"
-
-type FocusTargetRef = {
-    current: Vector3 | null
-}
-
-type OrbitPoint = [number, number, number]
-
-function TrajectoryLine({
-    points,
-    color,
-}: {
-    points: OrbitPoint[]
-    color: string
-}) {
-    const positions = useMemo(() => new Float32Array(points.flat()), [points])
-
-    return (
-        <line>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    args={[positions, 3]}
-                    count={positions.length / 3}
-                />
-            </bufferGeometry>
-            <lineBasicMaterial color={color} />
-        </line>
-    )
-}
+import { OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Probe({
     data,
     onSelect,
     isSelected,
+    dimOrbit,
     focusTargetRef,
     simTimeRef,
     scale,
@@ -48,6 +21,7 @@ export function Probe({
     data: ProbeData
     onSelect: (probe: ProbeData | null) => void
     isSelected: boolean
+    dimOrbit: boolean
     focusTargetRef?: FocusTargetRef | null
     simTimeRef: { current: Date }
     scale: {
@@ -94,7 +68,7 @@ export function Probe({
 
     return (
         <>
-            <TrajectoryLine points={trajectoryPoints} color={data.color} />
+            <OrbitLine points={trajectoryPoints} color={data.color} opacity={dimOrbit ? 0.18 : 0.72} />
 
             <group
                 ref={groupRef}

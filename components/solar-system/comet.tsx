@@ -7,40 +7,13 @@ import { Group, Vector3 } from "three"
 import type { Mesh } from "three"
 import type { CometData } from "@/lib/comet-data"
 import { getCometOrbitPath, getCometOrbitPosition } from "@/lib/comet-angle"
-
-type FocusTargetRef = {
-    current: Vector3 | null
-}
-
-type OrbitPoint = [number, number, number]
-
-function OrbitLine({
-    points,
-    color,
-}: {
-    points: OrbitPoint[]
-    color: string
-}) {
-    const positions = useMemo(() => new Float32Array(points.flat()), [points])
-
-    return (
-        <line>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    args={[positions, 3]}
-                    count={positions.length / 3}
-                />
-            </bufferGeometry>
-            <lineBasicMaterial color={color} />
-        </line>
-    )
-}
+import { OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Comet({
     data,
     onSelect,
     isSelected,
+    dimOrbit,
     focusTargetRef,
     simTimeRef,
     scale,
@@ -48,6 +21,7 @@ export function Comet({
     data: CometData
     onSelect: (comet: CometData | null) => void
     isSelected: boolean
+    dimOrbit: boolean
     focusTargetRef?: FocusTargetRef | null
     simTimeRef: { current: Date }
     scale: {
@@ -94,7 +68,7 @@ export function Comet({
 
     return (
         <>
-            <OrbitLine points={orbitPoints} color={data.color} />
+            <OrbitLine points={orbitPoints} color={data.color} opacity={dimOrbit ? 0.18 : 0.72} />
 
             <group
                 ref={groupRef}

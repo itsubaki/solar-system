@@ -16,9 +16,11 @@ const SCENE_FORWARD = new Vector3(0, 0, 1)
 export function OrbitLine({
     points,
     color,
+    opacity = 1,
 }: {
     points: OrbitPoint[]
     color: string
+    opacity?: number
 }) {
     const positions = new Float32Array(points.flat())
 
@@ -31,7 +33,11 @@ export function OrbitLine({
                     count={positions.length / 3}
                 />
             </bufferGeometry>
-            <lineBasicMaterial color={color} />
+            <lineBasicMaterial
+                color={color}
+                transparent={opacity < 1}
+                opacity={opacity}
+            />
         </line>
     )
 }

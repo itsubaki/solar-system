@@ -17,6 +17,8 @@ export function Planet({
     onSelectSatellite,
     selectedSatellite,
     isSelected,
+    hasSelection,
+    dimOrbit,
     showSatellites,
     focusTargetRef,
     cameraDistance,
@@ -28,6 +30,8 @@ export function Planet({
     onSelectSatellite: (satellite: SatelliteData & { parentPlanetName: string }) => void
     selectedSatellite: (SatelliteData & { parentPlanetName: string }) | null
     isSelected: boolean
+    hasSelection: boolean
+    dimOrbit: boolean
     showSatellites: boolean
     focusTargetRef?: FocusTargetRef | null
     cameraDistance: number
@@ -105,7 +109,7 @@ export function Planet({
     })
     return (
         <group quaternion={orbitPlaneQuaternion}>
-            <OrbitLine points={orbitPoints} color={data.color} />
+            <OrbitLine points={orbitPoints} color={data.color} opacity={dimOrbit ? 0.18 : 0.72} />
 
             <group
                 ref={groupRef}
@@ -170,6 +174,7 @@ export function Planet({
                         parentOrbitPlaneQuaternion={orbitPlaneQuaternion}
                         onSelect={onSelectSatellite}
                         isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
+                        dimOrbit={hasSelection && (selectedSatellite?.name !== satellite.name || selectedSatellite.parentPlanetName !== data.name)}
                         focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}
                         simTimeRef={simTimeRef}
                         scale={scale}
