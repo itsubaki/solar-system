@@ -80,13 +80,13 @@ function getZoomSliderValue(cameraDistance: number) {
     const max = Math.log(MAX_CAMERA_DISTANCE)
     const clampedDistance = Math.min(MAX_CAMERA_DISTANCE, Math.max(MIN_CAMERA_DISTANCE, cameraDistance))
 
-    return ((Math.log(clampedDistance) - min) / (max - min)) * (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN) + ZOOM_SLIDER_MIN
+    return (1 - (Math.log(clampedDistance) - min) / (max - min)) * (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN) + ZOOM_SLIDER_MIN
 }
 
 function getCameraDistanceFromSliderValue(sliderValue: number) {
     const min = Math.log(MIN_CAMERA_DISTANCE)
     const max = Math.log(MAX_CAMERA_DISTANCE)
-    const normalizedValue = (sliderValue - ZOOM_SLIDER_MIN) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)
+    const normalizedValue = 1 - (sliderValue - ZOOM_SLIDER_MIN) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)
 
     return Math.exp(min + normalizedValue * (max - min))
 }
