@@ -532,6 +532,8 @@ export function SolarSystem() {
         () => getSelectableTargets(visiblePlanets, showSatellites, showComets, showProbes),
         [showComets, showProbes, showSatellites, visiblePlanets]
     )
+    const zoomSliderValue = getZoomSliderValue(desiredCameraDistance ?? cameraDistance)
+    const zoomSliderThumbTop = `${((ZOOM_SLIDER_MAX - zoomSliderValue) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)) * 100}%`
     const handleCameraDistanceChange = useCallback((nextCameraDistance: number) => {
         setCameraDistance(nextCameraDistance)
     }, [])
@@ -859,14 +861,19 @@ export function SolarSystem() {
                 <div className="flex flex-col items-center gap-2 rounded-full bg-background/65 px-2 py-3 text-[10px] font-medium text-foreground ring-1 ring-white/15 backdrop-blur-sm">
                     <span className="leading-none">+</span>
                     <div className="relative flex h-24 items-center justify-center">
+                        <div className="pointer-events-none absolute left-1/2 top-0 h-24 w-1 -translate-x-1/2 rounded-full bg-white/20" />
+                        <div
+                            className="pointer-events-none absolute left-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary shadow-[0_0_0_2px_rgba(10,14,24,0.9)]"
+                            style={{ top: zoomSliderThumbTop }}
+                        />
                         <input
                             type="range"
                             min={ZOOM_SLIDER_MIN}
                             max={ZOOM_SLIDER_MAX}
                             step={1}
                             aria-label="Zoom"
-                            className="absolute w-24 -rotate-90 accent-primary"
-                            value={getZoomSliderValue(desiredCameraDistance ?? cameraDistance)}
+                            className="absolute w-24 -rotate-90 appearance-none border-0 bg-transparent opacity-0 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                            value={zoomSliderValue}
                             onChange={(event) => {
                                 setDesiredCameraDistance(
                                     getCameraDistanceFromSliderValue(Number(event.target.value))
