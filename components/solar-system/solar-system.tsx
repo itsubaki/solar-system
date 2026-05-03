@@ -149,9 +149,11 @@ function getSelectableTargets(
 function PlanetOrbitControls({
     focusTarget,
     desiredCameraDistance,
+    onDesiredCameraDistanceChange,
 }: {
     focusTarget: FocusTargetRef,
     desiredCameraDistance: number | null,
+    onDesiredCameraDistanceChange: (distance: number) => void,
 }) {
     const { camera, gl } = useThree()
     const controlsRef = useRef<OrbitControlsRef | null>(null)
@@ -211,6 +213,7 @@ function PlanetOrbitControls({
             )
             offset.setFromSpherical(spherical)
             camera.position.copy(controls.target).add(offset)
+            onDesiredCameraDistanceChange(spherical.radius)
             syncCamera()
         }
 
@@ -304,7 +307,7 @@ function PlanetOrbitControls({
             window.removeEventListener("pointercancel", endRotation)
             window.removeEventListener("keydown", onKeyDown)
         }
-    }, [camera, focusTarget, gl])
+    }, [camera, focusTarget, gl, onDesiredCameraDistanceChange])
 
     useEffect(() => {
         const controls = controlsRef.current
@@ -355,6 +358,7 @@ function Scene({
     planetScaleOption,
     desiredCameraDistance,
     onCameraDistanceChange,
+    onDesiredCameraDistanceChange,
     simTimeRef,
 }: {
     selectedComet: CometData | null
@@ -373,6 +377,7 @@ function Scene({
     planetScaleOption: PlanetScaleOption
     desiredCameraDistance: number | null
     onCameraDistanceChange: (distance: number) => void
+    onDesiredCameraDistanceChange: (distance: number) => void
     simTimeRef: { current: Date }
 }) {
     const visiblePlanets = useMemo(
@@ -425,7 +430,11 @@ function Scene({
                 onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
             />
 
-            <PlanetOrbitControls focusTarget={focusedPlanetPositionRef} desiredCameraDistance={desiredCameraDistance} />
+            <PlanetOrbitControls
+                focusTarget={focusedPlanetPositionRef}
+                desiredCameraDistance={desiredCameraDistance}
+                onDesiredCameraDistanceChange={onDesiredCameraDistanceChange}
+            />
 
             <Stars />
 
@@ -523,6 +532,12 @@ export function SolarSystem() {
         () => getSelectableTargets(visiblePlanets, showSatellites, showComets, showProbes),
         [showComets, showProbes, showSatellites, visiblePlanets]
     )
+    const handleCameraDistanceChange = useCallback((nextCameraDistance: number) => {
+        setCameraDistance(nextCameraDistance)
+    }, [])
+    const handleDesiredCameraDistanceChange = useCallback((nextCameraDistance: number) => {
+        setDesiredCameraDistance(nextCameraDistance)
+    }, [])
 
     const selectTarget = useCallback((target: SelectableTarget) => {
         if (target.type === "sun") {
@@ -851,7 +866,7 @@ export function SolarSystem() {
                             step={1}
                             aria-label="Zoom"
                             className="absolute w-24 -rotate-90 accent-primary"
-                            value={getZoomSliderValue(cameraDistance)}
+                            value={getZoomSliderValue(desiredCameraDistance ?? cameraDistance)}
                             onChange={(event) => {
                                 setDesiredCameraDistance(
                                     getCameraDistanceFromSliderValue(Number(event.target.value))
@@ -991,7 +1006,8 @@ export function SolarSystem() {
                             }}
                             planetScaleOption={planetScaleOption}
                             desiredCameraDistance={desiredCameraDistance}
-                            onCameraDistanceChange={setCameraDistance}
+                            onCameraDistanceChange={handleCameraDistanceChange}
+                            onDesiredCameraDistanceChange={handleDesiredCameraDistanceChange}
                             simTimeRef={simTimeRef}
                         />
                     </Suspense>
