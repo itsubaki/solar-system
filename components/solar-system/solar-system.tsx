@@ -72,6 +72,24 @@ const MAX_POLAR_ANGLE = Math.PI
 const KEY_ROTATE_PIXELS = 10
 const KEY_ZOOM_FACTOR = 0.95
 const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
+const ZOOM_SLIDER_MIN = 0
+const ZOOM_SLIDER_MAX = 100
+
+function getZoomSliderValue(cameraDistance: number) {
+    const min = Math.log(MIN_CAMERA_DISTANCE)
+    const max = Math.log(MAX_CAMERA_DISTANCE)
+    const clampedDistance = Math.min(MAX_CAMERA_DISTANCE, Math.max(MIN_CAMERA_DISTANCE, cameraDistance))
+
+    return ((Math.log(clampedDistance) - min) / (max - min)) * (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN) + ZOOM_SLIDER_MIN
+}
+
+function getCameraDistanceFromSliderValue(sliderValue: number) {
+    const min = Math.log(MIN_CAMERA_DISTANCE)
+    const max = Math.log(MAX_CAMERA_DISTANCE)
+    const normalizedValue = (sliderValue - ZOOM_SLIDER_MIN) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)
+
+    return Math.exp(min + normalizedValue * (max - min))
+}
 
 function getVisiblePlanets(showDwarfPlanets: boolean) {
     return [...(showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS)]
@@ -118,8 +136,10 @@ function getSelectableTargets(
 
 function PlanetOrbitControls({
     focusTarget,
+    desiredCameraDistance,
 }: {
     focusTarget: FocusTargetRef,
+    desiredCameraDistance: number | null,
 }) {
     const { camera, gl } = useThree()
     const controlsRef = useRef<OrbitControlsRef | null>(null)
@@ -278,6 +298,24 @@ function PlanetOrbitControls({
         }
     }, [camera, focusTarget, gl])
 
+    useEffect(() => {
+        const controls = controlsRef.current
+        if (!controls || desiredCameraDistance === null) return
+
+        const offset = new Vector3().copy(camera.position).sub(controls.target)
+        const spherical = new Spherical().setFromVector3(offset)
+
+        spherical.radius = Math.min(
+            MAX_CAMERA_DISTANCE,
+            Math.max(MIN_CAMERA_DISTANCE, desiredCameraDistance)
+        )
+
+        offset.setFromSpherical(spherical)
+        camera.position.copy(controls.target).add(offset)
+        camera.lookAt(controls.target)
+        controls.update()
+    }, [camera, desiredCameraDistance])
+
     return <OrbitControls
         ref={(instance) => {
             controlsRef.current = instance
@@ -307,6 +345,8 @@ function Scene({
     onSelectSatellite,
     onSelectSun,
     planetScaleOption,
+    desiredCameraDistance,
+    onCameraDistanceChange,
     simTimeRef,
 }: {
     selectedComet: CometData | null
@@ -323,6 +363,8 @@ function Scene({
     onSelectSatellite: (satellite: SelectedSatellite) => void
     onSelectSun: () => void
     planetScaleOption: PlanetScaleOption
+    desiredCameraDistance: number | null
+    onCameraDistanceChange: (distance: number) => void
     simTimeRef: { current: Date }
 }) {
     const visiblePlanets = useMemo(
@@ -341,6 +383,7 @@ function Scene({
 
         lastCameraDistanceRef.current = nextCameraDistance
         setCameraDistance(nextCameraDistance)
+        onCameraDistanceChange(nextCameraDistance)
     })
 
     useEffect(() => {
@@ -374,7 +417,7 @@ function Scene({
                 onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
             />
 
-            <PlanetOrbitControls focusTarget={focusedPlanetPositionRef} />
+            <PlanetOrbitControls focusTarget={focusedPlanetPositionRef} desiredCameraDistance={desiredCameraDistance} />
 
             <Stars />
 
@@ -457,6 +500,8 @@ export function SolarSystem() {
     const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
     const [selectedSatellite, setSelectedSatellite] = useState<SelectedSatellite | null>(null)
     const [selectedSun, setSelectedSun] = useState(false)
+    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
+    const [desiredCameraDistance, setDesiredCameraDistance] = useState<number | null>(DEFAULT_CAMERA_OFFSET.length())
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
@@ -786,38 +831,61 @@ export function SolarSystem() {
             </button>
 
             <div
-                className="absolute bottom-0 left-0 z-40 flex flex-col gap-2 sm:hidden"
+                className="absolute bottom-0 left-0 z-40 flex items-end gap-3 sm:hidden"
                 style={{
                     left: "calc(env(safe-area-inset-left) + 1rem)",
                     bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
                 }}
             >
-                <button
-                    type="button"
-                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showDwarfPlanets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
-                    aria-pressed={showDwarfPlanets}
-                    onClick={toggleDwarfPlanets}
-                >
-                    Dwarfs
-                </button>
+                <div className="flex flex-col items-center gap-2 rounded-full bg-background/65 px-2 py-3 text-[10px] font-medium text-foreground ring-1 ring-white/15 backdrop-blur-sm">
+                    <span className="leading-none">+</span>
+                    <div className="relative flex h-24 items-center justify-center">
+                        <input
+                            type="range"
+                            min={ZOOM_SLIDER_MIN}
+                            max={ZOOM_SLIDER_MAX}
+                            step={1}
+                            aria-label="Zoom"
+                            className="absolute w-24 -rotate-90 accent-primary"
+                            value={getZoomSliderValue(cameraDistance)}
+                            onChange={(event) => {
+                                setDesiredCameraDistance(
+                                    getCameraDistanceFromSliderValue(Number(event.target.value))
+                                )
+                            }}
+                        />
+                    </div>
+                    <span className="leading-none">-</span>
+                </div>
 
-                <button
-                    type="button"
-                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showComets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
-                    aria-pressed={showComets}
-                    onClick={toggleComets}
-                >
-                    Comets
-                </button>
+                <div className="flex flex-col gap-2">
+                    <button
+                        type="button"
+                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showDwarfPlanets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        aria-pressed={showDwarfPlanets}
+                        onClick={toggleDwarfPlanets}
+                    >
+                        Dwarfs
+                    </button>
 
-                <button
-                    type="button"
-                    className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showProbes ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
-                    aria-pressed={showProbes}
-                    onClick={toggleProbes}
-                >
-                    Probes
-                </button>
+                    <button
+                        type="button"
+                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showComets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        aria-pressed={showComets}
+                        onClick={toggleComets}
+                    >
+                        Comets
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showProbes ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        aria-pressed={showProbes}
+                        onClick={toggleProbes}
+                    >
+                        Probes
+                    </button>
+                </div>
             </div>
 
             <div
@@ -918,6 +986,8 @@ export function SolarSystem() {
                                 }
                             }}
                             planetScaleOption={planetScaleOption}
+                            desiredCameraDistance={desiredCameraDistance}
+                            onCameraDistanceChange={setCameraDistance}
                             simTimeRef={simTimeRef}
                         />
                     </Suspense>
