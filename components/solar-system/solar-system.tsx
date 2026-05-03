@@ -23,6 +23,8 @@ import { SatelliteInfo } from "./satellite-info"
 type OrbitControlsRef = {
     target: Vector3
     update: () => void
+    addEventListener: (type: "change", listener: () => void) => void
+    removeEventListener: (type: "change", listener: () => void) => void
 }
 
 type FocusTargetRef = {
@@ -158,6 +160,7 @@ function PlanetOrbitControls({
     const { camera, gl } = useThree()
     const controlsRef = useRef<OrbitControlsRef | null>(null)
     const followDeltaRef = useRef(new Vector3())
+    const lastControlRadiusRef = useRef(DEFAULT_CAMERA_OFFSET.length())
 
     useFrame(() => {
         const controls = controlsRef.current
@@ -187,8 +190,18 @@ function PlanetOrbitControls({
             controls.update()
         }
 
+        const syncDesiredDistanceFromControls = () => {
+            const currentRadius = camera.position.distanceTo(controls.target)
+            if (Math.abs(currentRadius - lastControlRadiusRef.current) < 0.005) return
+
+            lastControlRadiusRef.current = currentRadius
+            onDesiredCameraDistanceChange(currentRadius)
+        }
+
         controls.target.copy(DEFAULT_CAMERA_TARGET)
         camera.position.copy(DEFAULT_CAMERA_POSITION)
+        lastControlRadiusRef.current = camera.position.distanceTo(controls.target)
+        controls.addEventListener("change", syncDesiredDistanceFromControls)
         syncCamera()
 
         const orbitByPixels = (deltaX: number, deltaY: number) => {
@@ -301,6 +314,7 @@ function PlanetOrbitControls({
         window.addEventListener("keydown", onKeyDown)
 
         return () => {
+            controls.removeEventListener("change", syncDesiredDistanceFromControls)
             element.removeEventListener("pointerdown", onPointerDown)
             window.removeEventListener("pointermove", onPointerMove)
             window.removeEventListener("pointerup", endRotation)
