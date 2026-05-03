@@ -693,7 +693,6 @@ export function SolarSystem() {
         }
 
         selectTarget(selectableTargets[nextIndex])
-        setShowPlanetInfo(true)
     }, [getSelectedTargetIndex, selectTarget, selectableTargets])
 
     const selectPrevTarget = useCallback(() => {
@@ -706,7 +705,6 @@ export function SolarSystem() {
         }
 
         selectTarget(selectableTargets[previousIndex])
-        setShowPlanetInfo(true)
     }, [getSelectedTargetIndex, selectTarget, selectableTargets])
 
     const selectNextPlanet = useCallback(() => {
@@ -724,7 +722,6 @@ export function SolarSystem() {
         setSelectedSatellite(null)
         setSelectedSun(false)
         setSelectedPlanet(visiblePlanets[nextIndex])
-        setShowPlanetInfo(true)
     }, [selectedPlanet, visiblePlanets])
 
     const selectPrevPlanet = useCallback(() => {
@@ -742,7 +739,6 @@ export function SolarSystem() {
         setSelectedSatellite(null)
         setSelectedSun(false)
         setSelectedPlanet(visiblePlanets[previousIndex])
-        setShowPlanetInfo(true)
     }, [selectedPlanet, visiblePlanets])
 
     useEffect(() => {
