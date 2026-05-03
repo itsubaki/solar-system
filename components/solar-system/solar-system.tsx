@@ -399,6 +399,7 @@ function Scene({
         [showDwarfPlanets]
     )
     const hasSelection = selectedSun || !!selectedPlanet || !!selectedSatellite || !!selectedComet || !!selectedProbe
+    const shouldDimOrbits = hasSelection && !selectedSun
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
     const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
     const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_OFFSET.length())
@@ -470,7 +471,7 @@ function Scene({
                     selectedSatellite={selectedSatellite}
                     isSelected={selectedPlanet?.name === planet.name}
                     hasSelection={hasSelection}
-                    dimOrbit={hasSelection && selectedPlanet?.name !== planet.name}
+                    dimOrbit={shouldDimOrbits && selectedPlanet?.name !== planet.name}
                     showSatellites={planetScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
                     cameraDistance={cameraDistance}
@@ -488,7 +489,7 @@ function Scene({
                     data={comet}
                     onSelect={onSelectComet}
                     isSelected={selectedComet?.name === comet.name}
-                    dimOrbit={hasSelection && selectedComet?.name !== comet.name}
+                    dimOrbit={shouldDimOrbits && selectedComet?.name !== comet.name}
                     focusTargetRef={selectedComet?.name === comet.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
                     scale={{
@@ -504,7 +505,7 @@ function Scene({
                     data={probe}
                     onSelect={onSelectProbe}
                     isSelected={selectedProbe?.name === probe.name}
-                    dimOrbit={hasSelection && selectedProbe?.name !== probe.name}
+                    dimOrbit={shouldDimOrbits && selectedProbe?.name !== probe.name}
                     focusTargetRef={selectedProbe?.name === probe.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
                     scale={{
