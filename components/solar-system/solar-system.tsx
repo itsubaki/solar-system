@@ -91,6 +91,18 @@ function getCameraDistanceFromSliderValue(sliderValue: number) {
     return Math.exp(min + normalizedValue * (max - min))
 }
 
+function isShortcutBlockedTarget(activeElement: Element | null) {
+    if (activeElement instanceof HTMLInputElement) {
+        return activeElement.type !== "range"
+    }
+
+    return (
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") === "true"
+    )
+}
+
 function getVisiblePlanets(showDwarfPlanets: boolean) {
     return [...(showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS)]
         .sort((leftPlanet, rightPlanet) => leftPlanet.distance - rightPlanet.distance)
@@ -239,14 +251,10 @@ function PlanetOrbitControls({
         }
 
         const onKeyDown = (event: KeyboardEvent) => {
-            const activeElement = document.activeElement;
-            const isTypingTarget =
-                activeElement instanceof HTMLInputElement ||
-                activeElement instanceof HTMLTextAreaElement ||
-                activeElement instanceof HTMLSelectElement ||
-                activeElement?.getAttribute("contenteditable") === "true";
+            const activeElement = document.activeElement
+            const isTypingTarget = isShortcutBlockedTarget(activeElement)
 
-            if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
+            if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return
 
             switch (event.key) {
                 case "r":
@@ -674,13 +682,9 @@ export function SolarSystem() {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            const activeElement = document.activeElement;
-            const isTypingTarget =
-                activeElement instanceof HTMLInputElement ||
-                activeElement instanceof HTMLTextAreaElement ||
-                activeElement instanceof HTMLSelectElement ||
-                activeElement?.getAttribute("contenteditable") === "true";
-            if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return;
+            const activeElement = document.activeElement
+            const isTypingTarget = isShortcutBlockedTarget(activeElement)
+            if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return
 
             switch (event.key) {
                 case "R":
