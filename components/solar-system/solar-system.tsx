@@ -470,6 +470,7 @@ function Scene({
                     selectedSatellite={selectedSatellite}
                     isSelected={selectedPlanet?.name === planet.name}
                     hasSelection={hasSelection}
+                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedPlanet?.name !== planet.name}
                     showSatellites={planetScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
@@ -488,6 +489,7 @@ function Scene({
                     data={comet}
                     onSelect={onSelectComet}
                     isSelected={selectedComet?.name === comet.name}
+                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedComet?.name !== comet.name}
                     focusTargetRef={selectedComet?.name === comet.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
@@ -504,6 +506,7 @@ function Scene({
                     data={probe}
                     onSelect={onSelectProbe}
                     isSelected={selectedProbe?.name === probe.name}
+                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedProbe?.name !== probe.name}
                     focusTargetRef={selectedProbe?.name === probe.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}

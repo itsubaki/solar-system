@@ -14,6 +14,7 @@ export function Satellite({
     satellite,
     onSelect,
     isSelected,
+    selectedSun,
     dimOrbit,
     focusTargetRef,
     parentPoleDirection,
@@ -24,6 +25,7 @@ export function Satellite({
     satellite: SatelliteData & { parentPlanetName: string }
     onSelect: (satellite: SatelliteData & { parentPlanetName: string }) => void
     isSelected: boolean
+    selectedSun: boolean
     dimOrbit: boolean
     focusTargetRef?: FocusTargetRef | null
     parentPoleDirection: PoleDirection
@@ -96,7 +98,7 @@ export function Satellite({
 
     return (
         <group quaternion={orbitPlaneQuaternion}>
-            <OrbitLine points={orbitPoints} color={satellite.color} opacity={dimOrbit ? 0.18 : 0.72} />
+            <OrbitLine points={orbitPoints} color={satellite.color} opacity={selectedSun ? 1 : dimOrbit ? 0.18 : 0.72} />
 
             <group
                 ref={groupRef}
