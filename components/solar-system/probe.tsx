@@ -13,7 +13,6 @@ export function Probe({
     data,
     onSelect,
     isSelected,
-    selectedSun,
     dimOrbit,
     focusTargetRef,
     simTimeRef,
@@ -22,7 +21,6 @@ export function Probe({
     data: ProbeData
     onSelect: (probe: ProbeData | null) => void
     isSelected: boolean
-    selectedSun: boolean
     dimOrbit: boolean
     focusTargetRef?: FocusTargetRef | null
     simTimeRef: { current: Date }
@@ -70,7 +68,7 @@ export function Probe({
 
     return (
         <>
-            <OrbitLine points={trajectoryPoints} color={data.color} opacity={selectedSun ? 1 : dimOrbit ? 0.18 : 0.72} />
+            <OrbitLine points={trajectoryPoints} color={data.color} opacity={dimOrbit ? 0.18 : 0.72} />
 
             <group
                 ref={groupRef}

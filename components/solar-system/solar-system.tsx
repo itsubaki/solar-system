@@ -470,7 +470,6 @@ function Scene({
                     selectedSatellite={selectedSatellite}
                     isSelected={selectedPlanet?.name === planet.name}
                     hasSelection={hasSelection}
-                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedPlanet?.name !== planet.name}
                     showSatellites={planetScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
@@ -489,7 +488,6 @@ function Scene({
                     data={comet}
                     onSelect={onSelectComet}
                     isSelected={selectedComet?.name === comet.name}
-                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedComet?.name !== comet.name}
                     focusTargetRef={selectedComet?.name === comet.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
@@ -506,7 +504,6 @@ function Scene({
                     data={probe}
                     onSelect={onSelectProbe}
                     isSelected={selectedProbe?.name === probe.name}
-                    selectedSun={selectedSun}
                     dimOrbit={hasSelection && selectedProbe?.name !== probe.name}
                     focusTargetRef={selectedProbe?.name === probe.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
@@ -685,6 +682,68 @@ export function SolarSystem() {
         })
     }, [selectedProbe])
 
+    const selectNextTarget = useCallback(() => {
+        if (selectableTargets.length === 0) return
+
+        let nextIndex = 0
+        const currentIndex = getSelectedTargetIndex()
+        if (currentIndex >= 0) {
+            nextIndex = (currentIndex + 1) % selectableTargets.length
+        }
+
+        selectTarget(selectableTargets[nextIndex])
+        setShowPlanetInfo(true)
+    }, [getSelectedTargetIndex, selectTarget, selectableTargets])
+
+    const selectPrevTarget = useCallback(() => {
+        if (selectableTargets.length === 0) return
+
+        let previousIndex = selectableTargets.length - 1
+        const currentIndex = getSelectedTargetIndex()
+        if (currentIndex >= 0) {
+            previousIndex = (currentIndex - 1 + selectableTargets.length) % selectableTargets.length
+        }
+
+        selectTarget(selectableTargets[previousIndex])
+        setShowPlanetInfo(true)
+    }, [getSelectedTargetIndex, selectTarget, selectableTargets])
+
+    const selectNextPlanet = useCallback(() => {
+        if (visiblePlanets.length === 0) return
+
+        const currentIndex = selectedPlanet
+            ? visiblePlanets.findIndex((planet) => planet.name === selectedPlanet.name)
+            : -1
+        const nextIndex = currentIndex >= 0
+            ? (currentIndex + 1) % visiblePlanets.length
+            : 0
+
+        setSelectedComet(null)
+        setSelectedProbe(null)
+        setSelectedSatellite(null)
+        setSelectedSun(false)
+        setSelectedPlanet(visiblePlanets[nextIndex])
+        setShowPlanetInfo(true)
+    }, [selectedPlanet, visiblePlanets])
+
+    const selectPrevPlanet = useCallback(() => {
+        if (visiblePlanets.length === 0) return
+
+        const currentIndex = selectedPlanet
+            ? visiblePlanets.findIndex((planet) => planet.name === selectedPlanet.name)
+            : -1
+        const previousIndex = currentIndex >= 0
+            ? (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length
+            : visiblePlanets.length - 1
+
+        setSelectedComet(null)
+        setSelectedProbe(null)
+        setSelectedSatellite(null)
+        setSelectedSun(false)
+        setSelectedPlanet(visiblePlanets[previousIndex])
+        setShowPlanetInfo(true)
+    }, [selectedPlanet, visiblePlanets])
+
     useEffect(() => {
         let frameId: number
         let lastReal = Date.now()
@@ -732,23 +791,11 @@ export function SolarSystem() {
                     break;
                 case ">":
                     event.preventDefault();
-                    if (selectableTargets.length === 0) return;
-                    let nextIndex = 0;
-                    const currentIndex = getSelectedTargetIndex();
-                    if (currentIndex >= 0) {
-                        nextIndex = (currentIndex + 1) % selectableTargets.length;
-                    }
-                    selectTarget(selectableTargets[nextIndex]);
+                    selectNextTarget();
                     break;
                 case "<":
                     event.preventDefault();
-                    if (selectableTargets.length === 0) return;
-                    let prevIndex = selectableTargets.length - 1;
-                    const previousIndex = getSelectedTargetIndex();
-                    if (previousIndex >= 0) {
-                        prevIndex = (previousIndex - 1 + selectableTargets.length) % selectableTargets.length;
-                    }
-                    selectTarget(selectableTargets[prevIndex]);
+                    selectPrevTarget();
                     break;
                 case "a":
                     event.preventDefault();
@@ -785,27 +832,7 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [getSelectedTargetIndex, selectTarget, selectableTargets, selectedComet, selectedPlanet, selectedProbe, toggleComets, toggleDwarfPlanets, toggleProbes, updatePlanetScaleIndex]);
-
-    const selectNextPlanet = () => {
-        if (selectableTargets.length === 0) return;
-        let nextIndex = 0;
-        const currentIndex = getSelectedTargetIndex();
-        if (currentIndex >= 0) {
-            nextIndex = (currentIndex + 1) % selectableTargets.length;
-        }
-        selectTarget(selectableTargets[nextIndex]);
-    };
-
-    const selectPrevPlanet = () => {
-        if (selectableTargets.length === 0) return;
-        let prevIndex = selectableTargets.length - 1;
-        const currentIndex = getSelectedTargetIndex();
-        if (currentIndex >= 0) {
-            prevIndex = (currentIndex - 1 + selectableTargets.length) % selectableTargets.length;
-        }
-        selectTarget(selectableTargets[prevIndex]);
-    };
+    }, [selectNextTarget, selectPrevTarget, toggleComets, toggleDwarfPlanets, toggleProbes, updatePlanetScaleIndex]);
 
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
