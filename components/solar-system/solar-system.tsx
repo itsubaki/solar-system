@@ -707,40 +707,6 @@ export function SolarSystem() {
         selectTarget(selectableTargets[previousIndex])
     }, [getSelectedTargetIndex, selectTarget, selectableTargets])
 
-    const selectNextPlanet = useCallback(() => {
-        if (visiblePlanets.length === 0) return
-
-        const currentIndex = selectedPlanet
-            ? visiblePlanets.findIndex((planet) => planet.name === selectedPlanet.name)
-            : -1
-        const nextIndex = currentIndex >= 0
-            ? (currentIndex + 1) % visiblePlanets.length
-            : 0
-
-        setSelectedComet(null)
-        setSelectedProbe(null)
-        setSelectedSatellite(null)
-        setSelectedSun(false)
-        setSelectedPlanet(visiblePlanets[nextIndex])
-    }, [selectedPlanet, visiblePlanets])
-
-    const selectPrevPlanet = useCallback(() => {
-        if (visiblePlanets.length === 0) return
-
-        const currentIndex = selectedPlanet
-            ? visiblePlanets.findIndex((planet) => planet.name === selectedPlanet.name)
-            : -1
-        const previousIndex = currentIndex >= 0
-            ? (currentIndex - 1 + visiblePlanets.length) % visiblePlanets.length
-            : visiblePlanets.length - 1
-
-        setSelectedComet(null)
-        setSelectedProbe(null)
-        setSelectedSatellite(null)
-        setSelectedSun(false)
-        setSelectedPlanet(visiblePlanets[previousIndex])
-    }, [selectedPlanet, visiblePlanets])
-
     useEffect(() => {
         let frameId: number
         let lastReal = Date.now()
@@ -873,20 +839,20 @@ export function SolarSystem() {
             </div>
 
             <button
-                aria-label="Previous planet"
+                aria-label="Previous target"
                 className="absolute left-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 focus:outline-none select-none block sm:hidden transition-colors hover:bg-primary/15 hover:text-primary"
                 style={{ pointerEvents: "auto", background: "none" }}
-                onClick={selectPrevPlanet}
+                onClick={selectPrevTarget}
                 tabIndex={0}
             >
                 &lt;
             </button>
 
             <button
-                aria-label="Next planet"
+                aria-label="Next target"
                 className="absolute right-0 top-1/2 z-50 -translate-y-1/2 text-4xl font-bold text-card-foreground bg-transparent border-none p-2 m-0 focus:outline-none select-none block sm:hidden transition-colors hover:bg-primary/15 hover:text-primary"
                 style={{ pointerEvents: "auto", background: "none" }}
-                onClick={selectNextPlanet}
+                onClick={selectNextTarget}
                 tabIndex={0}
             >
                 &gt;
