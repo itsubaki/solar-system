@@ -49,13 +49,13 @@ const ORBIT_SPEED_OPTIONS = [
     { label: "1 year / sec", multiplier: 31536000 },
 ] as const
 
-type PlanetScaleOption = {
+type ObjectScaleOption = {
     scale: number
     label: string
     sup: string
 }
 
-const PLANET_SCALE_OPTIONS: readonly PlanetScaleOption[] = [
+const OBJECT_SCALE_OPTIONS: readonly ObjectScaleOption[] = [
     { scale: 1, label: "x1", sup: "0" },
     { scale: 10, label: "x10", sup: "3" },
     { scale: 100, label: "x100", sup: "6" },
@@ -369,7 +369,7 @@ function Scene({
     onSelectProbe,
     onSelectSatellite,
     onSelectSun,
-    planetScaleOption,
+    objectScaleOption,
     desiredCameraDistance,
     onCameraDistanceChange,
     onDesiredCameraDistanceChange,
@@ -388,7 +388,7 @@ function Scene({
     onSelectProbe: (probe: ProbeData | null) => void
     onSelectSatellite: (satellite: SelectedSatellite) => void
     onSelectSun: () => void
-    planetScaleOption: PlanetScaleOption
+    objectScaleOption: ObjectScaleOption
     desiredCameraDistance: number | null
     onCameraDistanceChange: (distance: number) => void
     onDesiredCameraDistanceChange: (distance: number) => void
@@ -472,13 +472,13 @@ function Scene({
                     isSelected={selectedPlanet?.name === planet.name}
                     hasSelection={hasSelection}
                     dimOrbit={shouldDimOrbits && selectedPlanet?.name !== planet.name}
-                    showSatellites={planetScaleOption.scale === 1}
+                    showSatellites={objectScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
                     cameraDistance={cameraDistance}
                     simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
-                        radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
+                        radius: 1 / ASTRONOMICAL_UNIT * objectScaleOption.scale,
                     }}
                 />
             ))}
@@ -494,7 +494,7 @@ function Scene({
                     simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
-                        radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
+                        radius: 1 / ASTRONOMICAL_UNIT * objectScaleOption.scale,
                     }}
                 />
             ))}
@@ -510,7 +510,7 @@ function Scene({
                     simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
-                        radius: 1 / ASTRONOMICAL_UNIT * planetScaleOption.scale,
+                        radius: 1 / ASTRONOMICAL_UNIT * objectScaleOption.scale,
                     }}
                 />
             ))}
@@ -522,7 +522,7 @@ function Scene({
 
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
-    const [planetScaleIndex, setPlanetScaleIndex] = useState(3) // default to x1,000
+    const [objectScaleIndex, setObjectScaleIndex] = useState(3) // default to x1,000
     const [showDwarfPlanets, setShowDwarfPlanets] = useState(false)
     const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
@@ -537,8 +537,8 @@ export function SolarSystem() {
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
-    const planetScaleOption = PLANET_SCALE_OPTIONS[planetScaleIndex]
-    const showSatellites = planetScaleOption.scale === 1
+    const objectScaleOption = OBJECT_SCALE_OPTIONS[objectScaleIndex]
+    const showSatellites = objectScaleOption.scale === 1
     const visiblePlanets = useMemo(
         () => getVisiblePlanets(showDwarfPlanets),
         [showDwarfPlanets]
@@ -657,10 +657,10 @@ export function SolarSystem() {
         })
     }, [selectedPlanet])
 
-    const updatePlanetScaleIndex = useCallback((updater: (prev: number) => number) => {
-        setPlanetScaleIndex((prev) => {
+    const updateObjectScaleIndex = useCallback((updater: (prev: number) => number) => {
+        setObjectScaleIndex((prev) => {
             const next = updater(prev)
-            if (PLANET_SCALE_OPTIONS[next].scale !== 1) {
+            if (OBJECT_SCALE_OPTIONS[next].scale !== 1) {
                 setSelectedSatellite(null)
                 if (selectedSatellite) {
                     setShowPlanetInfo(false)
@@ -770,11 +770,11 @@ export function SolarSystem() {
                     break;
                 case "z":
                     event.preventDefault();
-                    updatePlanetScaleIndex((prev) => Math.max(0, prev - 1));
+                    updateObjectScaleIndex((prev) => Math.max(0, prev - 1));
                     break;
                 case "x":
                     event.preventDefault();
-                    updatePlanetScaleIndex((prev) => Math.min(PLANET_SCALE_OPTIONS.length - 1, prev + 1));
+                    updateObjectScaleIndex((prev) => Math.min(OBJECT_SCALE_OPTIONS.length - 1, prev + 1));
                     break;
                 case "c":
                     event.preventDefault();
@@ -795,7 +795,7 @@ export function SolarSystem() {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [selectNextTarget, selectPrevTarget, toggleComets, toggleDwarfPlanets, toggleProbes, updatePlanetScaleIndex]);
+    }, [selectNextTarget, selectPrevTarget, toggleComets, toggleDwarfPlanets, toggleProbes, updateObjectScaleIndex]);
 
     return (
         <div className="relative w-full h-[100dvh] overflow-hidden bg-background">
@@ -813,10 +813,10 @@ export function SolarSystem() {
                     type="button"
                     className="text-xs text-muted-foreground mt-1 bg-transparent border-none p-0 m-0 cursor-pointer font-normal select-none"
                     style={{ outline: "none" }}
-                    aria-label="Change planet scale"
-                    onClick={() => updatePlanetScaleIndex((prev) => (prev + 1) % PLANET_SCALE_OPTIONS.length)}
+                    aria-label="Change object scale"
+                    onClick={() => updateObjectScaleIndex((prev) => (prev + 1) % OBJECT_SCALE_OPTIONS.length)}
                 >
-                    Planet radius {planetScaleOption.label} (volume x10<sup>{planetScaleOption.sup}</sup>)
+                    Object scale {objectScaleOption.label} (volume x10<sup>{objectScaleOption.sup}</sup>)
                 </button>
             </div>
 
@@ -831,7 +831,7 @@ export function SolarSystem() {
                     <li><b>+</b> / <b>-</b>: Zoom</li>
                     <li><b>&lt;</b> / <b>&gt;</b>: Move</li>
                     <li><b>a</b> / <b>s</b>: Orbit speed</li>
-                    <li><b>z</b> / <b>x</b>: Planet radius</li>
+                    <li><b>z</b> / <b>x</b>: Object scale</li>
                     <li><b>d</b>: Dwarfs</li>
                     <li><b>c</b>: Comets</li>
                     <li><b>p</b>: Probes</li>
@@ -1018,7 +1018,7 @@ export function SolarSystem() {
                                     setShowPlanetInfo(true)
                                 }
                             }}
-                            planetScaleOption={planetScaleOption}
+                            objectScaleOption={objectScaleOption}
                             desiredCameraDistance={desiredCameraDistance}
                             onCameraDistanceChange={handleCameraDistanceChange}
                             onDesiredCameraDistanceChange={handleDesiredCameraDistanceChange}
