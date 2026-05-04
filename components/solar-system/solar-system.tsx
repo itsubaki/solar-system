@@ -68,7 +68,7 @@ const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
 const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
 const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
 const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
-const MIN_CAMERA_DISTANCE = 0.15
+const MIN_CAMERA_DISTANCE = 0.01
 const MAX_CAMERA_DISTANCE = 400
 const MAX_POLAR_ANGLE = Math.PI
 const KEY_ROTATE_PIXELS = 10
@@ -442,6 +442,8 @@ function Scene({
                 makeDefault
                 position={DEFAULT_CAMERA_POSITION_ARRAY}
                 fov={60}
+                near={0.001}
+                far={2000}
                 onUpdate={(nextCamera) => nextCamera.lookAt(DEFAULT_CAMERA_TARGET)}
             />
 

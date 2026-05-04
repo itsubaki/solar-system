@@ -129,7 +129,7 @@ export function Satellite({
                 />
 
                 <Html
-                    position={[0, radius + 0.02, 0]}
+                    position={[0, radius + 0.0005, 0]}
                     center
                     style={{ pointerEvents: "auto", userSelect: "none" }}
                 >
