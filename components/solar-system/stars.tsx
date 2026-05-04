@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Html } from "@react-three/drei"
+import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 
 type Vec3 = [number, number, number]
@@ -139,6 +140,10 @@ function equatorialToEcliptic(vector: Vec3): Vec3 {
     ])
 }
 
+function equatorialFromRaDec(raDegrees: number, decDegrees: number): Vec3 {
+    return sphericalToVector(raDegrees, decDegrees)
+}
+
 function galacticToEcliptic(longitudeDegrees: number, latitudeDegrees: number): Vec3 {
     return equatorialToEcliptic(
         multiplyMatrixVector(
@@ -146,10 +151,6 @@ function galacticToEcliptic(longitudeDegrees: number, latitudeDegrees: number): 
             sphericalToVector(longitudeDegrees, latitudeDegrees)
         )
     )
-}
-
-function equatorialFromRaDec(raDegrees: number, decDegrees: number): Vec3 {
-    return sphericalToVector(raDegrees, decDegrees)
 }
 
 function scenePositionFromEcliptic(direction: Vec3, radius: number) {
@@ -775,6 +776,48 @@ function PointLayer({
     )
 }
 
+function BackgroundSkyLabel({ label }: { label: BackgroundLabel }) {
+    const { camera } = useThree()
+    const [isVisible, setIsVisible] = useState(false)
+    const labelPosition = useMemo(() => new THREE.Vector3(...label.position), [label.position])
+    const cameraForwardRef = useRef(new THREE.Vector3())
+    const cameraToLabelRef = useRef(new THREE.Vector3())
+
+    useFrame(() => {
+        camera.getWorldDirection(cameraForwardRef.current)
+        cameraToLabelRef.current.copy(labelPosition).sub(camera.position)
+
+        const nextIsVisible = cameraToLabelRef.current.dot(cameraForwardRef.current) > 0
+
+        setIsVisible((currentIsVisible) => {
+            if (currentIsVisible === nextIsVisible) {
+                return currentIsVisible
+            }
+
+            return nextIsVisible
+        })
+    })
+
+    if (!isVisible) {
+        return null
+    }
+
+    return (
+        <Html
+            position={label.position}
+            style={{
+                pointerEvents: "none",
+                userSelect: "none",
+                transform: "translate(-50%, calc(-100% - 18px))",
+            }}
+        >
+            <div className="whitespace-nowrap bg-transparent px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/78">
+                {label.name}
+            </div>
+        </Html>
+    )
+}
+
 export function Stars() {
     const layers = useMemo(() => createBackgroundLayers(), [])
     const labels = useMemo(() => createBackgroundLabels(), [])
@@ -801,23 +844,7 @@ export function Stars() {
             <PointLayer data={layers.darkLanesFine} size={0.3} opacity={0.24} />
 
             {labels.map((label) => (
-                <Html
-                    key={label.name}
-                    position={label.position}
-                    sprite
-                    center
-                    style={{
-                        pointerEvents: "none",
-                        userSelect: "none",
-                    }}
-                >
-                    <div
-                        className="whitespace-nowrap bg-transparent px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/78"
-                        style={{ transform: `translate(${0}px, ${-30}px)` }}
-                    >
-                        {label.name}
-                    </div>
-                </Html>
+                <BackgroundSkyLabel key={label.name} label={label} />
             ))}
         </>
     )
