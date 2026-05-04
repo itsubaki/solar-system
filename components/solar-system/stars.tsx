@@ -160,13 +160,6 @@ function scenePositionFromEcliptic(direction: Vec3, radius: number) {
     ] as const
 }
 
-function getScenePositionFromGalactic(longitudeDegrees: number, latitudeDegrees: number, radius = LABEL_RADIUS) {
-    return scenePositionFromEcliptic(
-        galacticToEcliptic(longitudeDegrees, latitudeDegrees),
-        radius
-    )
-}
-
 function getScenePositionFromRaDec(raDegrees: number, decDegrees: number, radius = LABEL_RADIUS) {
     return scenePositionFromEcliptic(
         equatorialToEcliptic(equatorialFromRaDec(raDegrees, decDegrees)),
@@ -176,14 +169,6 @@ function getScenePositionFromRaDec(raDegrees: number, decDegrees: number, radius
 
 function createBackgroundLabels(): BackgroundLabel[] {
     return [
-        {
-            name: "Milky Way",
-            position: getScenePositionFromGalactic(10, 7),
-        },
-        {
-            name: "Galactic Core",
-            position: getScenePositionFromGalactic(0, 0),
-        },
         {
             name: "Andromeda Galaxy",
             position: getScenePositionFromRaDec(ANDROMEDA_RIGHT_ASCENSION, ANDROMEDA_DECLINATION),
