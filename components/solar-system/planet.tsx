@@ -175,6 +175,7 @@ export function Planet({
                         onSelect={onSelectSatellite}
                         isSelected={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name}
                         dimOrbit={hasSelection && (selectedSatellite?.name !== satellite.name || selectedSatellite.parentPlanetName !== data.name)}
+                        orbitOpacity={isSelected ? 1 : undefined}
                         focusTargetRef={selectedSatellite?.name === satellite.name && selectedSatellite.parentPlanetName === data.name ? focusTargetRef : null}
                         simTimeRef={simTimeRef}
                         scale={scale}
