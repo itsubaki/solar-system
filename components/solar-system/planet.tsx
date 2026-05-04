@@ -101,7 +101,7 @@ export function Planet({
             planetRef.current.rotation.y += delta * rotationSpeed
         }
 
-        if (focusTargetRef && planetRef.current) {
+        if (focusTargetRef && planetRef.current && isSelected) {
             planetRef.current.getWorldPosition(worldPositionRef.current)
             if (focusTargetRef.current) {
                 focusTargetRef.current.copy(worldPositionRef.current)
