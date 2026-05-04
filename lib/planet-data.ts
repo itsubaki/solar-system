@@ -171,6 +171,82 @@ export const DWARF_PLANETS: PlanetData[] = [
         rotationPeriod: 25.9 / 24,
         color: "#E7EDF3",
         description: "A distant dwarf planet in the scattered disk, with a highly inclined and strongly eccentric orbit beyond Pluto."
+    },
+    {
+        name: "Sedna",
+        radius: 497.5,
+        distance: ASTRONOMICAL_UNIT * 518.57,
+        orbitPhase: {
+            eccentricity: 0.85491,
+            longitudeOfPeriapsis: 455.6,
+            meanLongitudeAtJ2000: 813.2,
+        },
+        poleDirection: { longitude: 0, latitude: 90 },
+        orbitPlane: {
+            inclination: 11.93,
+            longitudeOfAscendingNode: 144.25,
+        },
+        orbitalPeriod: 4160647.5,
+        rotationPeriod: 10.27 / 24,
+        color: "#A64E3C",
+        description: "A very distant likely dwarf planet beyond the Kuiper Belt, traveling on an extremely elongated orbit through the scattered outer solar system."
+    },
+    {
+        name: "Quaoar",
+        radius: 555,
+        distance: ASTRONOMICAL_UNIT * 43.49,
+        orbitPhase: {
+            eccentricity: 0.0396,
+            longitudeOfPeriapsis: 188.9,
+            meanLongitudeAtJ2000: 255.3,
+        },
+        poleDirection: { longitude: 0, latitude: 90 },
+        orbitPlane: {
+            inclination: 7.99,
+            longitudeOfAscendingNode: 188.9,
+        },
+        orbitalPeriod: 104687.7,
+        rotationPeriod: 17.68 / 24,
+        color: "#9C5F53",
+        description: "A large trans-Neptunian object in the classical Kuiper Belt, often considered a likely dwarf planet with a relatively low-inclination orbit."
+    },
+    {
+        name: "Orcus",
+        radius: 455,
+        distance: ASTRONOMICAL_UNIT * 39.17,
+        orbitPhase: {
+            eccentricity: 0.227,
+            longitudeOfPeriapsis: 72.2,
+            meanLongitudeAtJ2000: 238.1,
+        },
+        poleDirection: { longitude: 0, latitude: 90 },
+        orbitPlane: {
+            inclination: 20.57,
+            longitudeOfAscendingNode: 268.7,
+        },
+        orbitalPeriod: 89556.2,
+        rotationPeriod: 10.47 / 24,
+        color: "#8EA3B0",
+        description: "A resonant trans-Neptunian object beyond Neptune, regarded as a likely dwarf planet and often compared with Pluto because of its similar orbital period."
+    },
+    {
+        name: "Gonggong",
+        radius: 615,
+        distance: ASTRONOMICAL_UNIT * 67.38,
+        orbitPhase: {
+            eccentricity: 0.5004,
+            longitudeOfPeriapsis: 207.7,
+            meanLongitudeAtJ2000: 279.7,
+        },
+        poleDirection: { longitude: 0, latitude: 90 },
+        orbitPlane: {
+            inclination: 30.63,
+            longitudeOfAscendingNode: 336.8,
+        },
+        orbitalPeriod: 202157.1,
+        rotationPeriod: 22.4 / 24,
+        color: "#A6464B",
+        description: "A reddish distant trans-Neptunian object in the scattered disk, considered a likely dwarf planet on a steeply inclined and eccentric orbit."
     }
 ]
 
