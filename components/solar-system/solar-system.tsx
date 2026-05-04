@@ -524,7 +524,7 @@ function Scene({
 
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
-    const [objectScaleIndex, setObjectScaleIndex] = useState(3) // default to x1,000
+    const [objectScaleIndex, setObjectScaleIndex] = useState(0)
     const [showDwarfPlanets, setShowDwarfPlanets] = useState(false)
     const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
@@ -541,19 +541,23 @@ export function SolarSystem() {
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const objectScaleOption = OBJECT_SCALE_OPTIONS[objectScaleIndex]
     const showSatellites = objectScaleOption.scale === 1
+    const zoomSliderValue = getZoomSliderValue(desiredCameraDistance ?? cameraDistance)
+    const zoomSliderThumbTop = `${((ZOOM_SLIDER_MAX - zoomSliderValue) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)) * 100}%`
+
     const visiblePlanets = useMemo(
         () => getVisiblePlanets(showDwarfPlanets),
         [showDwarfPlanets]
     )
+
     const selectableTargets = useMemo(
         () => getSelectableTargets(visiblePlanets, showSatellites, showComets, showProbes),
         [showComets, showProbes, showSatellites, visiblePlanets]
     )
-    const zoomSliderValue = getZoomSliderValue(desiredCameraDistance ?? cameraDistance)
-    const zoomSliderThumbTop = `${((ZOOM_SLIDER_MAX - zoomSliderValue) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)) * 100}%`
+
     const handleCameraDistanceChange = useCallback((nextCameraDistance: number) => {
         setCameraDistance(nextCameraDistance)
     }, [])
+
     const handleDesiredCameraDistanceChange = useCallback((nextCameraDistance: number) => {
         setDesiredCameraDistance(nextCameraDistance)
     }, [])
