@@ -130,8 +130,11 @@ export function Satellite({
 
                 <Html
                     position={[0, getObjectLabelOffset(radius), 0]}
-                    center
-                    style={{ pointerEvents: "auto", userSelect: "none" }}
+                    style={{
+                        pointerEvents: "auto",
+                        userSelect: "none",
+                        transform: "translate(-50%, -100%)",
+                    }}
                 >
                     <div
                         className={`px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap backdrop-blur-sm border border-border/40 ${isSelected ? "bg-primary text-primary-foreground" : "bg-card/70 text-muted-foreground"}`}

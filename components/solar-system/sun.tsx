@@ -63,10 +63,10 @@ export function Sun({
 
             <Html
                 position={[0, getObjectLabelOffset(radius), 0]}
-                center
                 style={{
                     pointerEvents: "auto",
                     userSelect: "none",
+                    transform: "translate(-50%, -100%)",
                 }}
             >
                 <div

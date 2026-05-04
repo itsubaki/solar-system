@@ -188,10 +188,10 @@ export function Planet({
 
                 <Html
                     position={[0, getObjectLabelOffset(labelAnchorRadius), 0]}
-                    center
                     style={{
                         pointerEvents: "auto",
                         userSelect: "none",
+                        transform: "translate(-50%, -100%)",
                     }}
                 >
                     <div
