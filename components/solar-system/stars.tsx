@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
+import { Html } from "@react-three/drei"
 import * as THREE from "three"
 
 type Vec3 = [number, number, number]
@@ -36,6 +37,11 @@ type BrightStar = {
     magnitude: number
 }
 
+type BackgroundLabel = {
+    name: string
+    position: readonly [number, number, number]
+}
+
 const BACKGROUND_RADIUS = 1000
 const STAR_SHELL_THICKNESS = 40
 const OBLIQUITY = degToRad(23.439291111)
@@ -59,6 +65,7 @@ const HYADES_RIGHT_ASCENSION = 66.75
 const HYADES_DECLINATION = 15.87
 const OMEGA_CENTAURI_RIGHT_ASCENSION = 201.697
 const OMEGA_CENTAURI_DECLINATION = -47.4794
+const LABEL_RADIUS = BACKGROUND_RADIUS * 0.92
 const BRIGHT_STARS: readonly BrightStar[] = [
     { raDegrees: 101.2872, decDegrees: -16.7161, color: [0.9, 0.96, 1.0], magnitude: -1.46 },
     { raDegrees: 95.9879, decDegrees: -52.6957, color: [0.72, 0.82, 1.0], magnitude: -0.74 },
@@ -151,6 +158,70 @@ function scenePositionFromEcliptic(direction: Vec3, radius: number) {
         radius * direction[2],
         -radius * direction[1],
     ] as const
+}
+
+function getScenePositionFromGalactic(longitudeDegrees: number, latitudeDegrees: number, radius = LABEL_RADIUS) {
+    return scenePositionFromEcliptic(
+        galacticToEcliptic(longitudeDegrees, latitudeDegrees),
+        radius
+    )
+}
+
+function getScenePositionFromRaDec(raDegrees: number, decDegrees: number, radius = LABEL_RADIUS) {
+    return scenePositionFromEcliptic(
+        equatorialToEcliptic(equatorialFromRaDec(raDegrees, decDegrees)),
+        radius
+    )
+}
+
+function createBackgroundLabels(): BackgroundLabel[] {
+    return [
+        {
+            name: "Milky Way",
+            position: getScenePositionFromGalactic(10, 7),
+        },
+        {
+            name: "Galactic Core",
+            position: getScenePositionFromGalactic(0, 0),
+        },
+        {
+            name: "Andromeda Galaxy",
+            position: getScenePositionFromRaDec(ANDROMEDA_RIGHT_ASCENSION, ANDROMEDA_DECLINATION),
+        },
+        {
+            name: "Orion Nebula",
+            position: getScenePositionFromRaDec(ORION_NEBULA_RIGHT_ASCENSION, ORION_NEBULA_DECLINATION),
+        },
+        {
+            name: "Large Magellanic Cloud",
+            position: getScenePositionFromRaDec(
+                LARGE_MAGELLANIC_CLOUD_RIGHT_ASCENSION,
+                LARGE_MAGELLANIC_CLOUD_DECLINATION
+            ),
+        },
+        {
+            name: "Small Magellanic Cloud",
+            position: getScenePositionFromRaDec(
+                SMALL_MAGELLANIC_CLOUD_RIGHT_ASCENSION,
+                SMALL_MAGELLANIC_CLOUD_DECLINATION
+            ),
+        },
+        {
+            name: "Pleiades",
+            position: getScenePositionFromRaDec(PLEIADES_RIGHT_ASCENSION, PLEIADES_DECLINATION),
+        },
+        {
+            name: "Hyades",
+            position: getScenePositionFromRaDec(HYADES_RIGHT_ASCENSION, HYADES_DECLINATION),
+        },
+        {
+            name: "Omega Centauri",
+            position: getScenePositionFromRaDec(
+                OMEGA_CENTAURI_RIGHT_ASCENSION,
+                OMEGA_CENTAURI_DECLINATION
+            ),
+        },
+    ]
 }
 
 function getEquatorialAxes(
@@ -706,6 +777,7 @@ function PointLayer({
 
 export function Stars() {
     const layers = useMemo(() => createBackgroundLayers(), [])
+    const labels = useMemo(() => createBackgroundLabels(), [])
 
     return (
         <>
@@ -727,7 +799,26 @@ export function Stars() {
             <PointLayer data={layers.stars} size={0.13} opacity={0.58} />
             <PointLayer data={layers.darkLanes} size={0.72} opacity={0.28} />
             <PointLayer data={layers.darkLanesFine} size={0.3} opacity={0.24} />
-            <PointLayer data={layers.brightStars} size={0.17} opacity={0.7} blending={THREE.AdditiveBlending} />
+
+            {labels.map((label) => (
+                <Html
+                    key={label.name}
+                    position={label.position}
+                    sprite
+                    center
+                    style={{
+                        pointerEvents: "none",
+                        userSelect: "none",
+                    }}
+                >
+                    <div
+                        className="whitespace-nowrap bg-transparent px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/78"
+                        style={{ transform: `translate(${0}px, ${-30}px)` }}
+                    >
+                        {label.name}
+                    </div>
+                </Html>
+            ))}
         </>
     )
 }
