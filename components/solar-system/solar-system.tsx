@@ -871,7 +871,7 @@ export function SolarSystem() {
                     bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
                 }}
             >
-                <div className="flex flex-col items-center gap-2 rounded-full bg-background/65 px-2 py-3 text-[10px] font-medium text-foreground ring-1 ring-white/15 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-2 rounded-full bg-background/65 px-2 py-2 text-[18px] font-medium text-foreground ring-1 ring-white/15 backdrop-blur-sm">
                     <span className="leading-none">+</span>
                     <div className="relative flex h-24 items-center justify-center">
                         <div className="pointer-events-none absolute left-1/2 top-0 h-24 w-1 -translate-x-1/2 rounded-full bg-white/20" />
@@ -897,10 +897,10 @@ export function SolarSystem() {
                     <span className="leading-none">-</span>
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-4">
                     <button
                         type="button"
-                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showDwarfPlanets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        className={`rounded-full px-2 py-1 text-[12px] font-medium transition focus:outline-none ${showDwarfPlanets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
                         aria-pressed={showDwarfPlanets}
                         onClick={toggleDwarfPlanets}
                     >
@@ -909,7 +909,7 @@ export function SolarSystem() {
 
                     <button
                         type="button"
-                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showComets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        className={`rounded-full px-2 py-1 text-[12px] font-medium transition focus:outline-none ${showComets ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
                         aria-pressed={showComets}
                         onClick={toggleComets}
                     >
@@ -918,7 +918,7 @@ export function SolarSystem() {
 
                     <button
                         type="button"
-                        className={`rounded-full px-2 py-1 text-[10px] font-medium transition focus:outline-none ${showProbes ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
+                        className={`rounded-full px-2 py-1 text-[12px] font-medium transition focus:outline-none ${showProbes ? "bg-primary text-primary-foreground" : "bg-background/65 text-foreground ring-1 ring-white/15 backdrop-blur-sm"}`}
                         aria-pressed={showProbes}
                         onClick={toggleProbes}
                     >
