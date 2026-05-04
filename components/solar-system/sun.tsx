@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber"
 import { Html } from "@react-three/drei"
 import { Vector3, type Mesh } from "three"
 import { SUN_DATA } from "@/lib/planet-data"
+import { getObjectLabelOffset } from "./orbit"
 
 type FocusTargetRef = {
     current: Vector3 | null
@@ -61,7 +62,7 @@ export function Sun({
             </mesh>
 
             <Html
-                position={[0, radius + 0.1, 0]}
+                position={[0, getObjectLabelOffset(radius), 0]}
                 center
                 style={{
                     pointerEvents: "auto",

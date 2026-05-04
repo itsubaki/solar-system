@@ -7,7 +7,7 @@ import { Vector3 } from "three"
 import type { Group } from "three"
 import type { PoleDirection, SatelliteData } from "@/lib/planet-data"
 import { getSatelliteOrbitPath, getSatelliteOrbitPosition } from "@/lib/planet-angle"
-import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitFrameQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, getOrbitFrameQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Satellite({
     simTimeRef,
@@ -129,7 +129,7 @@ export function Satellite({
                 />
 
                 <Html
-                    position={[0, radius + 0.001, 0]}
+                    position={[0, getObjectLabelOffset(radius), 0]}
                     center
                     style={{ pointerEvents: "auto", userSelect: "none" }}
                 >

@@ -7,7 +7,7 @@ import { Group, Vector3 } from "three"
 import type { Mesh } from "three"
 import type { CometData } from "@/lib/comet-data"
 import { getCometOrbitPath, getCometOrbitPosition } from "@/lib/comet-angle"
-import { OrbitLine, type FocusTargetRef } from "./orbit"
+import { getObjectLabelOffset, OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Comet({
     data,
@@ -95,7 +95,7 @@ export function Comet({
                 </mesh>
 
                 <Html
-                    position={[0, radius + 0.1, 0]}
+                    position={[0, getObjectLabelOffset(radius), 0]}
                     center
                     style={{
                         pointerEvents: "auto",

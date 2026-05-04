@@ -69,6 +69,12 @@ export function AxialTiltIndicator({
     )
 }
 
+export function getObjectLabelOffset(anchorRadius: number) {
+    const gap = Math.min(Math.max(anchorRadius * 0.2, 0.001), 0.04)
+
+    return anchorRadius + gap
+}
+
 function getPoleVector(longitude: number, latitude: number) {
     const lambda = degToRad(longitude)
     const beta = degToRad(latitude)

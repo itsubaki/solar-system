@@ -7,7 +7,7 @@ import { Vector3 } from "three"
 import type { Group, Mesh } from "three"
 import type { ProbeData } from "@/lib/probe-data"
 import { getProbeTrajectoryPath, getProbeTrajectoryPosition } from "@/lib/probe-angle"
-import { OrbitLine, type FocusTargetRef } from "./orbit"
+import { getObjectLabelOffset, OrbitLine, type FocusTargetRef } from "./orbit"
 
 export function Probe({
     data,
@@ -95,7 +95,7 @@ export function Probe({
                 </mesh>
 
                 <Html
-                    position={[0, radius + 0.1, 0]}
+                    position={[0, getObjectLabelOffset(radius), 0]}
                     center
                     style={{
                         pointerEvents: "auto",

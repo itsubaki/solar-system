@@ -8,7 +8,7 @@ import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getPlanetOrbitPath, getPlanetOrbitPlane, getPlanetOrbitPosition } from "@/lib/planet-angle"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
-import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getOrbitPlaneQuaternion, getRingQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, getOrbitPlaneQuaternion, getRingQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
 import { Satellite } from "./satellite"
 
 export function Planet({
@@ -68,6 +68,10 @@ export function Planet({
             outerAlpha: { value: ring.outerAlpha ?? 0.1 },
         })) ?? [],
         [data.rings]
+    )
+    const labelAnchorRadius = useMemo(
+        () => Math.max(radius, ...(data.rings?.map((ring) => ring.outerRadius * scale.radius) ?? [])),
+        [data.rings, radius, scale.radius]
     )
     const orbitPlaneQuaternion = useMemo(() => {
         return getOrbitPlaneQuaternion(getPlanetOrbitPlane(data))
@@ -183,7 +187,7 @@ export function Planet({
                 ))}
 
                 <Html
-                    position={[0, radius + 0.1, 0]}
+                    position={[0, getObjectLabelOffset(labelAnchorRadius), 0]}
                     center
                     style={{
                         pointerEvents: "auto",
