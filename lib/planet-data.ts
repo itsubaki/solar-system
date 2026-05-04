@@ -56,6 +56,7 @@ export interface SatelliteData {
     orbitPlane: OrbitPlane
     color: string
     orbitPhase: OrbitPhase
+    description: string
 }
 
 export interface RingData {
@@ -347,7 +348,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.0554,
                     longitudeOfPeriapsis: 443.23,
                     meanLongitudeAtJ2000: 578.5,
-                }
+                },
+                description: "Earth's only natural satellite, driving ocean tides and stabilizing our planet's axial tilt."
             }
         ],
         description: "Our home planet, the only known planet with life."
@@ -395,7 +397,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.015,
                     longitudeOfPeriapsis: 385.5,
                     meanLongitudeAtJ2000: 575.2,
-                }
+                },
+                description: "Mars's larger inner moon, orbiting so quickly that it rises in the west and sets in the east."
             },
             {
                 name: "Deimos",
@@ -414,7 +417,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0,
                     longitudeOfPeriapsis: 54.3,
                     meanLongitudeAtJ2000: 259.3,
-                }
+                },
+                description: "Mars's smaller outer moon, a dark irregular body that drifts slowly across the Martian sky."
             }
         ],
         description: "The Red Planet, with the largest volcano in the Solar System."
@@ -462,7 +466,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.004,
                     longitudeOfPeriapsis: 49.1,
                     meanLongitudeAtJ2000: 380,
-                }
+                },
+                description: "The most volcanically active world in the Solar System, heated by Jupiter's immense tidal forces."
             },
             {
                 name: "Europa",
@@ -481,7 +486,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.009,
                     longitudeOfPeriapsis: 229,
                     meanLongitudeAtJ2000: 574.4,
-                }
+                },
+                description: "An icy Jovian moon with a global subsurface ocean, considered one of the best places to search for extraterrestrial life."
             },
             {
                 name: "Ganymede",
@@ -500,7 +506,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.001,
                     longitudeOfPeriapsis: 256.8,
                     meanLongitudeAtJ2000: 581.6,
-                }
+                },
+                description: "The largest moon in the Solar System and the only one known to generate its own magnetic field."
             },
             {
                 name: "Callisto",
@@ -519,7 +526,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.007,
                     longitudeOfPeriapsis: 352.9,
                     meanLongitudeAtJ2000: 440.3,
-                }
+                },
+                description: "A heavily cratered outer moon of Jupiter with one of the oldest and most battered surfaces in the Solar System."
             }
         ],
         description: "The largest planet, a gas giant with a Great Red Spot storm."
@@ -594,7 +602,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0.029,
                     longitudeOfPeriapsis: 156.9,
                     meanLongitudeAtJ2000: 168.6,
-                }
+                },
+                description: "Saturn's largest moon, wrapped in a thick nitrogen atmosphere with methane clouds, rain, and lakes."
             }
         ],
         description: "Known for its stunning ring system made of ice and rock."
@@ -817,7 +826,8 @@ export const PLANETS: PlanetData[] = [
                     eccentricity: 0,
                     longitudeOfPeriapsis: 178.1,
                     meanLongitudeAtJ2000: 241.1,
-                }
+                },
+                description: "Neptune's largest moon, captured from the Kuiper Belt and orbiting backward relative to Neptune's rotation."
             }
         ],
         description: "The windiest planet with supersonic storms."

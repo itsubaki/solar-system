@@ -25,6 +25,14 @@ function getSatellite(planetName: string, satelliteName: string) {
 }
 
 describe("planet-data", () => {
+    it("provides descriptions for every configured satellite", () => {
+        PLANETS.forEach((planet) => {
+            planet.satellites?.forEach((satellite) => {
+                expect(satellite.description.trim().length).toBeGreaterThan(0)
+            })
+        })
+    })
+
     it("keeps satellite ascending nodes from the JPL mean elements", () => {
         expect(getSatellite("Earth", "Moon").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(125.08)
         expect(getSatellite("Jupiter", "Europa").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(184)

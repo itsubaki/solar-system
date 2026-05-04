@@ -42,6 +42,10 @@ export function SatelliteInfo({
             </CardHeader>
 
             <CardContent className="space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                    {satellite.description}
+                </p>
+
                 <div className="grid grid-cols-[3fr_7fr] gap-3 pt-2 border-t border-border">
                     <div>
                         <p className="text-[10px] text-muted-foreground">Radius</p>
