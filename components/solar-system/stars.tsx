@@ -14,7 +14,6 @@ type PointLayerData = {
 
 type BackgroundLayers = {
     stars: PointLayerData
-    brightStars: PointLayerData
     milkyWay: PointLayerData
     milkyWayGlow: PointLayerData
     milkyWayBulge: PointLayerData
@@ -607,63 +606,11 @@ function createFineDarkLanes(random: () => number) {
     return buildPointLayer(positions, colors)
 }
 
-function createBrightStars(random: () => number) {
-    const positions: number[] = []
-    const colors: number[] = []
-
-    for (const star of BRIGHT_STARS) {
-        const { centerEquatorial, majorAxis, minorAxis } = getEquatorialAxes(
-            star.raDegrees,
-            star.decDegrees,
-            0
-        )
-
-        pushPoint(
-            positions,
-            colors,
-            equatorialToEcliptic(centerEquatorial),
-            BACKGROUND_RADIUS + random() * (STAR_SHELL_THICKNESS * 0.05),
-            [
-                star.color[0] * (0.5 + brightnessFromMagnitude(star.magnitude) * 0.5),
-                star.color[1] * (0.5 + brightnessFromMagnitude(star.magnitude) * 0.5),
-                star.color[2] * (0.5 + brightnessFromMagnitude(star.magnitude) * 0.5),
-            ]
-        )
-
-        for (let haloIndex = 0; haloIndex < 18; haloIndex += 1) {
-            const majorOffset = sampleGaussian(random, degToRad(0.12))
-            const minorOffset = sampleGaussian(random, degToRad(0.12))
-            const direction = normalize(
-                addVectors(
-                    centerEquatorial,
-                    addVectors(scaleVector(majorAxis, majorOffset), scaleVector(minorAxis, minorOffset))
-                )
-            )
-            const intensity = brightnessFromMagnitude(star.magnitude) * (0.12 + random() * 0.16)
-
-            pushPoint(
-                positions,
-                colors,
-                equatorialToEcliptic(direction),
-                BACKGROUND_RADIUS + random() * (STAR_SHELL_THICKNESS * 0.08),
-                [
-                    star.color[0] * intensity,
-                    star.color[1] * intensity,
-                    star.color[2] * intensity,
-                ]
-            )
-        }
-    }
-
-    return buildPointLayer(positions, colors)
-}
-
 function createBackgroundLayers(): BackgroundLayers {
     const random = createRng(0x51f15eed)
 
     return {
         stars: createBaseStars(random),
-        brightStars: createBrightStars(random),
         milkyWay: createMilkyWay(random),
         milkyWayGlow: createMilkyWayGlow(random),
         milkyWayBulge: createMilkyWayBulge(random),
