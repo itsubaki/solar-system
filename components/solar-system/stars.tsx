@@ -167,8 +167,23 @@ function getScenePositionFromRaDec(raDegrees: number, decDegrees: number, radius
     )
 }
 
+function getScenePositionFromGalactic(
+    longitudeDegrees: number,
+    latitudeDegrees: number,
+    radius = LABEL_RADIUS
+) {
+    return scenePositionFromEcliptic(
+        galacticToEcliptic(longitudeDegrees, latitudeDegrees),
+        radius
+    )
+}
+
 function createBackgroundLabels(): BackgroundLabel[] {
     return [
+        {
+            name: "Milky Way Galaxy",
+            position: getScenePositionFromGalactic(20, 0),
+        },
         {
             name: "Andromeda Galaxy",
             position: getScenePositionFromRaDec(ANDROMEDA_RIGHT_ASCENSION, ANDROMEDA_DECLINATION),
