@@ -30,13 +30,6 @@ type BackgroundLayers = {
     omegaCentauri: PointLayerData
 }
 
-type BrightStar = {
-    raDegrees: number
-    decDegrees: number
-    color: Vec3
-    magnitude: number
-}
-
 type BackgroundLabel = {
     name: string
     position: readonly [number, number, number]
@@ -66,18 +59,6 @@ const HYADES_DECLINATION = 15.87
 const OMEGA_CENTAURI_RIGHT_ASCENSION = 201.697
 const OMEGA_CENTAURI_DECLINATION = -47.4794
 const LABEL_RADIUS = BACKGROUND_RADIUS * 0.92
-const BRIGHT_STARS: readonly BrightStar[] = [
-    { raDegrees: 101.2872, decDegrees: -16.7161, color: [0.9, 0.96, 1.0], magnitude: -1.46 },
-    { raDegrees: 95.9879, decDegrees: -52.6957, color: [0.72, 0.82, 1.0], magnitude: -0.74 },
-    { raDegrees: 213.9153, decDegrees: 19.1824, color: [1.0, 0.86, 0.64], magnitude: -0.05 },
-    { raDegrees: 279.2347, decDegrees: 38.7837, color: [0.72, 0.83, 1.0], magnitude: 0.03 },
-    { raDegrees: 79.1723, decDegrees: 45.998, color: [0.72, 0.8, 1.0], magnitude: 0.08 },
-    { raDegrees: 78.6345, decDegrees: -8.2016, color: [1.0, 0.7, 0.54], magnitude: 0.12 },
-    { raDegrees: 114.8255, decDegrees: 5.225, color: [0.78, 0.86, 1.0], magnitude: 0.34 },
-    { raDegrees: 88.7929, decDegrees: 7.4071, color: [1.0, 0.76, 0.66], magnitude: 0.42 },
-    { raDegrees: 104.6564, decDegrees: -28.9721, color: [0.84, 0.9, 1.0], magnitude: 1.5 },
-    { raDegrees: 24.4286, decDegrees: -57.2368, color: [0.94, 0.96, 1.0], magnitude: 0.46 },
-]
 
 function degToRad(degrees: number) {
     return (degrees * Math.PI) / 180
@@ -181,7 +162,7 @@ function getScenePositionFromGalactic(
 function createBackgroundLabels(): BackgroundLabel[] {
     return [
         {
-            name: "Milky Way Galaxy",
+            name: "Milky Way",
             position: getScenePositionFromGalactic(20, 0),
         },
         {
@@ -278,10 +259,6 @@ function buildPointLayer(positions: number[], colors: number[]): PointLayerData 
         positions: new Float32Array(positions),
         colors: new Float32Array(colors),
     }
-}
-
-function brightnessFromMagnitude(magnitude: number) {
-    return Math.pow(10, -0.4 * (magnitude + 1.46))
 }
 
 function createBaseStars(random: () => number) {
