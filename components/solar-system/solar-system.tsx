@@ -1,37 +1,37 @@
 "use client"
 
 import { Suspense, useState, useEffect, useMemo, useRef, useCallback } from "react"
-import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei"
-import { Spherical, Vector3 } from "three"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { PerspectiveCamera } from "@react-three/drei"
+import { Vector3 } from "three"
+import {
+    DEFAULT_CAMERA_DISTANCE,
+    DEFAULT_CAMERA_POSITION_ARRAY,
+    ZOOM_SLIDER_MAX,
+    ZOOM_SLIDER_MIN,
+    getCameraDistanceFromSliderValue,
+    getZoomSliderValue,
+    isShortcutBlockedTarget,
+} from "@/lib/camera-controls"
 import { ASTRONOMICAL_UNIT } from "@/lib/orbit"
 import { PLANETS, DWARF_PLANETS, type PlanetData, type SatelliteData } from "@/lib/planet-data"
 import { COMETS, type CometData } from "@/lib/comet-data"
 import { PROBES, type ProbeData } from "@/lib/probe-data"
 import { Clock } from "./clock"
-import { Comet } from "./comet"
-import { CometInfo } from "./comet-info"
 import { Sun } from "./sun"
 import { SunInfo } from "./sun-info"
 import { Planet } from "./planet"
-import { Probe } from "./probe"
-import { Stars } from "./stars"
 import { PlanetInfo } from "./planet-info"
-import { ProbeInfo } from "./probe-info"
 import { SatelliteInfo } from "./satellite-info"
-
-type OrbitControlsRef = {
-    target: Vector3
-    update: () => void
-    addEventListener: (type: "change", listener: () => void) => void
-    removeEventListener: (type: "change", listener: () => void) => void
-}
-
-type FocusTargetRef = {
-    current: Vector3 | null
-}
+import { Comet } from "./comet"
+import { CometInfo } from "./comet-info"
+import { Probe } from "./probe"
+import { ProbeInfo } from "./probe-info"
+import { Stars } from "./stars"
+import { PlanetOrbitControls } from "./orbit-controls"
 
 type SelectedSatellite = SatelliteData & { parentPlanetName: string }
+
 type SelectableTarget =
     | { type: "sun" }
     | { type: "planet"; planet: PlanetData }
@@ -65,45 +65,7 @@ const OBJECT_SCALE_OPTIONS: readonly ObjectScaleOption[] = [
 ]
 
 const DEFAULT_CAMERA_TARGET = new Vector3(0, 0, 0)
-const DEFAULT_CAMERA_POSITION = new Vector3(2, 2, 2)
-const DEFAULT_CAMERA_POSITION_ARRAY = [2, 2, 2] as const
-const DEFAULT_CAMERA_OFFSET = DEFAULT_CAMERA_POSITION.clone().sub(DEFAULT_CAMERA_TARGET)
-const MIN_CAMERA_DISTANCE = 0.01
-const MAX_CAMERA_DISTANCE = 3000
-const MAX_POLAR_ANGLE = Math.PI
-const KEY_ROTATE_PIXELS = 10
-const KEY_ZOOM_FACTOR = 0.95
 const DWARF_PLANET_NAMES = new Set(DWARF_PLANETS.map((planet) => planet.name))
-const ZOOM_SLIDER_MIN = 0
-const ZOOM_SLIDER_MAX = 100
-
-function getZoomSliderValue(cameraDistance: number) {
-    const min = Math.log(MIN_CAMERA_DISTANCE)
-    const max = Math.log(MAX_CAMERA_DISTANCE)
-    const clampedDistance = Math.min(MAX_CAMERA_DISTANCE, Math.max(MIN_CAMERA_DISTANCE, cameraDistance))
-
-    return (1 - (Math.log(clampedDistance) - min) / (max - min)) * (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN) + ZOOM_SLIDER_MIN
-}
-
-function getCameraDistanceFromSliderValue(sliderValue: number) {
-    const min = Math.log(MIN_CAMERA_DISTANCE)
-    const max = Math.log(MAX_CAMERA_DISTANCE)
-    const normalizedValue = 1 - (sliderValue - ZOOM_SLIDER_MIN) / (ZOOM_SLIDER_MAX - ZOOM_SLIDER_MIN)
-
-    return Math.exp(min + normalizedValue * (max - min))
-}
-
-function isShortcutBlockedTarget(activeElement: Element | null) {
-    if (activeElement instanceof HTMLInputElement) {
-        return activeElement.type !== "range"
-    }
-
-    return (
-        activeElement instanceof HTMLTextAreaElement ||
-        activeElement instanceof HTMLSelectElement ||
-        activeElement?.getAttribute("contenteditable") === "true"
-    )
-}
 
 function getVisiblePlanets(showDwarfPlanets: boolean) {
     return [...(showDwarfPlanets ? [...PLANETS, ...DWARF_PLANETS] : PLANETS)]
@@ -146,213 +108,6 @@ function getSelectableTargets(
     }
 
     return targets
-}
-
-function PlanetOrbitControls({
-    focusTarget,
-    desiredCameraDistance,
-    onDesiredCameraDistanceChange,
-}: {
-    focusTarget: FocusTargetRef,
-    desiredCameraDistance: number | null,
-    onDesiredCameraDistanceChange: (distance: number) => void,
-}) {
-    const { camera, gl } = useThree()
-    const controlsRef = useRef<OrbitControlsRef | null>(null)
-    const followDeltaRef = useRef(new Vector3())
-    const lastControlRadiusRef = useRef(DEFAULT_CAMERA_OFFSET.length())
-
-    useFrame(() => {
-        const controls = controlsRef.current
-        const focusedTarget = focusTarget.current
-        if (!controls || !focusedTarget) return
-
-        followDeltaRef.current.subVectors(focusedTarget, controls.target)
-        if (followDeltaRef.current.lengthSq() === 0) return
-
-        camera.position.add(followDeltaRef.current)
-        controls.target.copy(focusedTarget)
-        camera.lookAt(controls.target)
-        controls.update()
-    })
-
-    useEffect(() => {
-        if (!controlsRef.current) return
-
-        const controls = controlsRef.current
-        const element = gl.domElement
-        const rotateSpeed = 1
-        const spherical = new Spherical()
-        const offset = new Vector3()
-
-        const syncCamera = () => {
-            camera.lookAt(controls.target)
-            controls.update()
-        }
-
-        const syncDesiredDistanceFromControls = () => {
-            const currentRadius = camera.position.distanceTo(controls.target)
-            if (Math.abs(currentRadius - lastControlRadiusRef.current) < 0.005) return
-
-            lastControlRadiusRef.current = currentRadius
-            onDesiredCameraDistanceChange(currentRadius)
-        }
-
-        controls.target.copy(DEFAULT_CAMERA_TARGET)
-        camera.position.copy(DEFAULT_CAMERA_POSITION)
-        lastControlRadiusRef.current = camera.position.distanceTo(controls.target)
-        controls.addEventListener("change", syncDesiredDistanceFromControls)
-        syncCamera()
-
-        const orbitByPixels = (deltaX: number, deltaY: number) => {
-            offset.copy(camera.position).sub(controls.target)
-            spherical.setFromVector3(offset)
-
-            spherical.theta -= (2 * Math.PI * deltaX * rotateSpeed) / element.clientHeight
-            spherical.phi += (2 * Math.PI * deltaY * rotateSpeed) / element.clientHeight
-            spherical.makeSafe()
-
-            offset.setFromSpherical(spherical)
-            camera.position.copy(controls.target).add(offset)
-            syncCamera()
-        }
-
-        const zoomByFactor = (factor: number) => {
-            offset.copy(camera.position).sub(controls.target)
-            spherical.setFromVector3(offset)
-            spherical.radius = Math.min(
-                MAX_CAMERA_DISTANCE,
-                Math.max(MIN_CAMERA_DISTANCE, spherical.radius * factor)
-            )
-            offset.setFromSpherical(spherical)
-            camera.position.copy(controls.target).add(offset)
-            onDesiredCameraDistanceChange(spherical.radius)
-            syncCamera()
-        }
-
-        const resetCamera = () => {
-            const resetTarget = focusTarget.current ?? DEFAULT_CAMERA_TARGET
-            controls.target.copy(resetTarget)
-            camera.position.copy(resetTarget).add(DEFAULT_CAMERA_OFFSET)
-            syncCamera()
-        }
-
-        let isRotating = false
-        let lastX = 0
-        let lastY = 0
-
-        const endRotation = () => {
-            isRotating = false
-        }
-
-        const onPointerDown = (event: PointerEvent) => {
-            if (event.button !== 0) return
-
-            event.preventDefault()
-            isRotating = true
-            lastX = event.clientX
-            lastY = event.clientY
-        }
-
-        const onPointerMove = (event: PointerEvent) => {
-            if (!isRotating) return
-
-            event.preventDefault()
-            const deltaX = event.clientX - lastX
-            const deltaY = event.clientY - lastY
-
-            lastX = event.clientX
-            lastY = event.clientY
-            orbitByPixels(deltaX, -deltaY)
-        }
-
-        const onKeyDown = (event: KeyboardEvent) => {
-            const activeElement = document.activeElement
-            const isTypingTarget = isShortcutBlockedTarget(activeElement)
-
-            if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey) return
-
-            switch (event.key) {
-                case "r":
-                case "R":
-                    event.preventDefault();
-                    resetCamera();
-                    break;
-                case "ArrowUp":
-                    event.preventDefault();
-                    orbitByPixels(0, KEY_ROTATE_PIXELS);
-                    break;
-                case "ArrowDown":
-                    event.preventDefault();
-                    orbitByPixels(0, -KEY_ROTATE_PIXELS);
-                    break;
-                case "ArrowLeft":
-                    event.preventDefault();
-                    orbitByPixels(-KEY_ROTATE_PIXELS, 0);
-                    break;
-                case "ArrowRight":
-                    event.preventDefault();
-                    orbitByPixels(KEY_ROTATE_PIXELS, 0);
-                    break;
-                case "+":
-                    event.preventDefault();
-                    zoomByFactor(KEY_ZOOM_FACTOR);
-                    break;
-                case "-":
-                    event.preventDefault();
-                    zoomByFactor(1 / KEY_ZOOM_FACTOR);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        element.addEventListener("pointerdown", onPointerDown)
-        window.addEventListener("pointermove", onPointerMove)
-        window.addEventListener("pointerup", endRotation)
-        window.addEventListener("pointercancel", endRotation)
-        window.addEventListener("keydown", onKeyDown)
-
-        return () => {
-            controls.removeEventListener("change", syncDesiredDistanceFromControls)
-            element.removeEventListener("pointerdown", onPointerDown)
-            window.removeEventListener("pointermove", onPointerMove)
-            window.removeEventListener("pointerup", endRotation)
-            window.removeEventListener("pointercancel", endRotation)
-            window.removeEventListener("keydown", onKeyDown)
-        }
-    }, [camera, focusTarget, gl, onDesiredCameraDistanceChange])
-
-    useEffect(() => {
-        const controls = controlsRef.current
-        if (!controls || desiredCameraDistance === null) return
-
-        const offset = new Vector3().copy(camera.position).sub(controls.target)
-        const spherical = new Spherical().setFromVector3(offset)
-
-        spherical.radius = Math.min(
-            MAX_CAMERA_DISTANCE,
-            Math.max(MIN_CAMERA_DISTANCE, desiredCameraDistance)
-        )
-
-        offset.setFromSpherical(spherical)
-        camera.position.copy(controls.target).add(offset)
-        camera.lookAt(controls.target)
-        controls.update()
-    }, [camera, desiredCameraDistance])
-
-    return <OrbitControls
-        ref={(instance) => {
-            controlsRef.current = instance
-        }}
-        enablePan={false}
-        enableZoom
-        enableRotate={false}
-        maxPolarAngle={MAX_POLAR_ANGLE}
-        minDistance={MIN_CAMERA_DISTANCE}
-        maxDistance={MAX_CAMERA_DISTANCE}
-        autoRotate={false}
-    />
 }
 
 function Scene({
@@ -401,8 +156,8 @@ function Scene({
     const hasSelection = selectedSun || !!selectedPlanet || !!selectedSatellite || !!selectedComet || !!selectedProbe
     const shouldDimOrbits = hasSelection && !selectedSun
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
-    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
-    const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_OFFSET.length())
+    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_DISTANCE)
+    const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_DISTANCE)
 
     useFrame(({ camera }) => {
         const currentTarget = focusedPlanetPositionRef.current ?? DEFAULT_CAMERA_TARGET
@@ -534,8 +289,8 @@ export function SolarSystem() {
     const [selectedProbe, setSelectedProbe] = useState<ProbeData | null>(null)
     const [selectedSatellite, setSelectedSatellite] = useState<SelectedSatellite | null>(null)
     const [selectedSun, setSelectedSun] = useState(false)
-    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_OFFSET.length())
-    const [desiredCameraDistance, setDesiredCameraDistance] = useState<number | null>(DEFAULT_CAMERA_OFFSET.length())
+    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_DISTANCE)
+    const [desiredCameraDistance, setDesiredCameraDistance] = useState<number | null>(DEFAULT_CAMERA_DISTANCE)
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
