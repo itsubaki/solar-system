@@ -231,7 +231,6 @@ function Scene({
                     dimOrbit={shouldDimOrbits && selectedPlanet?.name !== planet.name}
                     showSatellites={objectScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
-                    cameraDistance={cameraDistance}
                     simTimeRef={simTimeRef}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,

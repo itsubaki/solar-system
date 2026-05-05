@@ -21,7 +21,6 @@ export function Planet({
     dimOrbit,
     showSatellites,
     focusTargetRef,
-    cameraDistance,
     simTimeRef,
     scale,
 }: {
@@ -34,7 +33,6 @@ export function Planet({
     dimOrbit: boolean
     showSatellites: boolean
     focusTargetRef?: FocusTargetRef | null
-    cameraDistance: number
     simTimeRef: { current: Date }
     scale: {
         distance: number,
@@ -47,7 +45,6 @@ export function Planet({
     const [hovered, setHovered] = useState(false)
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
-    void cameraDistance
     const initialOrbitPosition = useMemo(
         () => getPlanetOrbitPosition(data),
         [data]
