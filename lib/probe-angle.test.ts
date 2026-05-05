@@ -25,7 +25,6 @@ const probeFixture: ProbeData = {
     },
     color: "#fff",
     escapeTrajectory: {
-        startDate: "1999-01-01T00:00:00Z",
         referenceDate: "2000-01-01T12:00:00Z",
         startDistanceAu: 3,
         referenceDistanceAu: 10,

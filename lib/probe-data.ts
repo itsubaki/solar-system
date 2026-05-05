@@ -2,7 +2,6 @@ import { ASTRONOMICAL_UNIT } from "./orbit"
 import type { PoleDirection } from "./planet-data"
 
 export interface EscapeTrajectoryData {
-    startDate: string
     referenceDate: string
     startDistanceAu: number
     referenceDistanceAu: number
@@ -43,7 +42,6 @@ export const PROBES: ProbeData[] = [
         emissive: "#E6F6FF",
         emissiveIntensity: 0.8,
         escapeTrajectory: {
-            startDate: "1977-09-05T12:56:00Z",
             referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
             referenceDistanceAu: 170.425289,
@@ -65,7 +63,6 @@ export const PROBES: ProbeData[] = [
         emissive: "#FFF7DD",
         emissiveIntensity: 0.8,
         escapeTrajectory: {
-            startDate: "1977-08-20T14:29:00Z",
             referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
             referenceDistanceAu: 142.756110,
@@ -87,7 +84,6 @@ export const PROBES: ProbeData[] = [
         emissive: "#F3F7FF",
         emissiveIntensity: 0.8,
         escapeTrajectory: {
-            startDate: "2006-01-19T19:00:00Z",
             referenceDate: "2026-05-01T00:00:00Z",
             startDistanceAu: 1,
             referenceDistanceAu: 64.51563312195802,

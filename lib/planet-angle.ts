@@ -2,13 +2,13 @@ import { OrbitPhase, OrbitPlane, PlanetData, SatelliteData } from "./planet-data
 import {
     ASTRONOMICAL_UNIT,
     FULL_TURN,
-    MS_PER_DAY,
     degToRad,
+    getElapsedDays,
+    getOrbitPlanePoint,
+    getOrbitalPlaneState,
+    J2000_EPOCH_UTC,
     normalizeRadians,
-    solveKeplerEquation,
 } from "./orbit"
-
-const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
 
 type OrbitState = {
     angle: number
@@ -19,18 +19,6 @@ type OrbitState = {
 
 export function getPlanetOrbitPosition(planet: PlanetData, at = new Date()): OrbitState {
     return getOrbitStateFromElements(getPlanetElements(planet, at))
-}
-
-export function getSatelliteOrbitPosition(
-    satellite: SatelliteData,
-    at = new Date()
-): OrbitState {
-    return getOrbitState(
-        satellite.orbitalPeriod,
-        satellite.orbitPhase,
-        satellite.orbitPlane.longitudeOfAscendingNode,
-        at
-    )
 }
 
 export function getPlanetOrbitPath(planet: PlanetData, segments = 256, at = new Date()) {
@@ -54,6 +42,18 @@ export function getPlanetOrbitPlane(planet: PlanetData, at = new Date()): OrbitP
     }
 }
 
+export function getSatelliteOrbitPosition(
+    satellite: SatelliteData,
+    at = new Date()
+): OrbitState {
+    return getOrbitState(
+        satellite.orbitalPeriod,
+        satellite.orbitPhase,
+        satellite.orbitPlane.longitudeOfAscendingNode,
+        at
+    )
+}
+
 export function getSatelliteOrbitPath(
     satellite: SatelliteData,
     segments = 128
@@ -69,7 +69,7 @@ export function getSatelliteOrbitPath(
 }
 
 function getPlanetElements(planet: PlanetData, at: Date = new Date()) {
-    const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
+    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, at)
     const elapsedCenturies = elapsedDays / 36525
 
     if (!planet.orbitRates) {
@@ -110,27 +110,12 @@ function getOrbitStateFromElements(elements: {
     meanLongitude: number
     semiMajorAxisScale: number
 }): OrbitState {
-    const argumentOfPeriapsis = degToRad(
-        elements.longitudeOfPeriapsis - elements.longitudeOfAscendingNode
+    return getOrbitalPlaneState(
+        normalizeRadians(degToRad(elements.meanLongitude - elements.longitudeOfPeriapsis)),
+        elements.eccentricity,
+        degToRad(elements.longitudeOfPeriapsis - elements.longitudeOfAscendingNode),
+        elements.semiMajorAxisScale
     )
-    const meanAnomaly = normalizeRadians(degToRad(
-        elements.meanLongitude - elements.longitudeOfPeriapsis
-    ))
-    const eccentricAnomaly = solveKeplerEquation(meanAnomaly, elements.eccentricity)
-    const trueAnomaly = 2 * Math.atan2(
-        Math.sqrt(1 + elements.eccentricity) * Math.sin(eccentricAnomaly / 2),
-        Math.sqrt(1 - elements.eccentricity) * Math.cos(eccentricAnomaly / 2)
-    )
-    const longitude = trueAnomaly + argumentOfPeriapsis
-    const radiusScale = elements.semiMajorAxisScale *
-        (1 - elements.eccentricity * Math.cos(eccentricAnomaly))
-
-    return {
-        angle: normalizeRadians(-longitude),
-        radiusScale,
-        x: radiusScale * Math.cos(longitude),
-        z: -radiusScale * Math.sin(longitude),
-    }
 }
 
 function getOrbitState(
@@ -139,30 +124,16 @@ function getOrbitState(
     longitudeOfAscendingNode: number,
     at: Date
 ): OrbitState {
-    const elapsedDays = (at.getTime() - J2000_EPOCH_UTC) / MS_PER_DAY
+    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, at)
     const meanMotion = FULL_TURN / orbitalPeriod
-    const argumentOfPeriapsis = getArgumentOfPeriapsis(
-        phase,
-        longitudeOfAscendingNode
-    )
     const meanAnomalyAtJ2000 = degToRad(
         phase.meanLongitudeAtJ2000 - phase.longitudeOfPeriapsis
     )
-    const meanAnomaly = normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays)
-    const eccentricAnomaly = solveKeplerEquation(meanAnomaly, phase.eccentricity)
-    const trueAnomaly = 2 * Math.atan2(
-        Math.sqrt(1 + phase.eccentricity) * Math.sin(eccentricAnomaly / 2),
-        Math.sqrt(1 - phase.eccentricity) * Math.cos(eccentricAnomaly / 2)
+    return getOrbitalPlaneState(
+        normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays),
+        phase.eccentricity,
+        getArgumentOfPeriapsis(phase, longitudeOfAscendingNode)
     )
-    const longitude = trueAnomaly + argumentOfPeriapsis
-    const radiusScale = 1 - phase.eccentricity * Math.cos(eccentricAnomaly)
-
-    return {
-        angle: normalizeRadians(-longitude),
-        radiusScale,
-        x: radiusScale * Math.cos(longitude),
-        z: -radiusScale * Math.sin(longitude),
-    }
 }
 
 function getArgumentOfPeriapsis(phase: OrbitPhase, longitudeOfAscendingNode: number) {
@@ -175,18 +146,18 @@ function getOrbitPathPoints(
     segments: number,
     semiMajorAxisScale = 1
 ) {
-    const semiMinorAxis = Math.sqrt(1 - eccentricity * eccentricity)
     const points: Array<{ x: number; z: number }> = []
 
     for (let i = 0; i <= segments; i += 1) {
         const eccentricAnomaly = (FULL_TURN * i) / segments
-        const localX = semiMajorAxisScale * (Math.cos(eccentricAnomaly) - eccentricity)
-        const localZ = semiMajorAxisScale * semiMinorAxis * Math.sin(eccentricAnomaly)
-
-        points.push({
-            x: localX * Math.cos(argumentOfPeriapsis) - localZ * Math.sin(argumentOfPeriapsis),
-            z: -(localX * Math.sin(argumentOfPeriapsis) + localZ * Math.cos(argumentOfPeriapsis)),
-        })
+        points.push(
+            getOrbitPlanePoint(
+                eccentricAnomaly,
+                eccentricity,
+                argumentOfPeriapsis,
+                semiMajorAxisScale
+            )
+        )
     }
 
     return points

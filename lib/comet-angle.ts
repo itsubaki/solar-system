@@ -2,11 +2,12 @@ import type { CometData } from "./comet-data"
 import {
     ASTRONOMICAL_UNIT,
     FULL_TURN,
-    MS_PER_DAY,
     degToRad,
+    getElapsedDaysFromIsoDate,
+    getOrbitPlanePoint,
+    getOrbitalPlaneState,
+    getSceneAngle,
     rotateOrbitPointToScene,
-    normalizeRadians,
-    solveKeplerEquation,
 } from "./orbit"
 
 type CometOrbitState = {
@@ -21,27 +22,24 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
     const { orbitalElements } = comet
     const semiMajorAxisAu = orbitalElements.perihelionDistanceAu / (1 - orbitalElements.eccentricity)
     const meanMotion = FULL_TURN / comet.orbitalPeriod
-    const elapsedDays = (at.getTime() - Date.parse(orbitalElements.perihelionDate)) / MS_PER_DAY
-    const meanAnomaly = normalizeRadians(meanMotion * elapsedDays)
-    const eccentricAnomaly = solveKeplerEquation(meanAnomaly, orbitalElements.eccentricity)
-    const trueAnomaly = 2 * Math.atan2(
-        Math.sqrt(1 + orbitalElements.eccentricity) * Math.sin(eccentricAnomaly / 2),
-        Math.sqrt(1 - orbitalElements.eccentricity) * Math.cos(eccentricAnomaly / 2)
-    )
-    const radiusAu = semiMajorAxisAu * (1 - orbitalElements.eccentricity * Math.cos(eccentricAnomaly))
     const baselineDistanceAu = comet.distance / ASTRONOMICAL_UNIT
-    const radiusScale = radiusAu / baselineDistanceAu
-    const worldPosition = getWorldOrbitPoint(
-        radiusScale,
-        trueAnomaly,
+    const elapsedDays = getElapsedDaysFromIsoDate(orbitalElements.perihelionDate, at)
+    const orbitState = getOrbitalPlaneState(
+        meanMotion * elapsedDays,
+        orbitalElements.eccentricity,
         degToRad(orbitalElements.argumentOfPerihelion),
+        semiMajorAxisAu / baselineDistanceAu
+    )
+    const worldPosition = getWorldOrbitPoint(
+        orbitState.x,
+        orbitState.z,
         degToRad(comet.orbitPlane.longitudeOfAscendingNode),
         degToRad(comet.orbitPlane.inclination)
     )
 
     return {
-        angle: normalizeRadians(Math.atan2(-worldPosition.z, worldPosition.x)),
-        radiusScale,
+        angle: getSceneAngle(worldPosition),
+        radiusScale: orbitState.radiusScale,
         x: worldPosition.x,
         y: worldPosition.y,
         z: worldPosition.z,
@@ -59,18 +57,17 @@ export function getCometOrbitPath(comet: CometData, segments = 512) {
 
     for (let i = 0; i <= segments; i += 1) {
         const eccentricAnomaly = (FULL_TURN * i) / segments
-        const trueAnomaly = 2 * Math.atan2(
-            Math.sqrt(1 + orbitalElements.eccentricity) * Math.sin(eccentricAnomaly / 2),
-            Math.sqrt(1 - orbitalElements.eccentricity) * Math.cos(eccentricAnomaly / 2)
+        const point = getOrbitPlanePoint(
+            eccentricAnomaly,
+            orbitalElements.eccentricity,
+            argumentOfPerihelion,
+            semiMajorAxisAu / baselineDistanceAu
         )
-        const radiusAu = semiMajorAxisAu * (1 - orbitalElements.eccentricity * Math.cos(eccentricAnomaly))
-        const radiusScale = radiusAu / baselineDistanceAu
 
         points.push(
             getWorldOrbitPoint(
-                radiusScale,
-                trueAnomaly,
-                argumentOfPerihelion,
+                point.x,
+                point.z,
                 longitudeOfAscendingNode,
                 orbitalInclination
             )
@@ -81,19 +78,14 @@ export function getCometOrbitPath(comet: CometData, segments = 512) {
 }
 
 function getWorldOrbitPoint(
-    radiusScale: number,
-    trueAnomaly: number,
-    argumentOfPerihelion: number,
+    orbitPlaneX: number,
+    orbitPlaneZ: number,
     longitudeOfAscendingNode: number,
     orbitalInclination: number
 ) {
-    const argumentOfLatitude = trueAnomaly + argumentOfPerihelion
-    const localX = radiusScale * Math.cos(argumentOfLatitude)
-    const localZ = -radiusScale * Math.sin(argumentOfLatitude)
-
     return rotateOrbitPointToScene(
-        localX,
-        localZ,
+        orbitPlaneX,
+        orbitPlaneZ,
         longitudeOfAscendingNode,
         orbitalInclination
     )
