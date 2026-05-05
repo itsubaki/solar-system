@@ -166,6 +166,10 @@ function createBackgroundLabels(): BackgroundLabel[] {
             position: getScenePositionFromGalactic(20, 0),
         },
         {
+            name: "Galactic Core",
+            position: getScenePositionFromGalactic(0, 0),
+        },
+        {
             name: "Andromeda Galaxy",
             position: getScenePositionFromRaDec(ANDROMEDA_RIGHT_ASCENSION, ANDROMEDA_DECLINATION),
         },
