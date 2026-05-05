@@ -156,7 +156,6 @@ function Scene({
     const hasSelection = selectedSun || !!selectedPlanet || !!selectedSatellite || !!selectedComet || !!selectedProbe
     const shouldDimOrbits = hasSelection && !selectedSun
     const focusedPlanetPositionRef = useRef<Vector3 | null>(null)
-    const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_DISTANCE)
     const lastCameraDistanceRef = useRef(DEFAULT_CAMERA_DISTANCE)
 
     useFrame(({ camera }) => {
@@ -165,7 +164,6 @@ function Scene({
         if (Math.abs(nextCameraDistance - lastCameraDistanceRef.current) < 0.005) return
 
         lastCameraDistanceRef.current = nextCameraDistance
-        setCameraDistance(nextCameraDistance)
         onCameraDistanceChange(nextCameraDistance)
     })
 
