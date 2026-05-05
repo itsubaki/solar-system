@@ -162,12 +162,8 @@ function getScenePositionFromGalactic(
 function createBackgroundLabels(): BackgroundLabel[] {
     return [
         {
-            name: "Milky Way",
-            position: getScenePositionFromGalactic(20, 0),
-        },
-        {
-            name: "Galactic Core",
-            position: getScenePositionFromGalactic(0, 0),
+            name: "Milky Way Galaxy",
+            position: getScenePositionFromGalactic(10, 0),
         },
         {
             name: "Andromeda Galaxy",
