@@ -35,8 +35,8 @@ type BackgroundLabel = {
     position: readonly [number, number, number]
 }
 
-const BACKGROUND_RADIUS = 1000
-const STAR_SHELL_THICKNESS = 40
+const BACKGROUND_RADIUS = 1300
+const STAR_SHELL_THICKNESS = 48
 const OBLIQUITY = degToRad(23.439291111)
 const GALACTIC_TO_EQUATORIAL_MATRIX: readonly [Vec3, Vec3, Vec3] = [
     [-0.0548755604, 0.4941094279, -0.867666149],
