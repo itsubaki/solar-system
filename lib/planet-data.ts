@@ -85,7 +85,7 @@ export const DWARF_PLANETS: PlanetData[] = [
         orbitPhase: {
             eccentricity: 0.07957631994408416,
             longitudeOfPeriapsis: 153.54938555433483,
-            meanLongitudeAtJ2000: 385.0891185587054,
+            meanLongitudeAtJ2000: 158.80268690458553,
         },
         poleDirection: { longitude: 291.421, latitude: 66.758 },
         orbitPlane: {
@@ -100,18 +100,18 @@ export const DWARF_PLANETS: PlanetData[] = [
     {
         name: "Pluto",
         radius: 1188.3,
-        distance: ASTRONOMICAL_UNIT * 39.48,
+        distance: ASTRONOMICAL_UNIT * 39.58862938517124,
         orbitPhase: {
-            eccentricity: 0.24880766,
-            longitudeOfPeriapsis: 224.06676,
-            meanLongitudeAtJ2000: 238.92881,
+            eccentricity: 0.2518378778576892,
+            longitudeOfPeriapsis: 224.0013855701622,
+            meanLongitudeAtJ2000: 238.77189281545935,
         },
         poleDirection: { longitude: 137.351, latitude: -22.816 },
         orbitPlane: {
-            inclination: 17.16,
-            longitudeOfAscendingNode: 110.299,
+            inclination: 17.14771140999114,
+            longitudeOfAscendingNode: 110.2923840543057,
         },
-        orbitalPeriod: 90560,
+        orbitalPeriod: 90981.71647718345,
         rotationPeriod: 6.39,
         color: "#B89C7A",
         description: "A dwarf planet in the Kuiper Belt with a strongly inclined, eccentric orbit."
@@ -123,7 +123,7 @@ export const DWARF_PLANETS: PlanetData[] = [
         orbitPhase: {
             eccentricity: 0.1957748236999078,
             longitudeOfPeriapsis: 362.685623066236,
-            meanLongitudeAtJ2000: 585.0132756143271,
+            meanLongitudeAtJ2000: 551.9685167103951,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
@@ -141,8 +141,8 @@ export const DWARF_PLANETS: PlanetData[] = [
         distance: ASTRONOMICAL_UNIT * 45.51068193198885,
         orbitPhase: {
             eccentricity: 0.1604249925523523,
-            longitudeOfPeriapsis: 376.3443476128863,
-            meanLongitudeAtJ2000: 545.664625586251,
+            longitudeOfPeriapsis: 376.34434761288634,
+            meanLongitudeAtJ2000: 515.3104418703083,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
@@ -161,7 +161,7 @@ export const DWARF_PLANETS: PlanetData[] = [
         orbitPhase: {
             eccentricity: 0.4369649682100509,
             longitudeOfPeriapsis: 186.7594587351884,
-            meanLongitudeAtJ2000: 397.2088478471641,
+            meanLongitudeAtJ2000: 381.58774559240186,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
@@ -176,18 +176,18 @@ export const DWARF_PLANETS: PlanetData[] = [
     {
         name: "Sedna",
         radius: 497.5,
-        distance: ASTRONOMICAL_UNIT * 518.57,
+        distance: ASTRONOMICAL_UNIT * 549.5384129670271,
         orbitPhase: {
-            eccentricity: 0.85491,
-            longitudeOfPeriapsis: 455.6,
-            meanLongitudeAtJ2000: 813.2,
+            eccentricity: 0.8612969133516033,
+            longitudeOfPeriapsis: 455.4885019695374,
+            meanLongitudeAtJ2000: 813.3723336130314,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
-            inclination: 11.93,
-            longitudeOfAscendingNode: 144.25,
+            inclination: 11.92591694977304,
+            longitudeOfAscendingNode: 144.4787501233461,
         },
-        orbitalPeriod: 4160647.5,
+        orbitalPeriod: 4705388.748357669,
         rotationPeriod: 10.27 / 24,
         color: "#A64E3C",
         description: "A very distant likely dwarf planet beyond the Kuiper Belt, traveling on an extremely elongated orbit through the scattered outer solar system."
@@ -195,18 +195,18 @@ export const DWARF_PLANETS: PlanetData[] = [
     {
         name: "Quaoar",
         radius: 555,
-        distance: ASTRONOMICAL_UNIT * 43.49,
+        distance: ASTRONOMICAL_UNIT * 43.1476797802032,
         orbitPhase: {
-            eccentricity: 0.0396,
-            longitudeOfPeriapsis: 188.9,
-            meanLongitudeAtJ2000: 255.3,
+            eccentricity: 0.03583878353429052,
+            longitudeOfPeriapsis: 352.8864185486417,
+            meanLongitudeAtJ2000: 611.4867438895719,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
-            inclination: 7.99,
-            longitudeOfAscendingNode: 188.9,
+            inclination: 7.991371294217068,
+            longitudeOfAscendingNode: 188.9632800603184,
         },
-        orbitalPeriod: 104687.7,
+        orbitalPeriod: 103522.4632767444,
         rotationPeriod: 17.68 / 24,
         color: "#9C5F53",
         description: "A large trans-Neptunian object in the classical Kuiper Belt, often considered a likely dwarf planet with a relatively low-inclination orbit."
@@ -214,18 +214,18 @@ export const DWARF_PLANETS: PlanetData[] = [
     {
         name: "Orcus",
         radius: 455,
-        distance: ASTRONOMICAL_UNIT * 39.17,
+        distance: ASTRONOMICAL_UNIT * 39.33577654973188,
         orbitPhase: {
-            eccentricity: 0.227,
-            longitudeOfPeriapsis: 72.2,
-            meanLongitudeAtJ2000: 238.1,
+            eccentricity: 0.2217299945799159,
+            longitudeOfPeriapsis: 342.10841019851057,
+            meanLongitudeAtJ2000: 492.44435970135174,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
-            inclination: 20.57,
-            longitudeOfAscendingNode: 268.7,
+            inclination: 20.55552555918871,
+            longitudeOfAscendingNode: 268.385941993199,
         },
-        orbitalPeriod: 89556.2,
+        orbitalPeriod: 90111.45854338718,
         rotationPeriod: 10.47 / 24,
         color: "#8EA3B0",
         description: "A resonant trans-Neptunian object beyond Neptune, regarded as a likely dwarf planet and often compared with Pluto because of its similar orbital period."
@@ -233,18 +233,18 @@ export const DWARF_PLANETS: PlanetData[] = [
     {
         name: "Gonggong",
         radius: 615,
-        distance: ASTRONOMICAL_UNIT * 67.38,
+        distance: ASTRONOMICAL_UNIT * 66.89366871435344,
         orbitPhase: {
-            eccentricity: 0.5004,
-            longitudeOfPeriapsis: 207.7,
-            meanLongitudeAtJ2000: 279.7,
+            eccentricity: 0.5031674399617051,
+            longitudeOfPeriapsis: 543.4817031068217,
+            meanLongitudeAtJ2000: 637.8382954995409,
         },
         poleDirection: { longitude: 0, latitude: 90 },
         orbitPlane: {
-            inclination: 30.63,
-            longitudeOfAscendingNode: 336.8,
+            inclination: 30.86626129015389,
+            longitudeOfAscendingNode: 336.8400960976296,
         },
-        orbitalPeriod: 202157.1,
+        orbitalPeriod: 199837.0221244152,
         rotationPeriod: 22.4 / 24,
         color: "#A6464B",
         description: "A reddish distant trans-Neptunian object in the scattered disk, considered a likely dwarf planet on a steeply inclined and eccentric orbit."
@@ -390,7 +390,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 1.1,
                     longitudeOfAscendingNode: 169.2,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 352.946, latitude: 63.285 },
+                    referencePoleDirection: { longitude: 352.9461317579142, latitude: 63.28492744725728 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -410,7 +410,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 1.8,
                     longitudeOfAscendingNode: 54.3,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 352.719, latitude: 64.17 },
+                    referencePoleDirection: { longitude: 352.71946436168486, latitude: 64.17041368049183 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -459,7 +459,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 0,
                     longitudeOfAscendingNode: 0,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 248.23, latitude: 87.794 },
+                    referencePoleDirection: { longitude: 248.23014137656605, latitude: 87.79436837364881 },
                 },
                 color: "#E6C87A",
                 orbitPhase: {
@@ -479,7 +479,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 0.5,
                     longitudeOfAscendingNode: 184,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 248.23, latitude: 87.794 },
+                    referencePoleDirection: { longitude: 248.23014137656605, latitude: 87.79436837364881 },
                 },
                 color: "#C4B896",
                 orbitPhase: {
@@ -499,7 +499,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 0.2,
                     longitudeOfAscendingNode: 58.5,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 248.395, latitude: 87.903 },
+                    referencePoleDirection: { longitude: 248.39457877312307, latitude: 87.9030354604931 },
                 },
                 color: "#8B7355",
                 orbitPhase: {
@@ -519,7 +519,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 0.3,
                     longitudeOfAscendingNode: 309.1,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 252.494, latitude: 88.16 },
+                    referencePoleDirection: { longitude: 252.49346566405814, latitude: 88.1597940437438 },
                 },
                 color: "#5C4033",
                 orbitPhase: {
@@ -595,7 +595,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 0.3,
                     longitudeOfAscendingNode: 78.6,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 79.467, latitude: 62.596 },
+                    referencePoleDirection: { longitude: 79.46734673826938, latitude: 62.59587051237927 },
                 },
                 color: "#E6A243",
                 orbitPhase: {
@@ -819,7 +819,7 @@ export const PLANETS: PlanetData[] = [
                     inclination: 157.3,
                     longitudeOfAscendingNode: 178.1,
                     referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 319.535, latitude: 61.513 },
+                    referencePoleDirection: { longitude: 319.5353431188662, latitude: 61.513180331653224 },
                 },
                 color: "#C4C4C4",
                 orbitPhase: {
