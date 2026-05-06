@@ -14,6 +14,7 @@ type PointLayerData = {
 
 type BackgroundLayers = {
     stars: PointLayerData
+    polaris: PointLayerData
     milkyWay: PointLayerData
     milkyWayGlow: PointLayerData
     milkyWayBulge: PointLayerData
@@ -58,6 +59,8 @@ const HYADES_RIGHT_ASCENSION = 66.75
 const HYADES_DECLINATION = 15.87
 const OMEGA_CENTAURI_RIGHT_ASCENSION = 201.697
 const OMEGA_CENTAURI_DECLINATION = -47.4794
+const POLARIS_RIGHT_ASCENSION = 37.95456067
+const POLARIS_DECLINATION = 89.26410897
 const LABEL_RADIUS = BACKGROUND_RADIUS * 0.92
 
 function degToRad(degrees: number) {
@@ -202,6 +205,10 @@ function createBackgroundLabels(): BackgroundLabel[] {
                 OMEGA_CENTAURI_DECLINATION
             ),
         },
+        {
+            name: "Polaris",
+            position: getScenePositionFromRaDec(POLARIS_RIGHT_ASCENSION, POLARIS_DECLINATION),
+        },
     ]
 }
 
@@ -283,6 +290,21 @@ function createBaseStars(random: () => number) {
 
         pushPoint(positions, colors, sphericalToVector(longitude, latitude), radius, color)
     }
+
+    return buildPointLayer(positions, colors)
+}
+
+function createNamedStar(raDegrees: number, decDegrees: number, color: Vec3) {
+    const positions: number[] = []
+    const colors: number[] = []
+
+    pushPoint(
+        positions,
+        colors,
+        equatorialToEcliptic(equatorialFromRaDec(raDegrees, decDegrees)),
+        BACKGROUND_RADIUS + STAR_SHELL_THICKNESS * 0.45,
+        color
+    )
 
     return buildPointLayer(positions, colors)
 }
@@ -588,6 +610,11 @@ function createBackgroundLayers(): BackgroundLayers {
 
     return {
         stars: createBaseStars(random),
+        polaris: createNamedStar(
+            POLARIS_RIGHT_ASCENSION,
+            POLARIS_DECLINATION,
+            [1.0, 0.95, 0.78]
+        ),
         milkyWay: createMilkyWay(random),
         milkyWayGlow: createMilkyWayGlow(random),
         milkyWayBulge: createMilkyWayBulge(random),
@@ -766,6 +793,7 @@ export function Stars() {
             <PointLayer data={layers.stars} size={0.13} opacity={0.58} />
             <PointLayer data={layers.darkLanes} size={0.72} opacity={0.28} />
             <PointLayer data={layers.darkLanesFine} size={0.3} opacity={0.24} />
+            <PointLayer data={layers.polaris} size={0.42} opacity={0.92} blending={THREE.AdditiveBlending} />
 
             {labels.map((label) => (
                 <BackgroundSkyLabel key={label.name} label={label} />
