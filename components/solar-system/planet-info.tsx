@@ -14,7 +14,7 @@ export function PlanetInfo({
     onClose: () => void
 }) {
     return (
-        <Card className="absolute top-6 right-6 w-84 bg-card/90 backdrop-blur-md border-border">
+        <Card className="absolute top-6 right-6 w-92 bg-card/90 backdrop-blur-md border-border">
             <CardHeader className="flex flex-row items-start justify-between">
                 <div className="flex items-center gap-3">
                     <div
@@ -39,7 +39,7 @@ export function PlanetInfo({
                     {planet.description ?? ""}
                 </p>
 
-                <div className="grid grid-cols-[3fr_7fr] gap-3 pt-2 border-t border-border">
+                <div className="grid grid-cols-[3.5fr_6.5fr] gap-3 pt-2 border-t border-border">
                     <div >
                         <p className="text-[10px] text-muted-foreground">Radius</p>
                         <p className="text-xs font-medium text-foreground">
