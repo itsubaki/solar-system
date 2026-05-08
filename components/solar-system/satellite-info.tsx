@@ -25,9 +25,6 @@ export function SatelliteInfo({
                     />
                     <div>
                         <CardTitle className="text-lg">{satellite.name}</CardTitle>
-                        <p className="text-[10px] text-muted-foreground">
-                            Satellite of {satellite.parentPlanetName}
-                        </p>
                     </div>
                 </div>
 
