@@ -620,7 +620,7 @@ export function SolarSystem() {
                 className="absolute bottom-0 left-0 z-40 flex items-end gap-3 sm:hidden"
                 style={{
                     left: "calc(env(safe-area-inset-left) + 1rem)",
-                    bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 2.5rem)",
                 }}
             >
                 <div className="flex flex-col items-center gap-2 rounded-full bg-background/65 px-2 py-2 text-[18px] font-medium text-foreground ring-1 ring-white/15 backdrop-blur-sm">
@@ -832,8 +832,8 @@ export function SolarSystem() {
             <div
                 className="absolute z-40 flex flex-col items-end gap-1"
                 style={{
-                    right: "calc(env(safe-area-inset-right) + 1.5rem)",
-                    bottom: "calc(env(safe-area-inset-bottom) + 1.5rem)",
+                    right: "calc(env(safe-area-inset-right) + 0.5rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 2.5rem)",
                 }}
             >
                 <Clock simTime={displaySimTime} />
@@ -847,6 +847,16 @@ export function SolarSystem() {
                 >
                     {ORBIT_SPEED_OPTIONS[orbitSpeedIndex].label}
                 </button>
+            </div>
+
+            <div
+                className="absolute right-0 bottom-0 z-50 p-2 text-xs text-muted-foreground opacity-70 pointer-events-none select-none"
+                style={{
+                    right: "calc(env(safe-area-inset-right) + 0.5rem)",
+                    bottom: "calc(env(safe-area-inset-bottom) + 0.3rem)",
+                }}
+            >
+                Based on data from NASA/JPL and IPAC.
             </div>
         </div>
     )
