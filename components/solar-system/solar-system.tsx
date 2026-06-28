@@ -274,7 +274,7 @@ function Scene({
 
 export function SolarSystem() {
     const [orbitSpeedIndex, setOrbitSpeedIndex] = useState(0)
-    const [objectScaleIndex, setObjectScaleIndex] = useState(0)
+    const [objectScaleIndex, setObjectScaleIndex] = useState(1)
     const [showDwarfPlanets, setShowDwarfPlanets] = useState(false)
     const [showComets, setShowComets] = useState(false)
     const [showProbes, setShowProbes] = useState(false)
