@@ -1,3 +1,3 @@
 # solar-system
 
-Interactive 3D Simulator of the Solar System.
+An interactive 3D simulator of the Solar System.
