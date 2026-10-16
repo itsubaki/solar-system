@@ -9,8 +9,8 @@ install:
 
 update:
 	pnpm update --latest
-	pnpm add -D eslint@9.39.4
-	pnpm audit
+	pnpm add -D typescript@^6
+	pnpm audit --prod
 
 build:
 	pnpm run build
