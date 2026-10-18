@@ -52,6 +52,7 @@ const circularSatellite: SatelliteData = {
         meanLongitudeAtJ2000: 0,
     },
     color: "#fff",
+    description: "Test fixture",
 }
 
 const retrogradeSatellite: SatelliteData = {
