@@ -5,6 +5,7 @@ import {
     degToRad,
     getElapsedDays,
     getOrbitPlanePoint,
+    getOrbitPathSegmentCount,
     getOrbitalPlaneState,
     J2000_EPOCH_UTC,
     normalizeRadians,
@@ -21,13 +22,13 @@ export function getPlanetOrbitPosition(planet: PlanetData, at = new Date()): Orb
     return getOrbitStateFromElements(getPlanetElements(planet, at))
 }
 
-export function getPlanetOrbitPath(planet: PlanetData, segments = 256, at = new Date()) {
+export function getPlanetOrbitPath(planet: PlanetData, segments?: number, at = new Date()) {
     const elements = getPlanetElements(planet, at)
 
     return getOrbitPathPoints(
         elements.eccentricity,
         degToRad(elements.longitudeOfPeriapsis - elements.longitudeOfAscendingNode),
-        segments,
+        segments ?? getOrbitPathSegmentCount(planet.distance * elements.semiMajorAxisScale, planet.radius),
         elements.semiMajorAxisScale
     )
 }
@@ -56,7 +57,7 @@ export function getSatelliteOrbitPosition(
 
 export function getSatelliteOrbitPath(
     satellite: SatelliteData,
-    segments = 128
+    segments = getOrbitPathSegmentCount(satellite.distance, satellite.radius, 128)
 ) {
     return getOrbitPathPoints(
         satellite.orbitPhase.eccentricity,

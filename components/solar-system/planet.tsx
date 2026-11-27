@@ -22,6 +22,7 @@ export function Planet({
     showSatellites,
     focusTargetRef,
     simTimeRef,
+    orbitEpoch,
     scale,
 }: {
     data: PlanetData
@@ -34,6 +35,7 @@ export function Planet({
     showSatellites: boolean
     focusTargetRef?: FocusTargetRef | null
     simTimeRef: { current: Date }
+    orbitEpoch: Date
     scale: {
         distance: number,
         radius: number,
@@ -46,16 +48,16 @@ export function Planet({
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
     const initialOrbitPosition = useMemo(
-        () => getPlanetOrbitPosition(data),
-        [data]
+        () => getPlanetOrbitPosition(data, orbitEpoch),
+        [data, orbitEpoch]
     )
     const orbitPoints = useMemo(
-        () => getPlanetOrbitPath(data).map((point) => [
+        () => getPlanetOrbitPath(data, undefined, orbitEpoch).map((point) => [
             distance * point.x,
             0,
             distance * point.z,
         ] as [number, number, number]),
-        [data, distance]
+        [data, distance, orbitEpoch]
     )
     const ringUniforms = useMemo(
         () => data.rings?.map((ring) => ({
@@ -71,8 +73,8 @@ export function Planet({
         [data.rings, radius, scale.radius]
     )
     const orbitPlaneQuaternion = useMemo(() => {
-        return getOrbitPlaneQuaternion(getPlanetOrbitPlane(data))
-    }, [data])
+        return getOrbitPlaneQuaternion(getPlanetOrbitPlane(data, orbitEpoch))
+    }, [data, orbitEpoch])
     const localPoleVector = useMemo(() => {
         return getLocalPoleVector(data.poleDirection, orbitPlaneQuaternion)
     }, [data.poleDirection, orbitPlaneQuaternion])

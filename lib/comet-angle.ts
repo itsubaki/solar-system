@@ -5,6 +5,7 @@ import {
     degToRad,
     getElapsedDaysFromIsoDate,
     getOrbitPlanePoint,
+    getOrbitPathSegmentCount,
     getOrbitalPlaneState,
     getSceneAngle,
     rotateOrbitPointToScene,
@@ -46,17 +47,22 @@ export function getCometOrbitPosition(comet: CometData, at = new Date()): CometO
     }
 }
 
-export function getCometOrbitPath(comet: CometData, segments = 512) {
+export function getCometOrbitPath(comet: CometData, segments?: number) {
     const { orbitalElements } = comet
     const semiMajorAxisAu = orbitalElements.perihelionDistanceAu / (1 - orbitalElements.eccentricity)
     const baselineDistanceAu = comet.distance / ASTRONOMICAL_UNIT
     const argumentOfPerihelion = degToRad(orbitalElements.argumentOfPerihelion)
     const longitudeOfAscendingNode = degToRad(comet.orbitPlane.longitudeOfAscendingNode)
     const orbitalInclination = degToRad(comet.orbitPlane.inclination)
+    const segmentCount = segments ?? getOrbitPathSegmentCount(
+        semiMajorAxisAu * ASTRONOMICAL_UNIT,
+        comet.displayRadius,
+        512
+    )
     const points: Array<{ x: number; y: number; z: number }> = []
 
-    for (let i = 0; i <= segments; i += 1) {
-        const eccentricAnomaly = (FULL_TURN * i) / segments
+    for (let i = 0; i <= segmentCount; i += 1) {
+        const eccentricAnomaly = (FULL_TURN * i) / segmentCount
         const point = getOrbitPlanePoint(
             eccentricAnomaly,
             orbitalElements.eccentricity,

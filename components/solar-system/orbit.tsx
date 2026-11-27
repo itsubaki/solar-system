@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { Quaternion, Vector3 } from "three"
 import { degToRad } from "@/lib/orbit"
 import type { OrbitPlane, PoleDirection } from "@/lib/planet-data"
@@ -22,7 +23,7 @@ export function OrbitLine({
     color: string
     opacity?: number
 }) {
-    const positions = new Float32Array(points.flat())
+    const positions = useMemo(() => new Float32Array(points.flat()), [points])
 
     return (
         <line>

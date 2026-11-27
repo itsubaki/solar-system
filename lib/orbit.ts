@@ -3,6 +3,15 @@ export const MS_PER_DAY = 1000 * 60 * 60 * 24
 export const FULL_TURN = Math.PI * 2
 export const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
 
+export function getOrbitPathSegmentCount(semiMajorAxis: number, bodyRadius: number, minSegments = 256) {
+    // Bound the chord error to a quarter of the body's unscaled radius.
+    // An ellipse is a compressed circle, so the same bound holds for it.
+    const maxError = bodyRadius / 4
+    const halfAngle = 2 * Math.asin(Math.sqrt(Math.min(1, maxError / (2 * semiMajorAxis))))
+
+    return Math.max(minSegments, Math.ceil(Math.PI / halfAngle))
+}
+
 export type ScenePoint = {
     x: number
     y: number

@@ -13,7 +13,8 @@ import {
     getZoomSliderValue,
     isShortcutBlockedTarget,
 } from "@/lib/camera-controls"
-import { ASTRONOMICAL_UNIT } from "@/lib/orbit"
+import { ASTRONOMICAL_UNIT, MS_PER_DAY } from "@/lib/orbit"
+import { installThreeConsoleFilter } from "@/lib/three-console"
 import { PLANETS, DWARF_PLANETS, type PlanetData, type SatelliteData } from "@/lib/planet-data"
 import { COMETS, type CometData } from "@/lib/comet-data"
 import { PROBES, type ProbeData } from "@/lib/probe-data"
@@ -29,6 +30,9 @@ import { Probe } from "./probe"
 import { ProbeInfo } from "./probe-info"
 import { Stars } from "./stars"
 import { PlanetOrbitControls } from "./orbit-controls"
+
+// Canvas constructs Fiber's legacy clock before effects run.
+if (typeof window !== "undefined") installThreeConsoleFilter()
 
 type SelectedSatellite = SatelliteData & { parentPlanetName: string }
 
@@ -127,6 +131,7 @@ function Scene({
     onCameraDistanceChange,
     onDesiredCameraDistanceChange,
     simTimeRef,
+    orbitEpoch,
 }: {
     selectedComet: CometData | null
     selectedPlanet: PlanetData | null
@@ -146,6 +151,7 @@ function Scene({
     onCameraDistanceChange: (distance: number) => void
     onDesiredCameraDistanceChange: (distance: number) => void
     simTimeRef: { current: Date }
+    orbitEpoch: Date
 }) {
     const visiblePlanets = useMemo(
         () => getVisiblePlanets(showDwarfPlanets),
@@ -228,6 +234,7 @@ function Scene({
                     showSatellites={objectScaleOption.scale === 1}
                     focusTargetRef={selectedPlanet?.name === planet.name || selectedSatellite?.parentPlanetName === planet.name ? focusedPlanetPositionRef : null}
                     simTimeRef={simTimeRef}
+                    orbitEpoch={orbitEpoch}
                     scale={{
                         distance: 1 / ASTRONOMICAL_UNIT,
                         radius: 1 / ASTRONOMICAL_UNIT * objectScaleOption.scale,
@@ -288,6 +295,10 @@ export function SolarSystem() {
     const [desiredCameraDistance, setDesiredCameraDistance] = useState<number | null>(DEFAULT_CAMERA_DISTANCE)
     const [displaySimTime, setDisplaySimTime] = useState(() => new Date())
     const simTimeRef = useRef(displaySimTime)
+    // Orbital elements change slowly; refresh the path and its plane together
+    // once per simulated day without rebuilding geometry on every clock tick.
+    const orbitDay = Math.floor(displaySimTime.getTime() / MS_PER_DAY)
+    const orbitEpoch = useMemo(() => new Date(orbitDay * MS_PER_DAY), [orbitDay])
     const orbitSpeedScale = ORBIT_SPEED_OPTIONS[orbitSpeedIndex].multiplier
     const objectScaleOption = OBJECT_SCALE_OPTIONS[objectScaleIndex]
     const showSatellites = objectScaleOption.scale === 1
@@ -779,6 +790,7 @@ export function SolarSystem() {
                             onCameraDistanceChange={handleCameraDistanceChange}
                             onDesiredCameraDistanceChange={handleDesiredCameraDistanceChange}
                             simTimeRef={simTimeRef}
+                            orbitEpoch={orbitEpoch}
                         />
                     </Suspense>
                 </Canvas>
