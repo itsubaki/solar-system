@@ -8,6 +8,7 @@ import {
     getPlanetOrbitPosition,
     getSatelliteOrbitPath,
     getSatelliteOrbitPosition,
+    getSatelliteOrbitState,
 } from "./planet-angle"
 import { ASTRONOMICAL_UNIT, degToRad, getOrbitPathSegmentCount, MS_PER_DAY, rotateOrbitPointToScene } from "./orbit"
 
@@ -64,13 +65,17 @@ describe("orbit paths at radius scale x1", () => {
     })
 
     it.each(PLANETS.flatMap((planet) => planet.satellites ?? []))("keeps $name on its rendered orbit", (satellite) => {
-        const path = getSatelliteOrbitPath(satellite).map((point) => toRenderPoint(point, satellite.distance))
-        for (const days of [0.123, 0.456, 0.789]) {
-            const position = getSatelliteOrbitPosition(satellite, new Date(EPOCH.getTime() + days * MS_PER_DAY))
+        const path = getSatelliteOrbitPath(satellite, undefined, EPOCH).map((point) => toRenderPoint(point, satellite.distance))
+        for (const days of [0.123, 0.456, 0.789, 92, 36525]) {
+            const at = new Date(EPOCH.getTime() + days * MS_PER_DAY)
+            const position = getSatelliteOrbitPosition(satellite, at)
+            const apsisRotation = getSatelliteOrbitState(satellite, at).argumentOfPeriapsis -
+                getSatelliteOrbitState(satellite, EPOCH).argumentOfPeriapsis
+            const rotatedPath = path.map((point) => rotateOrbitPointToScene(point.x, point.z, apsisRotation, 0))
             expect(distanceToPath({
                 x: position.x * satellite.distance / ASTRONOMICAL_UNIT,
                 z: position.z * satellite.distance / ASTRONOMICAL_UNIT,
-            }, path)).toBeLessThan(satellite.radius / ASTRONOMICAL_UNIT)
+            }, rotatedPath)).toBeLessThan(satellite.radius / ASTRONOMICAL_UNIT)
         }
     })
 

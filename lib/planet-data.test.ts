@@ -37,14 +37,14 @@ describe("planet-data", () => {
         expect(getSatellite("Earth", "Moon").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(125.08)
         expect(getSatellite("Jupiter", "Europa").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(184)
         expect(getSatellite("Saturn", "Titan").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(78.6)
-        expect(getSatellite("Neptune", "Triton").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(178.1)
+        expect(getSatellite("Neptune", "Triton").orbitPlane.longitudeOfAscendingNode).toBeCloseTo(177.7)
     })
 
-    it("keeps JPL Laplace-frame satellites in the Laplace reference frame", () => {
+    it("keeps JPL satellites in their published reference frames", () => {
         expect(getSatellite("Mars", "Phobos").orbitPlane.referenceFrame).toBe("laplace")
         expect(getSatellite("Jupiter", "Europa").orbitPlane.referenceFrame).toBe("laplace")
         expect(getSatellite("Saturn", "Titan").orbitPlane.referenceFrame).toBe("laplace")
-        expect(getSatellite("Neptune", "Triton").orbitPlane.referenceFrame).toBe("laplace")
+        expect(getSatellite("Neptune", "Triton").orbitPlane.referenceFrame).toBe("parentEquator")
     })
 
     it("represents retrograde planetary and satellite rotation/orbits consistently", () => {

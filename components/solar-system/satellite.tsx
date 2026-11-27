@@ -3,11 +3,14 @@
 import { useMemo, useRef, useState } from "react"
 import { Html } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
-import { Vector3 } from "three"
+import { Quaternion, Vector3 } from "three"
 import type { Group } from "three"
 import type { PoleDirection, SatelliteData } from "@/lib/planet-data"
-import { getSatelliteOrbitPath, getSatelliteOrbitPosition } from "@/lib/planet-angle"
+import { getSatelliteOrbitPath, getSatelliteOrbitState } from "@/lib/planet-angle"
+import { J2000_EPOCH_UTC } from "@/lib/orbit"
 import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, getOrbitFrameQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+
+const IDENTITY_QUATERNION = new Quaternion()
 
 export function Satellite({
     simTimeRef,
@@ -36,6 +39,9 @@ export function Satellite({
     }
 }) {
     const groupRef = useRef<Group>(null)
+    const frameRef = useRef<Group>(null)
+    const pathRef = useRef<Group>(null)
+    const axisRef = useRef<Group>(null)
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
     const distance = satellite.distance * scale.distance
@@ -56,12 +62,12 @@ export function Satellite({
     const axisQuaternion = useMemo(() => {
         return getAxisQuaternion(localPoleVector)
     }, [localPoleVector])
-    const initialOrbitPosition = useMemo(
-        () => getSatelliteOrbitPosition(satellite),
+    const referenceState = useMemo(
+        () => getSatelliteOrbitState(satellite, new Date(J2000_EPOCH_UTC)),
         [satellite]
     )
     const orbitPoints = useMemo(
-        () => getSatelliteOrbitPath(satellite).map((point) => [
+        () => getSatelliteOrbitPath(satellite, undefined, new Date(J2000_EPOCH_UTC)).map((point) => [
             distance * point.x,
             0,
             distance * point.z,
@@ -74,10 +80,20 @@ export function Satellite({
             return
         }
 
-        const orbitPosition = getSatelliteOrbitPosition(
+        const state = getSatelliteOrbitState(
             satellite,
             simTimeRef.current
         )
+        const orbitPosition = state.position
+        const frame = getOrbitFrameQuaternion(state.plane, parentPoleDirection, parentOrbitPlaneQuaternion)
+        frameRef.current?.quaternion.copy(frame)
+        // Rotate a cached ellipse with the periapsis instead of rebuilding
+        // its geometry, even when simulated time advances by a year/second.
+        if (pathRef.current) pathRef.current.rotation.y = state.argumentOfPeriapsis - referenceState.argumentOfPeriapsis
+        if (axisRef.current) {
+            const worldFrame = parentOrbitPlaneQuaternion.clone().multiply(frame)
+            axisRef.current.quaternion.copy(getAxisQuaternion(getLocalPoleVector(satellite.poleDirection, worldFrame)))
+        }
 
         groupRef.current.position.set(
             distance * orbitPosition.x,
@@ -97,15 +113,17 @@ export function Satellite({
     })
 
     return (
-        <group quaternion={orbitPlaneQuaternion}>
-            <OrbitLine points={orbitPoints} color={satellite.color} opacity={orbitOpacity ?? (dimOrbit ? 0.18 : 0.72)} />
+        <group ref={frameRef} quaternion={orbitPlaneQuaternion}>
+            <group ref={pathRef}>
+                <OrbitLine points={orbitPoints} color={satellite.color} opacity={orbitOpacity ?? (dimOrbit ? 0.18 : 0.72)} />
+            </group>
 
             <group
                 ref={groupRef}
                 position={[
-                    distance * initialOrbitPosition.x,
+                    distance * referenceState.position.x,
                     0,
-                    distance * initialOrbitPosition.z,
+                    distance * referenceState.position.z,
                 ]}
             >
                 <mesh
@@ -122,11 +140,13 @@ export function Satellite({
                     />
                 </mesh>
 
-                <AxialTiltIndicator
-                    radius={radius}
-                    quaternion={axisQuaternion}
-                    highlighted={hovered || isSelected}
-                />
+                <group ref={axisRef} quaternion={axisQuaternion}>
+                    <AxialTiltIndicator
+                        radius={radius}
+                        quaternion={IDENTITY_QUATERNION}
+                        highlighted={hovered || isSelected}
+                    />
+                </group>
 
                 <Html
                     position={[0, getObjectLabelOffset(radius), 0]}

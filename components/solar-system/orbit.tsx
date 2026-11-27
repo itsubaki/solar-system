@@ -2,8 +2,10 @@
 
 import { useMemo } from "react"
 import { Quaternion, Vector3 } from "three"
-import { degToRad } from "@/lib/orbit"
-import type { OrbitPlane, PoleDirection } from "@/lib/planet-data"
+import { getPoleVector } from "@/lib/orbit-frame"
+import type { PoleDirection } from "@/lib/planet-data"
+
+export { getOrbitPlaneQuaternion, getEquatorPlaneQuaternion, getOrbitFrameQuaternion } from "@/lib/orbit-frame"
 
 export type FocusTargetRef = {
     current: Vector3 | null
@@ -74,81 +76,6 @@ export function getObjectLabelOffset(anchorRadius: number) {
     const gap = Math.min(Math.max(anchorRadius * 0.2, 0.001), 0.04)
 
     return anchorRadius + gap
-}
-
-function getPoleVector(longitude: number, latitude: number) {
-    const lambda = degToRad(longitude)
-    const beta = degToRad(latitude)
-    const cosBeta = Math.cos(beta)
-
-    return new Vector3(
-        cosBeta * Math.cos(lambda),
-        Math.sin(beta),
-        -cosBeta * Math.sin(lambda)
-    )
-}
-
-export function getOrbitPlaneQuaternion(orbitPlane: OrbitPlane) {
-    const nodeRotation = new Quaternion().setFromAxisAngle(
-        SCENE_UP,
-        degToRad(orbitPlane.longitudeOfAscendingNode)
-    )
-    const inclinationRotation = new Quaternion().setFromAxisAngle(
-        new Vector3(1, 0, 0),
-        degToRad(orbitPlane.inclination)
-    )
-
-    return nodeRotation.multiply(inclinationRotation)
-}
-
-export function getEquatorPlaneQuaternion(poleDirection: PoleDirection) {
-    return new Quaternion().setFromUnitVectors(
-        SCENE_UP,
-        getPoleVector(poleDirection.longitude, poleDirection.latitude).normalize()
-    )
-}
-
-export function getOrbitFrameQuaternion(
-    orbitPlane: OrbitPlane,
-    parentPoleDirection?: PoleDirection,
-    parentOrbitPlaneQuaternion?: Quaternion
-) {
-    const orbitPlaneQuaternion = getOrbitPlaneQuaternion(orbitPlane)
-
-    if (orbitPlane.referenceFrame !== "parentEquator" || !parentPoleDirection) {
-        if (orbitPlane.referenceFrame === "laplace" && orbitPlane.referencePoleDirection) {
-            return getReferencePlaneQuaternion(
-                orbitPlane.referencePoleDirection,
-                orbitPlaneQuaternion,
-                parentOrbitPlaneQuaternion
-            )
-        }
-
-        return orbitPlaneQuaternion
-    }
-
-    return getReferencePlaneQuaternion(
-        parentPoleDirection,
-        orbitPlaneQuaternion,
-        parentOrbitPlaneQuaternion
-    )
-}
-
-function getReferencePlaneQuaternion(
-    poleDirection: PoleDirection,
-    orbitPlaneQuaternion: Quaternion,
-    parentOrbitPlaneQuaternion?: Quaternion
-) {
-    if (!parentOrbitPlaneQuaternion) {
-        return getEquatorPlaneQuaternion(poleDirection).multiply(orbitPlaneQuaternion)
-    }
-
-    const localPoleVector = getLocalPoleVector(
-        poleDirection,
-        parentOrbitPlaneQuaternion
-    )
-
-    return getAxisQuaternion(localPoleVector).multiply(orbitPlaneQuaternion)
 }
 
 export function getLocalPoleVector(

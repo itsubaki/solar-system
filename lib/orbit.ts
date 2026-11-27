@@ -2,6 +2,7 @@ export const ASTRONOMICAL_UNIT = 149_600_000 // km
 export const MS_PER_DAY = 1000 * 60 * 60 * 24
 export const FULL_TURN = Math.PI * 2
 export const J2000_EPOCH_UTC = Date.UTC(2000, 0, 1, 12, 0, 0)
+export const J2000_OBLIQUITY = (23.439291111 * Math.PI) / 180
 
 export function getOrbitPathSegmentCount(semiMajorAxis: number, bodyRadius: number, minSegments = 256) {
     // Bound the chord error to a quarter of the body's unscaled radius.

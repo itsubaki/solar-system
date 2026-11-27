@@ -47,7 +47,15 @@ export interface PlanetData {
     description: string
 }
 
+// JPL mean elements and precession periods: https://ssd.jpl.nasa.gov/sats/elem/
+export interface SatellitePrecession {
+    /** Signed periods in Julian years; zero means no secular precession. */
+    argumentOfPeriapsisPeriodYears: number
+    ascendingNodePeriodYears: number
+}
+
 export interface SatelliteData {
+    precession?: SatellitePrecession
     name: string
     radius: number
     distance: number
@@ -334,6 +342,7 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Moon",
+                precession: { argumentOfPeriapsisPeriodYears: 5.997, ascendingNodePeriodYears: -18.6 },
                 radius: 1737.4,
                 distance: 384_400,
                 orbitalPeriod: 27.322,
@@ -382,6 +391,7 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Phobos",
+                precession: { argumentOfPeriapsisPeriodYears: 1.1, ascendingNodePeriodYears: -2.3 },
                 radius: 11.267,
                 distance: 9_375,
                 orbitalPeriod: 0.3187,
@@ -402,6 +412,7 @@ export const PLANETS: PlanetData[] = [
             },
             {
                 name: "Deimos",
+                precession: { argumentOfPeriapsisPeriodYears: 0, ascendingNodePeriodYears: -56.2 },
                 radius: 6.2,
                 distance: 23_457,
                 orbitalPeriod: 1.2625,
@@ -451,6 +462,7 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Io",
+                precession: { argumentOfPeriapsisPeriodYears: 1.333, ascendingNodePeriodYears: 0 },
                 radius: 1821.6,
                 distance: 421_800,
                 orbitalPeriod: 1.762732,
@@ -471,6 +483,7 @@ export const PLANETS: PlanetData[] = [
             },
             {
                 name: "Europa",
+                precession: { argumentOfPeriapsisPeriodYears: 1.394, ascendingNodePeriodYears: -30.202 },
                 radius: 1560.8,
                 distance: 671_100,
                 orbitalPeriod: 3.525463,
@@ -491,6 +504,7 @@ export const PLANETS: PlanetData[] = [
             },
             {
                 name: "Ganymede",
+                precession: { argumentOfPeriapsisPeriodYears: 68.301, ascendingNodePeriodYears: -137.812 },
                 radius: 2634.1,
                 distance: 1_070_400,
                 orbitalPeriod: 7.155588,
@@ -511,6 +525,7 @@ export const PLANETS: PlanetData[] = [
             },
             {
                 name: "Callisto",
+                precession: { argumentOfPeriapsisPeriodYears: 277.921, ascendingNodePeriodYears: -577.264 },
                 radius: 2410.3,
                 distance: 1_882_700,
                 orbitalPeriod: 16.69044,
@@ -587,6 +602,7 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Titan",
+                precession: { argumentOfPeriapsisPeriodYears: 346.68, ascendingNodePeriodYears: -687.37 },
                 radius: 2574.7,
                 distance: 1_221_900,
                 orbitalPeriod: 15.945448,
@@ -811,21 +827,21 @@ export const PLANETS: PlanetData[] = [
         satellites: [
             {
                 name: "Triton",
+                precession: { argumentOfPeriapsisPeriodYears: 675.2, ascendingNodePeriodYears: 299.4 },
                 radius: 1353.4,
                 distance: 354_800,
-                orbitalPeriod: 5.876994,
+                orbitalPeriod: 5.8792,
                 poleDirection: { longitude: 114.683, latitude: -44.115 },
                 orbitPlane: {
                     inclination: 157.3,
-                    longitudeOfAscendingNode: 178.1,
-                    referenceFrame: "laplace",
-                    referencePoleDirection: { longitude: 319.5353431188662, latitude: 61.513180331653224 },
+                    longitudeOfAscendingNode: 177.7,
+                    referenceFrame: "parentEquator",
                 },
                 color: "#C4C4C4",
                 orbitPhase: {
                     eccentricity: 0,
-                    longitudeOfPeriapsis: 178.1,
-                    meanLongitudeAtJ2000: 241.1,
+                    longitudeOfPeriapsis: 177.7,
+                    meanLongitudeAtJ2000: 240.7,
                 },
                 description: "Neptune's largest moon, captured from the Kuiper Belt and orbiting backward relative to Neptune's rotation."
             }

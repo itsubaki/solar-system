@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react"
 import { Html } from "@react-three/drei"
 import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
+import { J2000_OBLIQUITY } from "@/lib/orbit"
 
 type Vec3 = [number, number, number]
 
@@ -38,7 +39,7 @@ type BackgroundLabel = {
 
 const BACKGROUND_RADIUS = 1300
 const STAR_SHELL_THICKNESS = 48
-const OBLIQUITY = degToRad(23.439291111)
+const OBLIQUITY = J2000_OBLIQUITY
 const GALACTIC_TO_EQUATORIAL_MATRIX: readonly [Vec3, Vec3, Vec3] = [
     [-0.0548755604, 0.4941094279, -0.867666149],
     [-0.8734370902, -0.44482963, -0.1980763734],
@@ -736,7 +737,8 @@ function BackgroundSkyLabel({ label }: { label: BackgroundLabel }) {
 
     useFrame(() => {
         camera.getWorldDirection(cameraForwardRef.current)
-        cameraToLabelRef.current.copy(labelPosition).sub(camera.position)
+        // Label positions are camera-relative, like the rest of the sky.
+        cameraToLabelRef.current.copy(labelPosition)
 
         const nextIsVisible = cameraToLabelRef.current.dot(cameraForwardRef.current) > 0
 
@@ -770,11 +772,19 @@ function BackgroundSkyLabel({ label }: { label: BackgroundLabel }) {
 }
 
 export function Stars() {
+    const skyRef = useRef<THREE.Group>(null)
     const layers = useMemo(() => createBackgroundLayers(), [])
     const labels = useMemo(() => createBackgroundLabels(), [])
 
+    useFrame(({ camera }) => {
+        if (!skyRef.current) return
+        camera.getWorldPosition(skyRef.current.position)
+        // Html projects world positions later in this frame.
+        skyRef.current.updateMatrixWorld(true)
+    })
+
     return (
-        <>
+        <group ref={skyRef}>
             <PointLayer data={layers.zodiacalLight} size={0.34} opacity={0.02} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.milkyWayGlow} size={1.35} opacity={0.05} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.milkyWayGlow} size={0.84} opacity={0.13} blending={THREE.AdditiveBlending} />
@@ -798,6 +808,6 @@ export function Stars() {
             {labels.map((label) => (
                 <BackgroundSkyLabel key={label.name} label={label} />
             ))}
-        </>
+        </group>
     )
 }

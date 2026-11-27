@@ -1,4 +1,4 @@
-import { OrbitPhase, OrbitPlane, PlanetData, SatelliteData } from "./planet-data"
+import type { OrbitPlane, PlanetData, SatelliteData } from "./planet-data"
 import {
     ASTRONOMICAL_UNIT,
     FULL_TURN,
@@ -47,24 +47,39 @@ export function getSatelliteOrbitPosition(
     satellite: SatelliteData,
     at = new Date()
 ): OrbitState {
-    return getOrbitState(
-        satellite.orbitalPeriod,
-        satellite.orbitPhase,
-        satellite.orbitPlane.longitudeOfAscendingNode,
-        at
-    )
+    return getSatelliteOrbitState(satellite, at).position
+}
+
+export function getSatelliteOrbitState(satellite: SatelliteData, at = new Date()) {
+    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, at)
+    const elapsedYears = elapsedDays / 365.25
+    const precessionAngle = (period = 0) => period === 0 ? 0 : 360 * elapsedYears / period
+    const longitudeOfAscendingNode = satellite.orbitPlane.longitudeOfAscendingNode +
+        precessionAngle(satellite.precession?.ascendingNodePeriodYears)
+    const argumentOfPeriapsis = satellite.orbitPhase.longitudeOfPeriapsis -
+        satellite.orbitPlane.longitudeOfAscendingNode +
+        precessionAngle(satellite.precession?.argumentOfPeriapsisPeriodYears)
+    // P is sidereal: advance mean longitude, then subtract the evolving
+    // periapsis longitude to obtain the anomalistic phase. Do not add the
+    // precession a second time to the satellite's mean longitude.
+    const meanLongitude = satellite.orbitPhase.meanLongitudeAtJ2000 + 360 * elapsedDays / satellite.orbitalPeriod
+    const meanAnomaly = normalizeRadians(degToRad(meanLongitude - argumentOfPeriapsis - longitudeOfAscendingNode))
+
+    return {
+        plane: { ...satellite.orbitPlane, longitudeOfAscendingNode },
+        argumentOfPeriapsis: degToRad(argumentOfPeriapsis),
+        position: getOrbitalPlaneState(meanAnomaly, satellite.orbitPhase.eccentricity, degToRad(argumentOfPeriapsis)),
+    }
 }
 
 export function getSatelliteOrbitPath(
     satellite: SatelliteData,
-    segments = getOrbitPathSegmentCount(satellite.distance, satellite.radius, 128)
+    segments = getOrbitPathSegmentCount(satellite.distance, satellite.radius, 128),
+    at = new Date()
 ) {
     return getOrbitPathPoints(
         satellite.orbitPhase.eccentricity,
-        getArgumentOfPeriapsis(
-            satellite.orbitPhase,
-            satellite.orbitPlane.longitudeOfAscendingNode
-        ),
+        getSatelliteOrbitState(satellite, at).argumentOfPeriapsis,
         segments
     )
 }
@@ -117,28 +132,6 @@ function getOrbitStateFromElements(elements: {
         degToRad(elements.longitudeOfPeriapsis - elements.longitudeOfAscendingNode),
         elements.semiMajorAxisScale
     )
-}
-
-function getOrbitState(
-    orbitalPeriod: number,
-    phase: OrbitPhase,
-    longitudeOfAscendingNode: number,
-    at: Date
-): OrbitState {
-    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, at)
-    const meanMotion = FULL_TURN / orbitalPeriod
-    const meanAnomalyAtJ2000 = degToRad(
-        phase.meanLongitudeAtJ2000 - phase.longitudeOfPeriapsis
-    )
-    return getOrbitalPlaneState(
-        normalizeRadians(meanAnomalyAtJ2000 + meanMotion * elapsedDays),
-        phase.eccentricity,
-        getArgumentOfPeriapsis(phase, longitudeOfAscendingNode)
-    )
-}
-
-function getArgumentOfPeriapsis(phase: OrbitPhase, longitudeOfAscendingNode: number) {
-    return degToRad(phase.longitudeOfPeriapsis - longitudeOfAscendingNode)
 }
 
 function getOrbitPathPoints(
