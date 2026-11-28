@@ -4,7 +4,8 @@ import { useMemo, useRef, useState } from "react"
 import { Html } from "@react-three/drei"
 import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
-import { J2000_OBLIQUITY } from "@/lib/orbit"
+import { J2000_EPOCH_UTC, J2000_OBLIQUITY } from "@/lib/orbit"
+import { createCatalogStarLayer } from "@/lib/star-catalog"
 
 type Vec3 = [number, number, number]
 
@@ -14,8 +15,6 @@ type PointLayerData = {
 }
 
 type BackgroundLayers = {
-    stars: PointLayerData
-    polaris: PointLayerData
     milkyWay: PointLayerData
     milkyWayGlow: PointLayerData
     milkyWayBulge: PointLayerData
@@ -267,47 +266,6 @@ function buildPointLayer(positions: number[], colors: number[]): PointLayerData 
         positions: new Float32Array(positions),
         colors: new Float32Array(colors),
     }
-}
-
-function createBaseStars(random: () => number) {
-    const positions: number[] = []
-    const colors: number[] = []
-
-    for (let index = 0; index < 3600; index += 1) {
-        const longitude = random() * 360
-        const latitude = Math.asin(2 * random() - 1) * 180 / Math.PI
-        const radius = BACKGROUND_RADIUS + random() * STAR_SHELL_THICKNESS
-        const tone = random()
-        const twinkle = 0.75 + random() * 0.25
-        let color: Vec3
-
-        if (tone < 0.68) {
-            color = [0.88 * twinkle, 0.9 * twinkle, 0.96 * twinkle]
-        } else if (tone < 0.84) {
-            color = [0.72 * twinkle, 0.82 * twinkle, 1.02 * twinkle]
-        } else {
-            color = [1.02 * twinkle, 0.93 * twinkle, 0.72 * twinkle]
-        }
-
-        pushPoint(positions, colors, sphericalToVector(longitude, latitude), radius, color)
-    }
-
-    return buildPointLayer(positions, colors)
-}
-
-function createNamedStar(raDegrees: number, decDegrees: number, color: Vec3) {
-    const positions: number[] = []
-    const colors: number[] = []
-
-    pushPoint(
-        positions,
-        colors,
-        equatorialToEcliptic(equatorialFromRaDec(raDegrees, decDegrees)),
-        BACKGROUND_RADIUS + STAR_SHELL_THICKNESS * 0.45,
-        color
-    )
-
-    return buildPointLayer(positions, colors)
 }
 
 function createMilkyWay(random: () => number) {
@@ -610,12 +568,6 @@ function createBackgroundLayers(): BackgroundLayers {
     const random = createRng(0x51f15eed)
 
     return {
-        stars: createBaseStars(random),
-        polaris: createNamedStar(
-            POLARIS_RIGHT_ASCENSION,
-            POLARIS_DECLINATION,
-            [1.0, 0.95, 0.78]
-        ),
         milkyWay: createMilkyWay(random),
         milkyWayGlow: createMilkyWayGlow(random),
         milkyWayBulge: createMilkyWayBulge(random),
@@ -728,6 +680,64 @@ function PointLayer({
     )
 }
 
+function CatalogStars({ simTimeRef }: { simTimeRef?: { current: Date } }) {
+    const geometryRef = useRef<THREE.BufferGeometry>(null)
+    const materialRef = useRef<THREE.ShaderMaterial>(null)
+    const yearRef = useRef<number | null>(null)
+    const data = useMemo(() => createCatalogStarLayer(new Date(J2000_EPOCH_UTC), BACKGROUND_RADIUS), [])
+    const uniforms = useMemo(() => ({ pixelRatio: { value: 1 } }), [])
+
+    useFrame(({ gl }) => {
+        if (materialRef.current) materialRef.current.uniforms.pixelRatio.value = Math.min(2, gl.getPixelRatio())
+        const at = simTimeRef?.current ?? new Date(J2000_EPOCH_UTC)
+        const year = at.getUTCFullYear()
+        if (!geometryRef.current || yearRef.current === year) return
+        const next = createCatalogStarLayer(at, BACKGROUND_RADIUS)
+        const attribute = geometryRef.current.getAttribute("position")
+        ;(attribute.array as Float32Array).set(next.positions)
+        attribute.needsUpdate = true
+        geometryRef.current.computeBoundingSphere()
+        yearRef.current = year
+    })
+
+    return (
+        <points renderOrder={-1}>
+            <bufferGeometry ref={geometryRef}>
+                <bufferAttribute attach="attributes-position" args={[data.positions, 3]} />
+                <bufferAttribute attach="attributes-color" args={[data.colors, 3]} />
+                <bufferAttribute attach="attributes-starSize" args={[data.sizes, 1]} />
+                <bufferAttribute attach="attributes-brightness" args={[data.brightness, 1]} />
+            </bufferGeometry>
+            <shaderMaterial
+                ref={materialRef}
+                transparent depthWrite={false} vertexColors uniforms={uniforms}
+                vertexShader={`
+                    attribute float starSize;
+                    attribute float brightness;
+                    uniform float pixelRatio;
+                    varying vec3 starColor;
+                    varying float starBrightness;
+                    void main() {
+                        starColor = color;
+                        starBrightness = brightness;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = starSize * pixelRatio;
+                    }
+                `}
+                fragmentShader={`
+                    varying vec3 starColor;
+                    varying float starBrightness;
+                    void main() {
+                        float radius = length(gl_PointCoord - vec2(0.5)) * 2.0;
+                        if (radius > 1.0) discard;
+                        gl_FragColor = vec4(starColor, exp(-3.0 * radius * radius) * starBrightness);
+                    }
+                `}
+            />
+        </points>
+    )
+}
+
 function BackgroundSkyLabel({ label }: { label: BackgroundLabel }) {
     const { camera } = useThree()
     const [isVisible, setIsVisible] = useState(false)
@@ -771,7 +781,7 @@ function BackgroundSkyLabel({ label }: { label: BackgroundLabel }) {
     )
 }
 
-export function Stars() {
+export function Stars({ simTimeRef }: { simTimeRef?: { current: Date } } = {}) {
     const skyRef = useRef<THREE.Group>(null)
     const layers = useMemo(() => createBackgroundLayers(), [])
     const labels = useMemo(() => createBackgroundLabels(), [])
@@ -800,10 +810,9 @@ export function Stars() {
             <PointLayer data={layers.pleiades} size={0.12} opacity={0.48} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.hyades} size={0.12} opacity={0.44} blending={THREE.AdditiveBlending} />
             <PointLayer data={layers.omegaCentauri} size={0.11} opacity={0.38} blending={THREE.AdditiveBlending} />
-            <PointLayer data={layers.stars} size={0.13} opacity={0.58} />
             <PointLayer data={layers.darkLanes} size={0.72} opacity={0.28} />
             <PointLayer data={layers.darkLanesFine} size={0.3} opacity={0.24} />
-            <PointLayer data={layers.polaris} size={0.42} opacity={0.92} blending={THREE.AdditiveBlending} />
+            <CatalogStars simTimeRef={simTimeRef} />
 
             {labels.map((label) => (
                 <BackgroundSkyLabel key={label.name} label={label} />

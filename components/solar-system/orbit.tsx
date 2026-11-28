@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo } from "react"
-import { Quaternion, Vector3 } from "three"
+import { useMemo, type Ref } from "react"
+import { Quaternion, Vector3, type BufferGeometry } from "three"
 import { getPoleVector } from "@/lib/orbit-frame"
 import type { PoleDirection } from "@/lib/planet-data"
 
@@ -20,16 +20,18 @@ export function OrbitLine({
     points,
     color,
     opacity = 1,
+    geometryRef,
 }: {
     points: OrbitPoint[]
     color: string
     opacity?: number
+    geometryRef?: Ref<BufferGeometry>
 }) {
     const positions = useMemo(() => new Float32Array(points.flat()), [points])
 
     return (
         <line>
-            <bufferGeometry>
+            <bufferGeometry ref={geometryRef}>
                 <bufferAttribute
                     attach="attributes-position"
                     args={[positions, 3]}

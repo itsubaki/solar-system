@@ -14,6 +14,7 @@ import {
     isShortcutBlockedTarget,
 } from "@/lib/camera-controls"
 import { ASTRONOMICAL_UNIT, MS_PER_DAY } from "@/lib/orbit"
+import { PLANET_MODEL_START, PLANET_MODEL_END } from "@/lib/planet-elements"
 import { installThreeConsoleFilter } from "@/lib/three-console"
 import { PLANETS, DWARF_PLANETS, type PlanetData, type SatelliteData } from "@/lib/planet-data"
 import { COMETS, type CometData } from "@/lib/comet-data"
@@ -210,7 +211,7 @@ function Scene({
                 onDesiredCameraDistanceChange={onDesiredCameraDistanceChange}
             />
 
-            <Stars />
+            <Stars simTimeRef={simTimeRef} />
 
             <Sun
                 onSelect={onSelectSun}
@@ -484,9 +485,8 @@ export function SolarSystem() {
             const elapsedMilliseconds = now - lastReal
             lastReal = now
 
-            simTimeRef.current = new Date(
-                simTimeRef.current.getTime() + elapsedMilliseconds * orbitSpeedScale
-            )
+            simTimeRef.current = new Date(Math.max(PLANET_MODEL_START, Math.min(PLANET_MODEL_END,
+                simTimeRef.current.getTime() + elapsedMilliseconds * orbitSpeedScale)))
 
             if (now - lastPublished >= 250) {
                 lastPublished = now
@@ -847,6 +847,10 @@ export function SolarSystem() {
                 }}
             >
                 <Clock simTime={displaySimTime} />
+
+                {displaySimTime.getTime() >= PLANET_MODEL_END && (
+                    <p className="text-right text-[10px] text-muted-foreground" role="status">End of supported dates (3000)</p>
+                )}
 
                 <button
                     type="button"

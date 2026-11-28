@@ -7,6 +7,7 @@ import { DoubleSide, Vector3, Color } from "three"
 import type { Group, Mesh } from "three"
 import type { PlanetData, SatelliteData } from "@/lib/planet-data"
 import { getPlanetOrbitPath, getPlanetOrbitPlane, getPlanetOrbitPosition } from "@/lib/planet-angle"
+import { getPlanetPositionKm } from "@/lib/body-position"
 import { ringVertexShader, ringFragmentShader } from "@/lib/ring-shader"
 import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, getOrbitPlaneQuaternion, getRingQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
 import { Satellite } from "./satellite"
@@ -44,6 +45,8 @@ export function Planet({
     const groupRef = useRef<Group>(null)
     const planetRef = useRef<Mesh>(null)
     const worldPositionRef = useRef(new Vector3())
+    const localPositionRef = useRef(new Vector3())
+    const satellites = useMemo(() => data.satellites?.map((satellite) => ({ ...satellite, parentPlanetName: data.name })), [data])
     const [hovered, setHovered] = useState(false)
     const distance = data.distance * scale.distance
     const radius = data.radius * scale.radius
@@ -75,6 +78,7 @@ export function Planet({
     const orbitPlaneQuaternion = useMemo(() => {
         return getOrbitPlaneQuaternion(getPlanetOrbitPlane(data, orbitEpoch))
     }, [data, orbitEpoch])
+    const inverseOrbitPlaneQuaternion = useMemo(() => orbitPlaneQuaternion.clone().invert(), [orbitPlaneQuaternion])
     const localPoleVector = useMemo(() => {
         return getLocalPoleVector(data.poleDirection, orbitPlaneQuaternion)
     }, [data.poleDirection, orbitPlaneQuaternion])
@@ -88,12 +92,10 @@ export function Planet({
     let rotationSpeed = (2 * Math.PI) / (data.rotationPeriod * 10)
     useFrame((_, delta) => {
         if (groupRef.current) {
-            const orbitPosition = getPlanetOrbitPosition(data, simTimeRef.current)
-            groupRef.current.position.set(
-                distance * orbitPosition.x,
-                0,
-                distance * orbitPosition.z
-            )
+            const position = getPlanetPositionKm(data, simTimeRef.current)
+            localPositionRef.current.set(position.x, position.y, position.z)
+                .applyQuaternion(inverseOrbitPlaneQuaternion).multiplyScalar(scale.distance)
+            groupRef.current.position.copy(localPositionRef.current)
         }
 
         if (planetRef.current) {
@@ -166,13 +168,10 @@ export function Planet({
                     </group>
                 )}
 
-                {showSatellites && Array.isArray(data.satellites) && data.satellites.map((satellite) => (
+                {showSatellites && satellites?.map((satellite) => (
                     <Satellite
                         key={`${data.name}-${satellite.name}`}
-                        satellite={{
-                            ...satellite,
-                            parentPlanetName: data.name,
-                        }}
+                        satellite={satellite}
                         parentPoleDirection={data.poleDirection}
                         parentOrbitPlaneQuaternion={orbitPlaneQuaternion}
                         onSelect={onSelectSatellite}

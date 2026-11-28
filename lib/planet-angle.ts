@@ -1,4 +1,6 @@
 import type { OrbitPlane, PlanetData, SatelliteData } from "./planet-data"
+import { blendDegrees, getLongTermPlanetElements, getModernPlanetModelWeight } from "./planet-elements"
+import { getDynamicalDate } from "./dynamical-time"
 import {
     ASTRONOMICAL_UNIT,
     FULL_TURN,
@@ -85,7 +87,8 @@ export function getSatelliteOrbitPath(
 }
 
 function getPlanetElements(planet: PlanetData, at: Date = new Date()) {
-    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, at)
+    const dynamicalDate = planet.orbitRates ? getDynamicalDate(at) : at
+    const elapsedDays = getElapsedDays(J2000_EPOCH_UTC, dynamicalDate)
     const elapsedCenturies = elapsedDays / 36525
 
     if (!planet.orbitRates) {
@@ -104,7 +107,7 @@ function getPlanetElements(planet: PlanetData, at: Date = new Date()) {
     const semiMajorAxisAu = baseSemiMajorAxisAu +
         planet.orbitRates.semiMajorAxisAuPerCentury * elapsedCenturies
 
-    return {
+    const modern = {
         eccentricity: planet.orbitPhase.eccentricity +
             planet.orbitRates.eccentricityPerCentury * elapsedCenturies,
         inclination: planet.orbitPlane.inclination +
@@ -116,6 +119,18 @@ function getPlanetElements(planet: PlanetData, at: Date = new Date()) {
         meanLongitude: planet.orbitPhase.meanLongitudeAtJ2000 +
             planet.orbitRates.meanLongitudePerCentury * elapsedCenturies,
         semiMajorAxisScale: semiMajorAxisAu / baseSemiMajorAxisAu,
+    }
+    const longTerm = getLongTermPlanetElements(planet.name, dynamicalDate)
+    if (!longTerm) return modern
+    const weight = getModernPlanetModelWeight(at)
+    const mix = (longValue: number, modernValue: number) => longValue + (modernValue - longValue) * weight
+    return {
+        eccentricity: mix(longTerm.eccentricity, modern.eccentricity),
+        inclination: mix(longTerm.inclination, modern.inclination),
+        longitudeOfAscendingNode: blendDegrees(longTerm.longitudeOfAscendingNode, modern.longitudeOfAscendingNode, weight),
+        longitudeOfPeriapsis: blendDegrees(longTerm.longitudeOfPeriapsis, modern.longitudeOfPeriapsis, weight),
+        meanLongitude: blendDegrees(longTerm.meanLongitude, modern.meanLongitude, weight),
+        semiMajorAxisScale: mix(longTerm.semiMajorAxisAu / baseSemiMajorAxisAu, modern.semiMajorAxisScale),
     }
 }
 

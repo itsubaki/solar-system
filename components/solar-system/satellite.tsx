@@ -4,11 +4,12 @@ import { useMemo, useRef, useState } from "react"
 import { Html } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { Quaternion, Vector3 } from "three"
-import type { Group } from "three"
+import type { BufferGeometry, Group } from "three"
 import type { PoleDirection, SatelliteData } from "@/lib/planet-data"
-import { getSatelliteOrbitPath, getSatelliteOrbitState } from "@/lib/planet-angle"
-import { J2000_EPOCH_UTC } from "@/lib/orbit"
-import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, getOrbitFrameQuaternion, OrbitLine, type FocusTargetRef } from "./orbit"
+import { J2000_EPOCH_UTC, MS_PER_DAY } from "@/lib/orbit"
+import { getSatellitePathKm } from "@/lib/body-position"
+import { getCalculatedSatelliteState } from "@/lib/satellite-model"
+import { AxialTiltIndicator, getAxisQuaternion, getLocalPoleVector, getObjectLabelOffset, OrbitLine, type FocusTargetRef } from "./orbit"
 
 const IDENTITY_QUATERNION = new Quaternion()
 
@@ -20,7 +21,6 @@ export function Satellite({
     dimOrbit,
     orbitOpacity,
     focusTargetRef,
-    parentPoleDirection,
     parentOrbitPlaneQuaternion,
     scale,
 }: {
@@ -42,37 +42,19 @@ export function Satellite({
     const frameRef = useRef<Group>(null)
     const pathRef = useRef<Group>(null)
     const axisRef = useRef<Group>(null)
+    const pathGeometryRef = useRef<BufferGeometry>(null)
+    const lastPathTimeRef = useRef<number | null>(null)
     const worldPositionRef = useRef(new Vector3())
     const [hovered, setHovered] = useState(false)
-    const distance = satellite.distance * scale.distance
     const radius = satellite.radius * scale.radius
-    const orbitPlaneQuaternion = useMemo(() => {
-        return getOrbitFrameQuaternion(
-            satellite.orbitPlane,
-            parentPoleDirection,
-            parentOrbitPlaneQuaternion
-        )
-    }, [parentOrbitPlaneQuaternion, parentPoleDirection, satellite.orbitPlane])
-    const worldOrbitFrameQuaternion = useMemo(() => {
-        return parentOrbitPlaneQuaternion.clone().multiply(orbitPlaneQuaternion)
-    }, [orbitPlaneQuaternion, parentOrbitPlaneQuaternion])
-    const localPoleVector = useMemo(() => {
-        return getLocalPoleVector(satellite.poleDirection, worldOrbitFrameQuaternion)
-    }, [satellite.poleDirection, worldOrbitFrameQuaternion])
-    const axisQuaternion = useMemo(() => {
-        return getAxisQuaternion(localPoleVector)
-    }, [localPoleVector])
-    const referenceState = useMemo(
-        () => getSatelliteOrbitState(satellite, new Date(J2000_EPOCH_UTC)),
-        [satellite]
-    )
+    const orbitPlaneQuaternion = useMemo(() => parentOrbitPlaneQuaternion.clone().invert(), [parentOrbitPlaneQuaternion])
+    const axisQuaternion = useMemo(() => getAxisQuaternion(getLocalPoleVector(satellite.poleDirection, IDENTITY_QUATERNION)), [satellite.poleDirection])
+    const initialState = useMemo(() => getCalculatedSatelliteState(satellite.name, new Date(J2000_EPOCH_UTC))!, [satellite.name])
     const orbitPoints = useMemo(
-        () => getSatelliteOrbitPath(satellite, undefined, new Date(J2000_EPOCH_UTC)).map((point) => [
-            distance * point.x,
-            0,
-            distance * point.z,
+        () => getSatellitePathKm(satellite, new Date(J2000_EPOCH_UTC)).map((point) => [
+            scale.distance * point.x, scale.distance * point.y, scale.distance * point.z,
         ] as [number, number, number]),
-        [distance, satellite]
+        [scale.distance, satellite]
     )
 
     useFrame(() => {
@@ -80,26 +62,20 @@ export function Satellite({
             return
         }
 
-        const state = getSatelliteOrbitState(
-            satellite,
-            simTimeRef.current
-        )
-        const orbitPosition = state.position
-        const frame = getOrbitFrameQuaternion(state.plane, parentPoleDirection, parentOrbitPlaneQuaternion)
-        frameRef.current?.quaternion.copy(frame)
-        // Rotate a cached ellipse with the periapsis instead of rebuilding
-        // its geometry, even when simulated time advances by a year/second.
-        if (pathRef.current) pathRef.current.rotation.y = state.argumentOfPeriapsis - referenceState.argumentOfPeriapsis
-        if (axisRef.current) {
-            const worldFrame = parentOrbitPlaneQuaternion.clone().multiply(frame)
-            axisRef.current.quaternion.copy(getAxisQuaternion(getLocalPoleVector(satellite.poleDirection, worldFrame)))
+        const at = simTimeRef.current
+        const state = getCalculatedSatelliteState(satellite.name, at)!
+        frameRef.current?.quaternion.copy(parentOrbitPlaneQuaternion).invert()
+        const geometry = pathGeometryRef.current
+        if (geometry && (lastPathTimeRef.current === null ||
+            Math.abs(at.getTime() - lastPathTimeRef.current) > Math.abs(satellite.orbitalPeriod) * MS_PER_DAY / 128)) {
+            const attribute = geometry.getAttribute("position")
+            getSatellitePathKm(satellite, at).forEach((point, i) =>
+                attribute.setXYZ(i, point.x * scale.distance, point.y * scale.distance, point.z * scale.distance))
+            attribute.needsUpdate = true
+            geometry.computeBoundingSphere()
+            lastPathTimeRef.current = at.getTime()
         }
-
-        groupRef.current.position.set(
-            distance * orbitPosition.x,
-            0,
-            distance * orbitPosition.z
-        )
+        groupRef.current.position.set(state.position.x, state.position.y, state.position.z).multiplyScalar(scale.distance)
 
         if (focusTargetRef) {
             groupRef.current.getWorldPosition(worldPositionRef.current)
@@ -115,15 +91,15 @@ export function Satellite({
     return (
         <group ref={frameRef} quaternion={orbitPlaneQuaternion}>
             <group ref={pathRef}>
-                <OrbitLine points={orbitPoints} color={satellite.color} opacity={orbitOpacity ?? (dimOrbit ? 0.18 : 0.72)} />
+                <OrbitLine geometryRef={pathGeometryRef} points={orbitPoints} color={satellite.color} opacity={orbitOpacity ?? (dimOrbit ? 0.18 : 0.72)} />
             </group>
 
             <group
                 ref={groupRef}
                 position={[
-                    distance * referenceState.position.x,
-                    0,
-                    distance * referenceState.position.z,
+                    scale.distance * initialState.position.x,
+                    scale.distance * initialState.position.y,
+                    scale.distance * initialState.position.z,
                 ]}
             >
                 <mesh
